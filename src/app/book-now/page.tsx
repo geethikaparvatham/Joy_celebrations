@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Check, CreditCard, Calendar, Clock, Users, Share2, Instagram, MessageCircle } from "lucide-react";
+import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle } from "lucide-react";
 import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
 
@@ -132,7 +132,8 @@ export default function BookNowPage() {
       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     } else if (platform === 'instagram') {
       navigator.clipboard.writeText(url);
-      alert('Receipt link copied to clipboard! You can now paste it in your Instagram DMs.');
+      alert('Receipt link copied to clipboard! Opening Instagram so you can paste it in DMs.');
+      window.open('https://www.instagram.com/joy.celebrations/', '_blank');
     }
   };
 
@@ -619,7 +620,7 @@ export default function BookNowPage() {
                       onClick={() => handleCustomerShare('instagram')}
                       style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s' }}
                     >
-                      <Instagram size={18} /> Share Instagram
+                      <Camera size={18} /> Share Instagram
                     </button>
                   </div>
                 </div>
