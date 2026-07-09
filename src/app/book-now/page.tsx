@@ -74,6 +74,8 @@ export default function BookNowPage() {
   // Dynamic pricing calculation
   const selectedPackage = useBookingStore(state => state.selectedPackage);
   const selectedOccasion = useBookingStore(state => state.selectedOccasion);
+  const date = useBookingStore(state => state.date);
+  const timeSlot = useBookingStore(state => state.timeSlot);
   const selectedPackageData = PACKAGES_LIST.find(p => p.name === selectedPackage);
   const basePrice = selectedPackageData?.price || 599;
   const addonTotal = selectedAddons.reduce((sum, addonName) => {
@@ -338,10 +340,14 @@ export default function BookNowPage() {
             )}
 
             {currentStep === 3 && (
-              <div style={{ textAlign: 'center', maxWidth: '400px', margin: '0 auto' }}>
-                <div style={{ position: 'relative', marginBottom: '2rem' }}>
+              <div style={{ textAlign: 'center', maxWidth: '450px', margin: '0 auto' }}>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Select your preferred date and time.</p>
+                
+                <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
                   <input 
                     type="date" 
+                    value={date || ''}
+                    onChange={(e) => useBookingStore.setState({ date: e.target.value })}
                     ref={dateInputRef}
                     className={`${styles.inputField} ${styles.dateInput}`}
                     style={{ 
@@ -353,7 +359,7 @@ export default function BookNowPage() {
                       color: 'white',
                       fontFamily: 'inherit',
                       outline: 'none',
-                      fontSize: '1rem',
+                      fontSize: '1.1rem',
                       position: 'relative',
                       zIndex: 2,
                       cursor: 'pointer'
@@ -364,27 +370,49 @@ export default function BookNowPage() {
                   <Calendar 
                     size={20} 
                     onClick={() => dateInputRef.current?.showPicker()}
-                    style={{ 
-                      position: 'absolute', 
-                      right: '1rem', 
-                      top: '50%', 
-                      transform: 'translateY(-50%)', 
-                      color: '#d4af37',
-                      cursor: 'pointer',
-                      zIndex: 3
-                    }} 
+                    style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', cursor: 'pointer', zIndex: 3 }} 
                   />
                 </div>
+
+                {date && (
+                  <div style={{ animation: 'fadeIn 0.5s ease', marginBottom: '2rem' }}>
+                    <div style={{ background: 'rgba(212, 175, 55, 0.05)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+                      <h4 style={{ color: '#d4af37', marginBottom: '0.5rem', fontSize: '0.95rem', letterSpacing: '1px' }}>OPERATING HOURS</h4>
+                      <p style={{ color: 'white', fontSize: '1rem', margin: 0 }}>Every Day: <span style={{ fontWeight: 'bold' }}>9:00 AM – 2:00 AM</span></p>
+                    </div>
+
+                    <div style={{ position: 'relative' }}>
+                      <input 
+                        type="time" 
+                        value={timeSlot || ''}
+                        onChange={(e) => useBookingStore.setState({ timeSlot: e.target.value })}
+                        className={`${styles.inputField} ${styles.dateInput}`}
+                        style={{ 
+                          width: '100%', 
+                          padding: '1rem 3rem 1rem 1rem', 
+                          background: 'rgba(255, 255, 255, 0.05)', 
+                          border: '1px solid rgba(212, 175, 55, 0.3)', 
+                          borderRadius: '8px',
+                          color: 'white',
+                          fontFamily: 'inherit',
+                          outline: 'none',
+                          fontSize: '1.1rem'
+                        }}
+                      />
+                      <Clock 
+                        size={20} 
+                        style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', pointerEvents: 'none' }} 
+                      />
+                    </div>
+                  </div>
+                )}
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => setCurrentStep(2)}
-                  >
-                    Previous
-                  </button>
+                  <button className="btn-secondary" onClick={() => setCurrentStep(2)}>Previous</button>
                   <button 
                     className="btn-primary"
+                    disabled={!date || !timeSlot}
+                    style={{ opacity: (!date || !timeSlot) ? 0.5 : 1 }}
                     onClick={() => setCurrentStep(4)}
                   >
                     Next Step
