@@ -97,7 +97,14 @@ export default function BookNowPage() {
       pm: paymentMethod,
       id: Math.random().toString(36).substr(2, 9).toUpperCase()
     };
-    return `${window.location.origin}/receipt?d=${btoa(JSON.stringify(receiptData))}`;
+    
+    // Force public link even when testing on localhost
+    let baseUrl = window.location.origin;
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://joy-celebrations-private-theatre.vercel.app';
+    }
+    
+    return `${baseUrl}/receipt?d=${btoa(JSON.stringify(receiptData))}`;
   };
 
   const handleFinalSubmit = () => {
