@@ -1,0 +1,124 @@
+.container {
+  padding-top: 100px;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3rem;
+  padding: 2rem 2%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+  border-color: var(--accent-gold);
+}
+
+.midnightCard, .popularCard {
+  border: 1px solid var(--accent-gold);
+}
+
+.midnightBadge {
+  position: absolute;
+  top: 1.5rem;
+  right: -2.5rem;
+  background: var(--gold-gradient);
+  color: var(--bg-primary);
+  padding: 0.5rem 3rem;
+  transform: rotate(45deg);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.planName {
+  font-size: 1.5rem;
+  color: var(--accent-gold);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-playfair), serif;
+}
+
+.price {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.price span {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+  margin-right: 0.2rem;
+}
+
+.features {
+  list-style: none;
+  flex-grow: 1;
+  margin-bottom: 2rem;
+}
+
+.features li {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.features li:last-child {
+  border-bottom: none;
+}
+
+.featureIcon, .featureIconCheck {
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
+.bookBtn {
+  width: 100%;
+}

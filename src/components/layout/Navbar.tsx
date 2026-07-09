@@ -1,0 +1,49 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Menu, Phone } from "lucide-react";
+import styles from "./Navbar.module.css";
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
+      <Link href="/" className={styles.logo}>
+        <span className="gold-text">JOY</span> <span className={styles.logoLight}>CELEBRATIONS</span>
+      </Link>
+
+      <div className={styles.navLinks}>
+        <Link href="/" className={styles.link}>Home</Link>
+        <Link href="/about" className={styles.link}>About</Link>
+        <Link href="/packages" className={styles.link}>Packages</Link>
+        <Link href="/themes" className={styles.link}>Themes</Link>
+        <Link href="/gallery" className={styles.link}>Gallery</Link>
+        <Link href="/add-ons" className={styles.link}>Add-ons</Link>
+        <Link href="/contact" className={styles.link}>Contact</Link>
+      </div>
+
+      <div className={styles.rightActions}>
+        <a href="tel:09618681267" className={styles.phoneLink}>
+          <Phone size={16} /> 096186 81267
+        </a>
+        <Link href="/book-now" className={`btn-primary ${styles.bookBtn}`}>
+          Book Now
+        </Link>
+      </div>
+
+      <button className={styles.mobileMenuBtn}>
+        <Menu size={28} />
+      </button>
+    </nav>
+  );
+}

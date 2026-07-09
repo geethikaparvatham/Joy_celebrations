@@ -1,0 +1,119 @@
+.container {
+  padding-top: 100px;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  padding: 4rem 2rem 2rem;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.content {
+  padding: 2rem 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.card {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.iconWrapper {
+  background: rgba(212, 175, 55, 0.1);
+  padding: 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  color: var(--accent-gold);
+}
+
+.cardTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  color: var(--accent-gold);
+}
+
+.price span {
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  margin-right: 0.2rem;
+}
+
+.features {
+  list-style: none;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.features li {
+  margin-bottom: 0.5rem;
+}
+
+.specialNote {
+  text-align: center;
+  padding: 3rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(0, 0, 0, 0.4) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.specialNote h3 {
+  font-size: 1.5rem;
+  color: var(--accent-gold);
+  margin-bottom: 1rem;
+  font-family: var(--font-playfair), serif;
+}
+
+.specialNote p {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
