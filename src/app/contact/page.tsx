@@ -79,6 +79,23 @@ export default function ContactPage() {
           </button>
         </form>
       </div>
+
+      {/* Google Maps Section */}
+      <div style={{ marginTop: '5rem', padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(212, 175, 55, 0.1)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}>
+        <h2 className="heading-luxury text-2xl" style={{ textAlign: 'center', marginBottom: '2rem', color: '#d4af37' }}>Find Us Here</h2>
+        <div style={{ width: '100%', height: '450px', borderRadius: '12px', overflow: 'hidden' }}>
+          <iframe 
+            src="https://www.google.com/maps?q=Joy+Celebrations+Private+Theatre,+Vijayawada&output=embed" 
+            width="100%" 
+            height="100%" 
+            style={{ border: 0, filter: 'contrast(1.1) brightness(0.9)' }} 
+            allowFullScreen 
+            loading="lazy" 
+            referrerPolicy="no-referrer-when-downgrade"
+            title="JOY Celebrations Location"
+          ></iframe>
+        </div>
+      </div>
     </div>
   );
 }
