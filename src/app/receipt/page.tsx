@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Check, Download, Share2 } from "lucide-react";
 
@@ -17,7 +17,7 @@ interface BookingData {
   id: string; // booking id
 }
 
-export default function ReceiptPage() {
+function ReceiptContent() {
   const searchParams = useSearchParams();
   const [data, setData] = useState<BookingData | null>(null);
 
@@ -144,5 +144,13 @@ export default function ReceiptPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ReceiptPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}><p>Loading receipt...</p></div>}>
+      <ReceiptContent />
+    </Suspense>
   );
 }

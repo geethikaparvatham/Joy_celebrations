@@ -69,7 +69,7 @@ export default function BookNowPage() {
   
   const [showUpiModal, setShowUpiModal] = useState(false);
   const [selectedUpiApp, setSelectedUpiApp] = useState<string | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success'>('pending');
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'share'>('pending');
 
   // Dynamic pricing calculation
   const selectedPackage = useBookingStore(state => state.selectedPackage);
