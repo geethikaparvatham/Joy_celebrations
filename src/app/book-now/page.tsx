@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Check, CreditCard, Calendar, Clock, Users } from "lucide-react";
+import { Check, CreditCard, Calendar, Clock, Users, Share2, Instagram, MessageCircle } from "lucide-react";
 import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
 
@@ -83,6 +83,23 @@ export default function BookNowPage() {
   }, 0);
   const currentTotal = basePrice + addonTotal;
 
+  const generateReceiptUrl = () => {
+    const store = useBookingStore.getState();
+    const receiptData = {
+      n: customerName || "Customer",
+      p: customerPhone,
+      pk: store.selectedPackage,
+      o: store.selectedOccasion,
+      d: store.date || 'TBD',
+      t: store.timeSlot || 'TBD',
+      a: selectedAddons,
+      tm: currentTotal,
+      pm: paymentMethod,
+      id: Math.random().toString(36).substr(2, 9).toUpperCase()
+    };
+    return `${window.location.origin}/receipt?d=${btoa(JSON.stringify(receiptData))}`;
+  };
+
   const handleFinalSubmit = () => {
     const store = useBookingStore.getState();
     const whatsappNumber = "919618681267";
@@ -100,11 +117,23 @@ export default function BookNowPage() {
     }
     
     msg += `*Total Amount:* ₹ ${currentTotal.toLocaleString('en-IN')}%0A`;
-    msg += `*Payment Method:* ${paymentMethod}%0A`;
+    msg += `*Payment Method:* ${paymentMethod}%0A%0A`;
+    msg += `*Receipt Link:* ${generateReceiptUrl()}`;
     
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${msg}`;
     
     window.open(whatsappUrl, '_blank');
+  };
+
+  const handleCustomerShare = (platform: string) => {
+    const url = generateReceiptUrl();
+    if (platform === 'whatsapp') {
+      const msg = `Hey! I just booked a private theatre experience at JOY Celebrations. Check out my receipt here: ${url}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    } else if (platform === 'instagram') {
+      navigator.clipboard.writeText(url);
+      alert('Receipt link copied to clipboard! You can now paste it in your Instagram DMs.');
+    }
   };
 
   const handleConfirmPay = () => {
@@ -117,9 +146,8 @@ export default function BookNowPage() {
       setSelectedUpiApp('Direct');
       setPaymentStatus('success');
       setTimeout(() => {
-        setShowUpiModal(false);
-        handleFinalSubmit();
-      }, 2000);
+        setPaymentStatus('share');
+      }, 1000);
     }
   };
 
@@ -542,24 +570,69 @@ export default function BookNowPage() {
                     onClick={() => {
                       setPaymentStatus('success');
                       setTimeout(() => {
-                        setShowUpiModal(false);
-                        handleFinalSubmit();
-                      }, 2000);
+                        setPaymentStatus('share');
+                      }, 1000);
                     }}
                   >
                     I have paid ₹ {currentTotal.toLocaleString('en-IN')}
                   </button>
                 </div>
               </>
-            ) : (
-              <div style={{ padding: '2rem 0' }}>
+            ) : paymentStatus === 'success' ? (
+              <div style={{ padding: '2rem 0', animation: 'fadeIn 0.5s ease' }}>
                 <div style={{ width: '60px', height: '60px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                   <Check size={32} color="white" />
                 </div>
                 <h4 style={{ color: '#25D366', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-                  {paymentMethod === 'UPI / GPay / PhonePe' ? 'Payment Successful!' : 'Booking Confirmed!'}
+                  Payment Confirmed!
                 </h4>
-                <p style={{ color: 'var(--text-secondary)' }}>Redirecting to WhatsApp...</p>
+              </div>
+            ) : (
+              <div style={{ padding: '1rem 0', animation: 'fadeIn 0.5s ease' }}>
+                <div style={{ width: '60px', height: '60px', background: '#d4af37', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                  <Check size={32} color="black" />
+                </div>
+                <h4 style={{ color: '#d4af37', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+                  Booking Successful!
+                </h4>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+                  Send your booking details to our admin to confirm your slot, or share it with your friends!
+                </p>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <button 
+                    className="btn-primary" 
+                    onClick={handleFinalSubmit}
+                    style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', background: '#25D366', color: 'white', border: 'none' }}
+                  >
+                    <MessageCircle size={20} /> Send Details to Admin (WhatsApp)
+                  </button>
+                  
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button 
+                      onClick={() => handleCustomerShare('whatsapp')}
+                      style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s' }}
+                    >
+                      <Share2 size={18} /> Share WhatsApp
+                    </button>
+                    <button 
+                      onClick={() => handleCustomerShare('instagram')}
+                      style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s' }}
+                    >
+                      <Instagram size={18} /> Share Instagram
+                    </button>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={() => {
+                    setShowUpiModal(false);
+                    window.location.href = generateReceiptUrl();
+                  }}
+                  style={{ marginTop: '1.5rem', background: 'none', border: 'none', color: '#d4af37', textDecoration: 'underline', cursor: 'pointer' }}
+                >
+                  View My Digital Receipt
+                </button>
               </div>
             )}
           </div>
