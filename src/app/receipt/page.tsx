@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Check, Download, Share2 } from "lucide-react";
+import html2canvas from "html2canvas";
 
 interface BookingData {
   n: string; // name
@@ -20,6 +21,7 @@ interface BookingData {
 function ReceiptContent() {
   const searchParams = useSearchParams();
   const [data, setData] = useState<BookingData | null>(null);
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const d = searchParams.get('d');
@@ -41,8 +43,28 @@ function ReceiptContent() {
     );
   }
 
-  const handlePrint = () => {
-    window.print();
+  const handleSave = async () => {
+    if (!receiptRef.current) return;
+    
+    const actionButtons = document.getElementById('receipt-actions');
+    if (actionButtons) actionButtons.style.display = 'none';
+    
+    try {
+      const canvas = await html2canvas(receiptRef.current, {
+        backgroundColor: '#0a0a0a',
+        scale: 2, 
+      });
+      
+      const image = canvas.toDataURL("image/png", 1.0);
+      const link = document.createElement("a");
+      link.download = `JOY_Receipt_${data.id}.png`;
+      link.href = image;
+      link.click();
+    } catch (err) {
+      console.error("Error saving receipt:", err);
+    } finally {
+      if (actionButtons) actionButtons.style.display = 'flex';
+    }
   };
 
   const handleShare = async () => {
@@ -64,7 +86,7 @@ function ReceiptContent() {
 
   return (
     <div style={{ minHeight: '80vh', padding: '4rem 1rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ 
+      <div ref={receiptRef} style={{ 
         background: 'var(--bg-secondary)', 
         borderRadius: '16px', 
         border: '1px solid #d4af37', 
@@ -134,11 +156,11 @@ function ReceiptContent() {
         </div>
 
         {/* Actions */}
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div id="receipt-actions" style={{ display: 'flex', gap: '1rem' }}>
           <button onClick={handleShare} className="btn-secondary" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
             <Share2 size={18} /> Share
           </button>
-          <button onClick={handlePrint} className="btn-primary" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+          <button onClick={handleSave} className="btn-primary" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
             <Download size={18} /> Save
           </button>
         </div>
