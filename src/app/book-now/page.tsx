@@ -1,11 +1,50 @@
 "use client";
 
-import { useState } from "react";
-import { Check, CreditCard, Calendar } from "lucide-react";
+import { useState, useRef } from "react";
+import { Check, CreditCard, Calendar, Clock, Users } from "lucide-react";
 import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
 
 const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details", "Summary"];
+
+const ADDONS_LIST = [
+  { name: 'Photography', price: 1500 },
+  { name: 'Fog Entry', price: 799 },
+  { name: 'Rose Petal Pathway', price: 699 },
+  { name: 'Custom Cake', price: 'On Request' },
+  { name: 'Cold Sparklers', price: 499 }
+];
+
+const PACKAGES_LIST = [
+  { 
+    name: 'Plan 1', 
+    price: 599, 
+    people: 'Up to 4 Members', 
+    duration: '1 Hour',
+    features: ['Perfect for Private Movie Experience', 'Large Screen Projection', 'Premium Sound System']
+  },
+  { 
+    name: 'Plan 2', 
+    price: 1300, 
+    people: 'Up to 4 Members', 
+    duration: '1 Hour',
+    features: ['Premium Decoration', 'Customized Name Board', 'LED Letters', '1 Kg Cake OR Half Kg Cool Cake']
+  },
+  { 
+    name: 'Plan 3', 
+    price: 2500, 
+    people: 'Up to 10 Members', 
+    duration: '2 Hours',
+    features: ['Premium Decoration', 'Birthday Video', 'Fog Effect', 'LED Letters & Name Board']
+  },
+  { 
+    name: 'Midnight Special', 
+    price: 2500, 
+    people: 'Up to 10 Members', 
+    duration: '1 Hour',
+    features: ['Exclusive Midnight Slot', 'Premium Decoration', 'Birthday Video', 'Fog Effect']
+  }
+];
 
 const inputStyles = {
   width: '100%', 
@@ -21,6 +60,68 @@ const inputStyles = {
 
 export default function BookNowPage() {
   const [currentStep, setCurrentStep] = useState(1);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState('UPI / GPay / PhonePe');
+  
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  
+  const [showUpiModal, setShowUpiModal] = useState(false);
+  const [selectedUpiApp, setSelectedUpiApp] = useState<string | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success'>('pending');
+
+  // Dynamic pricing calculation
+  const selectedPackage = useBookingStore(state => state.selectedPackage);
+  const selectedOccasion = useBookingStore(state => state.selectedOccasion);
+  const selectedPackageData = PACKAGES_LIST.find(p => p.name === selectedPackage);
+  const basePrice = selectedPackageData?.price || 599;
+  const addonTotal = selectedAddons.reduce((sum, addonName) => {
+    const addonInfo = ADDONS_LIST.find(a => a.name === addonName);
+    const price = typeof addonInfo?.price === 'number' ? addonInfo.price : 0;
+    return sum + price;
+  }, 0);
+  const currentTotal = basePrice + addonTotal;
+
+  const handleFinalSubmit = () => {
+    const store = useBookingStore.getState();
+    const whatsappNumber = "919618681267";
+    const name = customerName || "Customer";
+    
+    let msg = `*New Booking Request!*%0A%0A`;
+    msg += `*Name:* ${name}%0A`;
+    if (customerPhone) msg += `*Phone:* ${customerPhone}%0A`;
+    msg += `*Package:* ${store.selectedPackage}%0A`;
+    msg += `*Occasion:* ${store.selectedOccasion}%0A`;
+    msg += `*Date/Time:* ${store.date || 'TBD'} | ${store.timeSlot || 'TBD'}%0A`;
+    
+    if (selectedAddons.length > 0) {
+      msg += `*Addons:* ${selectedAddons.join(', ')}%0A`;
+    }
+    
+    msg += `*Total Amount:* ₹ ${currentTotal.toLocaleString('en-IN')}%0A`;
+    msg += `*Payment Method:* ${paymentMethod}%0A`;
+    
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${msg}`;
+    
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleConfirmPay = () => {
+    setShowUpiModal(true);
+    if (paymentMethod === 'UPI / GPay / PhonePe') {
+      setSelectedUpiApp(null);
+      setPaymentStatus('pending');
+    } else {
+      // Skip QR code for other methods and show success directly
+      setSelectedUpiApp('Direct');
+      setPaymentStatus('success');
+      setTimeout(() => {
+        setShowUpiModal(false);
+        handleFinalSubmit();
+      }, 2000);
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -54,36 +155,149 @@ export default function BookNowPage() {
           
           <div style={{ marginTop: '2rem' }}>
             {currentStep === 1 && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                {['Plan 1', 'Plan 2', 'Plan 3', 'Midnight Special'].map(pkg => (
-                  <button 
-                    key={pkg}
-                    className="btn-secondary"
-                    onClick={() => {
-                      useBookingStore.getState().setPackage(pkg);
-                      setCurrentStep(2);
-                    }}
-                  >
-                    Select {pkg}
-                  </button>
-                ))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                {PACKAGES_LIST.map((pkg) => {
+                  const isSelected = selectedPackage === pkg.name;
+                  return (
+                    <div 
+                      key={pkg.name}
+                      style={{ 
+                        position: 'relative',
+                        padding: '2rem 1.5rem', 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'flex-start', 
+                        gap: '1.5rem',
+                        textAlign: 'left',
+                        height: '100%',
+                        justifyContent: 'space-between',
+                        transition: 'all 0.3s ease',
+                        background: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'transparent',
+                        border: `1px solid ${isSelected ? '#d4af37' : 'rgba(255, 255, 255, 0.1)'}`,
+                        borderRadius: '0', // Square edges like reference
+                        cursor: 'pointer',
+                        overflow: 'hidden'
+                      }}
+                      onClick={() => {
+                        useBookingStore.getState().setPackage(pkg.name);
+                        setCurrentStep(2);
+                      }}
+                    >
+                      {/* Ribbon for Midnight Special */}
+                      {pkg.name === 'Midnight Special' && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '20px',
+                          right: '-35px',
+                          background: '#d4af37',
+                          color: 'black',
+                          fontWeight: 'bold',
+                          fontSize: '0.7rem',
+                          padding: '5px 40px',
+                          transform: 'rotate(45deg)',
+                          letterSpacing: '1px'
+                        }}>
+                          MIDNIGHT
+                        </div>
+                      )}
+
+                      <div style={{ width: '100%' }}>
+                        <h3 style={{ color: '#d4af37', fontSize: '1.4rem', marginBottom: '0.5rem' }}>{pkg.name}</h3>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                          <span style={{ color: 'white', fontSize: '1.2rem', marginTop: '0.2rem', marginRight: '0.2rem' }}>₹</span>
+                          <span style={{ color: 'white', fontSize: '2.5rem', fontWeight: 'bold', lineHeight: '1' }}>{pkg.price}</span>
+                        </div>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                            <Clock size={18} color="#d4af37" /> {pkg.duration}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                            <Users size={18} color="#d4af37" /> {pkg.people}
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                          {pkg.features.map((feature, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.8rem' }}>
+                              <Check size={16} color="#d4af37" style={{ marginTop: '0.1rem', flexShrink: 0 }} />
+                              <span>{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <button className="btn-primary" style={{ width: '100%', marginTop: '2rem', background: isSelected ? '#d4af37' : 'transparent', color: isSelected ? 'black' : '#d4af37', border: '1px solid #d4af37' }}>
+                        {isSelected ? 'SELECTED' : 'SELECT'}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
             {currentStep === 2 && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
-                {['Birthday', 'Anniversary', 'Surprise Party', 'Other'].map(occ => (
-                  <button 
-                    key={occ}
-                    className="btn-secondary"
-                    onClick={() => {
-                      useBookingStore.getState().setOccasion(occ);
-                      setCurrentStep(3);
-                    }}
-                  >
-                    {occ}
-                  </button>
-                ))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', margin: '0 auto', maxWidth: '900px' }}>
+                {[
+                  { name: 'Birthday', img: '/images/occasion_birthday.jpg' },
+                  { name: 'Anniversary', img: '/images/occasion_anniversary.jpg' },
+                  { name: 'Surprise Party', img: '/images/occasion_surprise.jpg' },
+                  { name: 'Other', img: '/images/occasion_other.jpg' }
+                ].map(occ => {
+                  const isSelected = selectedOccasion === occ.name;
+                  return (
+                    <div 
+                      key={occ.name}
+                      style={{ 
+                        position: 'relative',
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        borderRadius: '12px', 
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        border: isSelected ? '2px solid #d4af37' : '2px solid transparent',
+                        transition: 'all 0.3s ease',
+                        boxShadow: isSelected ? '0 0 15px rgba(212,175,55,0.3)' : '0 4px 10px rgba(0,0,0,0.5)',
+                        transform: isSelected ? 'translateY(-5px)' : 'none'
+                      }}
+                      onClick={() => {
+                        useBookingStore.getState().setOccasion(occ.name);
+                        setTimeout(() => setCurrentStep(3), 300); // Slight delay for animation
+                      }}
+                    >
+                      <div style={{ height: '180px', width: '100%', position: 'relative' }}>
+                        <img 
+                          src={occ.img} 
+                          alt={occ.name} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        />
+                        <div style={{ 
+                          position: 'absolute', inset: 0, 
+                          background: isSelected ? 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' : 'rgba(0,0,0,0.5)', 
+                          transition: 'all 0.3s ease' 
+                        }} />
+                      </div>
+                      <div style={{ 
+                        padding: '1.2rem', 
+                        background: isSelected ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.05)',
+                        textAlign: 'center',
+                        position: 'relative',
+                        zIndex: 2,
+                        marginTop: '-10px',
+                        backdropFilter: 'blur(10px)'
+                      }}>
+                        <h4 style={{ 
+                          color: isSelected ? '#d4af37' : 'white', 
+                          margin: 0, fontSize: '1.2rem',
+                          fontWeight: isSelected ? 'bold' : 'normal',
+                          letterSpacing: '1px'
+                        }}>
+                          {occ.name}
+                        </h4>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -92,6 +306,7 @@ export default function BookNowPage() {
                 <div style={{ position: 'relative', marginBottom: '2rem' }}>
                   <input 
                     type="date" 
+                    ref={dateInputRef}
                     className={`${styles.inputField} ${styles.dateInput}`}
                     style={{ 
                       width: '100%', 
@@ -104,18 +319,23 @@ export default function BookNowPage() {
                       outline: 'none',
                       fontSize: '1rem',
                       position: 'relative',
-                      zIndex: 2
+                      zIndex: 2,
+                      cursor: 'pointer'
                     }}
+                    onClick={(e) => e.currentTarget.showPicker()}
+                    min={new Date().toISOString().split('T')[0]}
                   />
                   <Calendar 
                     size={20} 
+                    onClick={() => dateInputRef.current?.showPicker()}
                     style={{ 
                       position: 'absolute', 
                       right: '1rem', 
                       top: '50%', 
                       transform: 'translateY(-50%)', 
                       color: '#d4af37',
-                      pointerEvents: 'none'
+                      cursor: 'pointer',
+                      zIndex: 3
                     }} 
                   />
                 </div>
@@ -140,26 +360,47 @@ export default function BookNowPage() {
             {currentStep === 4 && (
               <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                  {['Photography', 'Fog Entry', 'Rose Petal Pathway', 'Custom Cake', 'Cold Sparklers'].map(addon => (
-                    <button 
-                      key={addon}
-                      className="btn-secondary"
-                      style={{ padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}
-                      onClick={(e) => {
-                        e.currentTarget.classList.toggle('active-addon');
-                        e.currentTarget.style.borderColor = e.currentTarget.classList.contains('active-addon') ? '#d4af37' : '';
-                        e.currentTarget.style.color = e.currentTarget.classList.contains('active-addon') ? '#d4af37' : '';
-                      }}
-                    >
-                      <span style={{ fontWeight: 'bold' }}>{addon}</span>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>+ Add</span>
-                    </button>
-                  ))}
+                  {ADDONS_LIST.map(addon => {
+                    const isSelected = selectedAddons.includes(addon.name);
+                    return (
+                      <button 
+                        key={addon.name}
+                        className="btn-secondary"
+                        style={{ 
+                          padding: '1rem', 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          alignItems: 'center', 
+                          gap: '0.5rem',
+                          background: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+                          borderColor: isSelected ? '#d4af37' : '',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedAddons(selectedAddons.filter(a => a !== addon.name));
+                          } else {
+                            setSelectedAddons([...selectedAddons, addon.name]);
+                          }
+                        }}
+                      >
+                        <span style={{ fontWeight: 'bold', color: isSelected ? '#d4af37' : 'white' }}>{addon.name}</span>
+                        <span style={{ fontSize: '0.95rem', color: isSelected ? '#d4af37' : 'var(--text-secondary)' }}>
+                          {typeof addon.price === 'number' ? `₹ ${addon.price}` : addon.price}
+                        </span>
+                        <span style={{ fontSize: '0.8rem', color: isSelected ? '#d4af37' : 'var(--text-secondary)' }}>
+                          {isSelected ? '✓ ADDED' : '+ ADD'}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
                   <button className="btn-secondary" onClick={() => setCurrentStep(3)}>Previous</button>
-                  <button className="btn-primary" onClick={() => setCurrentStep(5)}>Next Step</button>
+                  <button className="btn-primary" onClick={() => setCurrentStep(5)}>
+                    Next Step (₹ {currentTotal.toLocaleString('en-IN')})
+                  </button>
                 </div>
               </div>
             )}
@@ -167,8 +408,8 @@ export default function BookNowPage() {
             {currentStep === 5 && (
               <div style={{ textAlign: 'center', maxWidth: '500px', margin: '0 auto' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                  <input type="text" placeholder="Full Name" className={styles.inputField} style={inputStyles} />
-                  <input type="tel" placeholder="Phone Number" className={styles.inputField} style={inputStyles} />
+                  <input type="text" placeholder="Full Name" value={customerName} onChange={e => setCustomerName(e.target.value)} className={styles.inputField} style={inputStyles} />
+                  <input type="tel" placeholder="Phone Number" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className={styles.inputField} style={inputStyles} />
                   <input type="email" placeholder="Email Address" className={styles.inputField} style={inputStyles} />
                   <textarea placeholder="Any Special Requests?" rows={3} className={styles.inputField} style={{...inputStyles, resize: 'vertical'}}></textarea>
                 </div>
@@ -187,30 +428,57 @@ export default function BookNowPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', textAlign: 'left', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px' }}>
                     <p><strong>Package:</strong> {useBookingStore.getState().selectedPackage}</p>
                     <p><strong>Occasion:</strong> {useBookingStore.getState().selectedOccasion}</p>
+                    {selectedAddons.length > 0 && (
+                      <p><strong>Addons:</strong> {selectedAddons.join(', ')}</p>
+                    )}
                     <p style={{ borderTop: '1px solid rgba(212, 175, 55, 0.3)', paddingTop: '0.5rem', marginTop: '0.5rem', color: '#d4af37', fontSize: '1.2rem' }}>
-                      <strong>Total Estimate:</strong> ₹{useBookingStore.getState().totalPrice || "1,500"}
+                      <strong>Total Estimate:</strong> ₹ {currentTotal.toLocaleString('en-IN')}
                     </p>
                   </div>
                 </div>
 
                 <h4 style={{ marginBottom: '1rem', fontSize: '1.2rem' }}>Select Payment Method</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                  {['UPI / GPay / PhonePe', 'Credit/Debit Card', 'Net Banking', 'Cash on Delivery'].map(method => (
-                    <label key={method} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      <input type="radio" name="payment" value={method} defaultChecked={method === 'UPI / GPay / PhonePe'} />
-                      <span style={{ fontSize: '0.9rem' }}>{method}</span>
-                    </label>
-                  ))}
+                  {['UPI / GPay / PhonePe', 'Credit/Debit Card', 'Net Banking', 'Cash on Delivery'].map(method => {
+                    const isSelected = paymentMethod === method;
+                    return (
+                      <label 
+                        key={method} 
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '0.5rem', 
+                          background: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255,255,255,0.05)', 
+                          padding: '1rem', 
+                          borderRadius: '8px', 
+                          cursor: 'pointer', 
+                          border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.1)',
+                          transition: 'all 0.3s ease',
+                          color: isSelected ? '#d4af37' : 'white'
+                        }}
+                      >
+                        <input 
+                          type="radio" 
+                          name="payment" 
+                          value={method} 
+                          checked={isSelected}
+                          onChange={() => setPaymentMethod(method)}
+                          style={{ accentColor: '#d4af37', width: '16px', height: '16px' }}
+                        />
+                        <span style={{ fontSize: '0.9rem', fontWeight: isSelected ? 'bold' : 'normal' }}>{method}</span>
+                      </label>
+                    );
+                  })}
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
                   <button className="btn-secondary" onClick={() => setCurrentStep(5)}>Previous</button>
                   <button 
                     className="btn-primary"
-                    onClick={() => alert("Booking Confirmed! Thank you for choosing JOY Celebrations.")}
+                    onClick={handleConfirmPay}
                     style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                   >
-                    <CreditCard size={18} /> Confirm & Pay
+                    <CreditCard size={18} /> Confirm & Pay (₹ {currentTotal.toLocaleString('en-IN')})
                   </button>
                 </div>
               </div>
@@ -218,6 +486,85 @@ export default function BookNowPage() {
           </div>
         </div>
       </div>
+      
+      {/* UPI Payment Modal */}
+      {showUpiModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(5px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }}>
+          <div style={{
+            background: 'var(--bg-secondary)', padding: '2rem', borderRadius: '12px',
+            maxWidth: '450px', width: '90%', border: '1px solid #d4af37',
+            textAlign: 'center', boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+          }}>
+            <h3 style={{ color: '#d4af37', marginBottom: '1.5rem', fontSize: '1.5rem' }}>
+              {paymentMethod === 'UPI / GPay / PhonePe' ? 'Complete UPI Payment' : 'Booking Confirmation'}
+            </h3>
+            
+            {paymentStatus === 'pending' ? (
+              <>
+                <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Select your preferred UPI App to scan the QR code.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                  {['GPay', 'PhonePe', 'Paytm'].map(app => (
+                    <button 
+                      key={app}
+                      onClick={() => setSelectedUpiApp(app)}
+                      style={{
+                        padding: '0.8rem 0.5rem',
+                        background: selectedUpiApp === app ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.05)',
+                        border: selectedUpiApp === app ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.1)',
+                        color: selectedUpiApp === app ? '#d4af37' : 'white',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      {app}
+                    </button>
+                  ))}
+                </div>
+                
+                {selectedUpiApp && (
+                  <div style={{ marginBottom: '1.5rem', animation: 'fadeIn 0.5s ease' }}>
+                    <p style={{ marginBottom: '1rem', color: '#d4af37' }}>Scan with {selectedUpiApp}</p>
+                    <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '200px', height: '200px', objectFit: 'contain', margin: '0 auto', borderRadius: '8px', background: 'white', padding: '0.5rem' }} />
+                  </div>
+                )}
+                
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                  <button className="btn-secondary" onClick={() => setShowUpiModal(false)}>Cancel</button>
+                  <button 
+                    className="btn-primary" 
+                    disabled={!selectedUpiApp}
+                    style={{ opacity: !selectedUpiApp ? 0.5 : 1 }}
+                    onClick={() => {
+                      setPaymentStatus('success');
+                      setTimeout(() => {
+                        setShowUpiModal(false);
+                        handleFinalSubmit();
+                      }, 2000);
+                    }}
+                  >
+                    I have paid ₹ {currentTotal.toLocaleString('en-IN')}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ padding: '2rem 0' }}>
+                <div style={{ width: '60px', height: '60px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                  <Check size={32} color="white" />
+                </div>
+                <h4 style={{ color: '#25D366', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+                  {paymentMethod === 'UPI / GPay / PhonePe' ? 'Payment Successful!' : 'Booking Confirmed!'}
+                </h4>
+                <p style={{ color: 'var(--text-secondary)' }}>Redirecting to WhatsApp...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

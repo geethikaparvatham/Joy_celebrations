@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Phone } from "lucide-react";
+import { Menu, Phone, Home, Gift, PartyPopper, Image as ImageIcon, PhoneCall } from "lucide-react";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
@@ -17,6 +17,7 @@ export default function Navbar() {
   }, []);
 
   return (
+    <>
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
       <Link href="/" className={styles.logo}>
         <span className="gold-text">JOY</span> <span className={styles.logoLight}>CELEBRATIONS</span>
@@ -45,5 +46,30 @@ export default function Navbar() {
         <Menu size={28} />
       </button>
     </nav>
+    
+    {/* Mobile Bottom Navigation */}
+    <div className={styles.mobileBottomNav}>
+      <Link href="/" className={styles.mobileNavLink}>
+        <Home size={20} />
+        <span>Home</span>
+      </Link>
+      <Link href="/packages" className={styles.mobileNavLink}>
+        <Gift size={20} />
+        <span>Packages</span>
+      </Link>
+      <Link href="/themes" className={styles.mobileNavLink}>
+        <PartyPopper size={20} />
+        <span>Themes</span>
+      </Link>
+      <Link href="/gallery" className={styles.mobileNavLink}>
+        <ImageIcon size={20} />
+        <span>Gallery</span>
+      </Link>
+      <Link href="/contact" className={styles.mobileNavLink}>
+        <PhoneCall size={20} />
+        <span>Contact</span>
+      </Link>
+    </div>
+    </>
   );
 }

@@ -46,19 +46,33 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <form className={`glass-panel ${styles.form}`} onSubmit={(e) => e.preventDefault()}>
+        <form 
+          className={`glass-panel ${styles.form}`} 
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const name = formData.get("name");
+            const phone = formData.get("phone");
+            const message = formData.get("message");
+            
+            const whatsappMessage = `Hi JOY Celebrations!%0A%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Message:* ${message}`;
+            const whatsappUrl = `https://wa.me/919618681267?text=${whatsappMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+          }}
+        >
           <h2 className="heading-luxury text-2xl mb-4">Send a Message</h2>
           <div className={styles.formGroup}>
             <label htmlFor="name">Full Name</label>
-            <input type="text" id="name" required />
+            <input type="text" id="name" name="name" required />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phone">Phone Number</label>
-            <input type="tel" id="phone" required />
+            <input type="tel" id="phone" name="phone" required />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="message">Message</label>
-            <textarea id="message" rows={4} required></textarea>
+            <textarea id="message" name="message" rows={4} required></textarea>
           </div>
           <button type="submit" className={`btn-primary ${styles.submitBtn}`}>
             Send Message

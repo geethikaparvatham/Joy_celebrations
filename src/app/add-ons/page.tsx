@@ -1,43 +1,14 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Camera, Film, CloudFog, PartyPopper, Flower, Cake } from "lucide-react";
+import { Cake } from "lucide-react";
 import styles from "./page.module.css";
 
 const addons = [
-  {
-    id: "photography",
-    title: "Professional Photography (1 Hour)",
-    price: 1500,
-    icon: <Camera size={24} className={styles.icon} />,
-    features: ["Unlimited Photos"]
-  },
-  {
-    id: "cinematic-reel",
-    title: "Cinematic Reel",
-    price: 1500,
-    icon: <Film size={24} className={styles.icon} />,
-    features: []
-  },
-  {
-    id: "fog-effect",
-    title: "Fog Effect",
-    price: 799,
-    icon: <CloudFog size={24} className={styles.icon} />,
-    features: []
-  },
-  {
-    id: "bubble-entry",
-    title: "Bubble Entry",
-    price: 299,
-    icon: <PartyPopper size={24} className={styles.icon} />,
-    features: []
-  },
-  {
-    id: "rose-petals",
-    title: "Rose Petals Entry",
-    price: 699,
-    icon: <Flower size={24} className={styles.icon} />,
-    features: []
-  }
+  { id: "photography", title: "Professional Photography (1 Hour)", price: 1500, image: "/addon_photography.jpg", details: "• Unlimited Photos" },
+  { id: "cinematic-reel", title: "Cinematic Reel", price: 1500, image: "/addon_cinematic_reel.jpg", details: "" },
+  { id: "fog-effect", title: "Fog Effect", price: 799, image: "/addon_fog.jpg", details: "" },
+  { id: "bubble-entry", title: "Bubble Entry", price: 299, image: "/addon_bubble_entry.jpg", details: "" },
+  { id: "rose-petals", title: "Rose Petals Entry", price: 699, image: "/addon_rose_petals.jpg", details: "" }
 ];
 
 export default function AddOnsPage() {
@@ -53,25 +24,13 @@ export default function AddOnsPage() {
       <div className={styles.content}>
         <div className={styles.grid}>
           {addons.map((addon) => (
-            <div key={addon.id} className={`glass-panel ${styles.card}`}>
-              <div className={styles.cardHeader}>
-                <div className={styles.iconWrapper}>
-                  {addon.icon}
-                </div>
-                <h2 className={styles.cardTitle}>{addon.title}</h2>
+            <div key={addon.id} className={styles.photoCard}>
+              <div className={styles.circularImageWrapper}>
+                <Image src={addon.image} alt={addon.title} fill className={styles.image} />
               </div>
-              
-              <div className={styles.price}>
-                <span>₹</span>{addon.price}
-              </div>
-
-              {addon.features.length > 0 && (
-                <ul className={styles.features}>
-                  {addon.features.map((feature, i) => (
-                    <li key={i}>• {feature}</li>
-                  ))}
-                </ul>
-              )}
+              <h3 className={styles.addonTitle}>{addon.title}</h3>
+              <p className={styles.addonPrice}>₹ {addon.price}</p>
+              {addon.details && <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{addon.details}</p>}
             </div>
           ))}
         </div>

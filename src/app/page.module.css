@@ -129,6 +129,35 @@
   60% { transform: translateY(3px); }
 }
 
+@media (max-width: 768px) {
+  .heroPreTitle {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    padding: 0 1rem;
+    line-height: 1.5;
+  }
+  
+  .title {
+    font-size: 2.2rem;
+  }
+  
+  .subtitle {
+    font-size: 0.95rem;
+    padding: 0 1rem;
+  }
+
+  .ctaContainer {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .ctaContainer > * {
+    width: 100%;
+  }
+}
+
 .textDark {
   color: #4c1d95 !important; /* Deep Royal Purple */
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;

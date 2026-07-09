@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import "./globals.css";
 
@@ -41,7 +41,7 @@ export default function RootLayout({
         <Navbar />
         <main>{children}</main>
         <WhatsAppButton />
-        <Footer />
+        <ConditionalFooter />
       </body>
     </html>
   );

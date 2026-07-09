@@ -39,7 +39,6 @@ export default function Footer() {
             <li><Link href="/packages">Packages</Link></li>
             <li><Link href="/themes">Themes</Link></li>
             <li><Link href="/gallery">Gallery</Link></li>
-            <li><Link href="/reviews">Reviews</Link></li>
             <li><Link href="/contact">Contact</Link></li>
             <li><Link href="/book-now">Book Now</Link></li>
           </ul>
