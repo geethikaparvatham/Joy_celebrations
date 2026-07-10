@@ -30,9 +30,9 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
             style={{
               padding: '0.5rem 1.5rem',
               borderRadius: '2rem',
-              border: activeCategory === category ? 'none' : '1px solid rgba(255,255,255,0.2)',
-              background: activeCategory === category ? '#5a228b' : 'transparent', // Purple color from the screenshot
-              color: activeCategory === category ? 'white' : 'var(--text-secondary)',
+              border: activeCategory === category ? 'none' : '1px solid rgba(212, 175, 55, 0.3)',
+              background: activeCategory === category ? '#d4af37' : 'transparent',
+              color: activeCategory === category ? '#050505' : 'var(--text-secondary)',
               cursor: 'pointer',
               fontSize: '0.9rem',
               transition: 'all 0.3s ease',
@@ -66,7 +66,7 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
                 />
               </div>
               <div style={{ padding: '0 0.5rem' }}>
-                <div style={{ color: '#5a228b', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '0.5px' }}>
+                <div style={{ color: '#d4af37', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '0.5px' }}>
                   {post.category}
                 </div>
                 <h2 style={{ color: 'white', fontSize: '1.25rem', lineHeight: '1.4', fontWeight: 600, margin: 0 }}>
