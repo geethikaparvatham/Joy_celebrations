@@ -103,6 +103,10 @@
   cursor: pointer;
 }
 
+.mobileDropdown {
+  display: none;
+}
+
 /* Mobile Bottom Navigation */
 .mobileBottomNav {
   display: none;
