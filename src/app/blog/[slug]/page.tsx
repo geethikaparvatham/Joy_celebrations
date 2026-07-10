@@ -80,6 +80,45 @@ const postsData: Record<string, any> = {
       <h2>Book Your Experience</h2>
       <p>At JOY Celebrations, we handle all the decorations, catering, and technical setup so you can focus entirely on your partner. Ready to plan the perfect surprise?</p>
     `
+  },
+  'private-theatre-vs-public-cinema': {
+    title: '5 Reasons Why a Private Theatre is Better Than a Public Cinema',
+    description: 'Tired of noisy crowds and uncomfortable seats? Here are 5 reasons why upgrading to a private theatre in Vijayawada is worth it.',
+    date: '2024-03-05',
+    content: `
+      <h2>The Evolution of Movie Watching</h2>
+      <p>Going to the movies is a classic pastime, but public cinemas come with a lot of frustrations—crying babies, people talking on their phones, and uncomfortable seating. This is why <strong>private theatres in Vijayawada</strong> are taking over.</p>
+
+      <h2>1. Complete Privacy</h2>
+      <p>Whether you're watching an intense thriller or a romantic comedy, you can react however you want without worrying about disturbing strangers.</p>
+
+      <h2>2. You Control the Remote</h2>
+      <p>Need a bathroom break? Want to rewind a crucial scene? In a private theatre, you have the remote. You control the pace of your entertainment.</p>
+
+      <h2>3. Premium Comfort</h2>
+      <p>Instead of rigid flip-down seats, enjoy luxury sofas, bean bags, and plenty of legroom. It's like your living room, but with a 150-inch 4K screen.</p>
+    `
+  },
+  'best-romantic-movies-date-night': {
+    title: 'Best Movies to Watch for a Romantic Date Night in a Private Theatre',
+    description: 'Planning a movie date? Here is a curated list of the best romantic movies to stream during your private theatre booking.',
+    date: '2024-03-20',
+    content: `
+      <h2>Setting the Mood</h2>
+      <p>A great date night relies on a great movie. When you book a <strong>couple theatre in Vijayawada</strong>, you get access to all major streaming platforms. But what should you watch? Here are our top picks.</p>
+
+      <h2>1. About Time (2013)</h2>
+      <p>A beautiful, heartwarming sci-fi romance about time travel, love, and appreciating the little things in life. Perfect for couples.</p>
+
+      <h2>2. The Notebook (2004)</h2>
+      <p>A classic for a reason. If you want a tear-jerker that guarantees cuddles on our premium sofas, this is the one.</p>
+
+      <h2>3. La La Land (2016)</h2>
+      <p>Experience the incredible jazz soundtrack and vibrant colors on our state-of-the-art 4K projector and Dolby Atmos sound system. It's a visual masterpiece.</p>
+
+      <h2>Make it Perfect</h2>
+      <p>Pair your movie with our custom rose petal decorations and a special cake to create a truly magical evening at JOY Celebrations.</p>
+    `
   }
 };
 
