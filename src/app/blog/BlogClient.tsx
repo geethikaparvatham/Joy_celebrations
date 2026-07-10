@@ -44,7 +44,7 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
         {filteredPosts.map(post => (
           <Link href={`/blog/${post.slug}`} key={post.slug} style={{ textDecoration: 'none' }}>
             <div style={{ 

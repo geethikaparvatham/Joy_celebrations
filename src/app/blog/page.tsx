@@ -48,7 +48,7 @@ const posts = [
 
 export default function BlogIndex() {
   return (
-    <div style={{ padding: '8rem 5% 5rem', minHeight: '100vh', maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ padding: '8rem 5% 5rem', minHeight: '100vh', maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 className="heading-luxury" style={{ color: 'white', fontSize: '2.5rem', margin: 0 }}>Blog</h1>
       </div>
