@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Star, Send } from "lucide-react";
 
 export default function FeedbackForm() {
-  const [rating, setRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState(5);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [name, setName] = useState("");
   const [event, setEvent] = useState("");
   const [feedback, setFeedback] = useState("");
@@ -13,22 +13,26 @@ export default function FeedbackForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Format the message for WhatsApp
-    const whatsappNumber = "919618681267";
-    let msg = `*New Customer Feedback!*%0A%0A`;
-    msg += `*Name:* ${name || 'Anonymous'}%0A`;
-    if (event) msg += `*Event:* ${event}%0A`;
-    msg += `*Rating:* ${rating} Stars ⭐%0A`;
-    msg += `*Feedback:* "${feedback}"%0A`;
+    if (rating === 0) {
+      alert("Please select a star rating!");
+      return;
+    }
     
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${msg}`;
-    window.open(whatsappUrl, '_blank');
+    // Google prohibits websites from automatically posting reviews on a user's behalf for security reasons.
+    // The best practice workaround is to copy their text and redirect them to the Google Review page.
+    if (feedback) {
+      navigator.clipboard.writeText(feedback).catch(err => console.error('Could not copy text: ', err));
+      alert("We've copied your feedback! You will now be redirected to Google. Please paste your feedback there to complete your review!");
+    }
+    
+    // Redirect to Google Reviews (User must replace this URL with their actual Google Business Review link)
+    window.location.href = "https://g.page/review";
     
     // Reset form
     setName("");
     setEvent("");
     setFeedback("");
-    setRating(5);
+    setRating(0);
   };
 
   return (
