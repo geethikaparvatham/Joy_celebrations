@@ -35,6 +35,7 @@ export default function Navbar() {
         <Link href="/add-ons" className={styles.link}>Add-ons</Link>
         <Link href="/blog" className={styles.link}>Blog</Link>
         <Link href="/faq" className={styles.link}>FAQ</Link>
+        <Link href="/reviews" className={styles.link}>Feedback & Reviews</Link>
         <Link href="/contact" className={styles.link}>Contact</Link>
       </div>
 
@@ -66,6 +67,7 @@ export default function Navbar() {
       <Link href="/add-ons" className={styles.mobileDropdownLink} onClick={closeMenu}>Add-ons</Link>
       <Link href="/blog" className={styles.mobileDropdownLink} onClick={closeMenu}>Blog</Link>
       <Link href="/faq" className={styles.mobileDropdownLink} onClick={closeMenu}>FAQ</Link>
+      <Link href="/reviews" className={styles.mobileDropdownLink} onClick={closeMenu}>Feedback & Reviews</Link>
       <Link href="/contact" className={styles.mobileDropdownLink} onClick={closeMenu}>Contact</Link>
     </div>
     
