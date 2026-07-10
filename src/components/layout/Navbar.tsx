@@ -30,20 +30,22 @@ export default function Navbar() {
         <Link href="/themes" className={styles.link}>Themes</Link>
         <Link href="/gallery" className={styles.link}>Gallery</Link>
         <Link href="/add-ons" className={styles.link}>Add-ons</Link>
+        <Link href="/blog" className={styles.link}>Blog</Link>
+        <Link href="/faq" className={styles.link}>FAQ</Link>
         <Link href="/contact" className={styles.link}>Contact</Link>
       </div>
 
       <div className={styles.rightActions}>
-        <a href="tel:09618681267" className={styles.phoneLink}>
-          <Phone size={16} /> 096186 81267
+        <a href="tel:09618681267" className={styles.phoneLink} aria-label="Call Joy Celebrations">
+          <Phone size={16} aria-hidden="true" /> 096186 81267
         </a>
         <Link href="/book-now" className={`btn-primary ${styles.bookBtn}`}>
           Book Now
         </Link>
       </div>
 
-      <button className={styles.mobileMenuBtn}>
-        <Menu size={28} />
+      <button className={styles.mobileMenuBtn} aria-label="Toggle Mobile Menu">
+        <Menu size={28} aria-hidden="true" />
       </button>
     </nav>
     

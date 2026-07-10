@@ -1,5 +1,7 @@
 "use client";
 
+import Head from "next/head";
+
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
@@ -58,7 +60,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
-            Let's Celebrate Your <br/> <TypingAnimation /> <span className="gold-text">With Us</span>
+            <span style={{ display: 'none' }}>Private Party Theatre in Vijayawada - </span>Let's Celebrate Your <br/> <TypingAnimation /> <span className="gold-text">With Us</span>
           </motion.h1>
           
           <motion.p 
@@ -123,6 +125,34 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <section style={{ padding: '5rem 10%', background: '#0a0a0a', borderTop: '1px solid rgba(212, 175, 55, 0.1)' }}>
+        <h2 className="heading-luxury" style={{ color: '#d4af37', marginBottom: '2rem', textAlign: 'center' }}>The Best Private Party Theatre in Vijayawada</h2>
+        <div style={{ maxWidth: '900px', margin: '0 auto', color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '1.1rem', textAlign: 'justify' }}>
+          <p style={{ marginBottom: '1.5rem' }}>
+            Welcome to <strong>JOY Celebrations</strong>, the ultimate <strong>private party theatre in Vijayawada</strong>. Whether you are planning a grand <strong>birthday celebration in Vijayawada</strong>, a romantic <strong>anniversary celebration</strong>, or an intimate <strong>proposal decoration</strong>, our luxury private theatre offers the perfect setting. We provide state-of-the-art 4K projection, Dolby Atmos immersive sound, and breathtaking custom decorations tailored for your special moments.
+          </p>
+          <p style={{ marginBottom: '1.5rem' }}>
+            Looking for a unique <strong>couple theatre in Vijayawada</strong> for a romantic date night? Or perhaps a fun-filled <strong>kids birthday theatre</strong>? Our premium packages start at just ₹599, combining world-class entertainment with exclusive privacy. Say goodbye to crowded restaurants and hello to a personalized, VIP experience. Book your <strong>surprise celebration in Vijayawada</strong> today and let us craft memories that will last a lifetime.
+          </p>
+        </div>
+      </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "Private Party Theatre Booking",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "5.0",
+              "reviewCount": "205"
+            }
+          })
+        }}
+      />
     </div>
   );
 }

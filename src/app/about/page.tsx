@@ -1,4 +1,11 @@
 import styles from "./page.module.css";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us | JOY Celebrations Vijayawada',
+  description: 'Discover the vision behind JOY Celebrations, Vijayawada\'s premier private party theatre. Learn how we craft magical moments for birthdays and anniversaries.',
+  keywords: ['About Joy Celebrations', 'Private Party Theatre in Vijayawada', 'Best Celebration Venue Vijayawada', 'Couple Theatre Vijayawada'],
+};
 
 export default function AboutPage() {
   return (
@@ -20,16 +27,16 @@ export default function AboutPage() {
         </div>
         
         <div className={styles.textContent}>
-          <h2>Why We Started</h2>
+          <h2 className="heading-luxury">Why We Started</h2>
           <p>
-            At JOY Celebrations, we believe that every special moment deserves an extraordinary setting. 
+            At <strong>JOY Celebrations</strong>, we believe that every special moment deserves an extraordinary setting. 
             We noticed a gap in the market for private, luxurious spaces where families, friends, and 
-            couples could celebrate without the interruptions of public venues.
+            couples could celebrate without the interruptions of public venues. We established the premier <strong>private party theatre in Vijayawada</strong> to offer a VIP experience.
           </p>
           <p>
             Our mission is to provide an unparalleled cinematic and celebration experience. From the 
             moment you step in, our premium interiors, personalized decorations, and dedicated service 
-            ensure your celebration is nothing short of magical.
+            ensure your celebration is nothing short of magical. Whether you are hosting a <strong>birthday celebration in Vijayawada</strong>, planning a beautiful <strong>anniversary celebration</strong>, or looking for a memorable <strong>romantic date night</strong>, our theatre is equipped to make it perfect.
           </p>
           
           <div className={styles.statsGrid}>

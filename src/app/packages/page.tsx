@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { Check, Clock, Users, PlusCircle } from "lucide-react";
 import styles from "./page.module.css";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Premium Celebration Packages in Vijayawada',
+  description: 'Explore our budget-friendly birthday packages and romantic date night options at JOY Celebrations, Vijayawada’s top private party theatre.',
+  keywords: ['Budget-Friendly Birthday Packages Vijayawada', 'Romantic Date Night Vijayawada', 'Private Party Packages', 'Joy Celebrations Packages'],
+};
 
 const packages = [
   {
@@ -103,6 +110,32 @@ export default function PackagesPage() {
           </div>
         ))}
       </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "itemListElement": packages.map((pkg, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "item": {
+                "@type": "Service",
+                "name": pkg.name,
+                "provider": {
+                  "@type": "LocalBusiness",
+                  "name": "JOY Celebrations"
+                },
+                "offers": {
+                  "@type": "Offer",
+                  "price": pkg.price,
+                  "priceCurrency": "INR"
+                }
+              }
+            }))
+          })
+        }}
+      />
     </div>
   );
 }
