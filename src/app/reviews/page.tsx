@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Star } from 'lucide-react';
+import FeedbackForm from './FeedbackForm';
 
 export const metadata: Metadata = {
   title: 'Feedback & Reviews',
@@ -77,21 +78,7 @@ export default function ReviewsPage() {
         ))}
       </div>
 
-      <div style={{ marginTop: '5rem', textAlign: 'center', background: 'rgba(212, 175, 55, 0.05)', padding: '3rem 2rem', borderRadius: '16px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-        <h2 className="heading-luxury" style={{ color: 'white', fontSize: '2rem', marginBottom: '1rem' }}>Had a great time with us?</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
-          We would love to hear about your experience! Your feedback helps us create even better magical moments.
-        </p>
-        <a 
-          href="https://g.page/review" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="btn-primary"
-          style={{ textDecoration: 'none', display: 'inline-block' }}
-        >
-          Leave a Google Review
-        </a>
-      </div>
+      <FeedbackForm />
     </div>
   );
 }
