@@ -7,7 +7,6 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import TypingAnimation from "@/components/ui/TypingAnimation";
-import ChecklistSection from "@/components/home/ChecklistSection";
 
 const heroBackgrounds = [
   "/bg2.jpg",
@@ -126,8 +125,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <ChecklistSection />
 
       <section style={{ padding: '5rem 10%', background: '#0a0a0a', borderTop: '1px solid rgba(212, 175, 55, 0.1)' }}>
         <h2 className="heading-luxury" style={{ color: '#d4af37', marginBottom: '2rem', textAlign: 'center' }}>The Best Private Party Theatre in Vijayawada</h2>
