@@ -7,6 +7,8 @@ const postsData: Record<string, any> = {
     title: 'Why Are Private Theater Parties the Next Big Trend in Vijayawada',
     description: 'Looking for the perfect way to celebrate a birthday in Vijayawada? Discover why private theatres are becoming the #1 choice.',
     date: '2023-11-15',
+    category: 'Celebration Ideas',
+    image: '/images/theme_birthday.jpg',
     content: `
       <h2>The Shift in Vijayawada's Celebration Culture</h2>
       <p>For years, birthday celebrations in Vijayawada meant booking a table at a crowded restaurant or hosting a chaotic house party. But today, the trend has completely shifted towards <strong>private party theatres in Vijayawada</strong>. The demand for intimate, personalized, and exclusive spaces is higher than ever.</p>
@@ -26,6 +28,8 @@ const postsData: Record<string, any> = {
     title: 'From Solo Chill to Group Thrills in Vijayawada — Why Private Experiences Always Win',
     description: 'Planning to pop the question? Learn how to create a breathtaking romantic setup that guarantees a "Yes!".',
     date: '2023-12-02',
+    category: 'Places & Activities',
+    image: '/images/theme_friendship.jpg',
     content: `
       <h2>Setting the Stage for Forever</h2>
       <p>A proposal is a once-in-a-lifetime moment, and the environment plays a massive role in setting the mood. If you're in Andhra Pradesh and searching for the best <strong>proposal decoration in Vijayawada</strong>, a private theatre offers an unbeatable combination of intimacy and grandeur.</p>
@@ -46,6 +50,8 @@ const postsData: Record<string, any> = {
     title: 'How Are Private Theaters in Vijayawada Replacing Boring Movie Nights?',
     description: 'Comparing the experience, privacy, and cost of celebrating at a busy restaurant versus a luxury private party theatre.',
     date: '2024-01-10',
+    category: 'Movies & Shows',
+    image: '/images/theme_couple.jpg',
     content: `
       <h2>The Dilemma</h2>
       <p>When planning a celebration, the default option is often a nice restaurant. But as <strong>couple theatres in Vijayawada</strong> become more popular, people are starting to weigh their options. Let's compare the two.</p>
@@ -64,6 +70,8 @@ const postsData: Record<string, any> = {
     title: 'Top 5 Anniversary Surprise Ideas Using a Private Theatre',
     description: 'Make your anniversary unforgettable with these top 5 surprise ideas you can execute perfectly in a private party theatre.',
     date: '2024-02-14',
+    category: 'Celebration Ideas',
+    image: '/images/theme_anniversary.jpg',
     content: `
       <h2>Going Beyond the Usual Dinner</h2>
       <p>Anniversaries are milestones that deserve more than just a standard dinner date. If you're looking for unique <strong>anniversary celebrations in Vijayawada</strong>, renting a private theatre opens up a world of creative possibilities.</p>
@@ -85,6 +93,8 @@ const postsData: Record<string, any> = {
     title: '5 Reasons Why a Private Theatre is Better Than a Public Cinema',
     description: 'Tired of noisy crowds and uncomfortable seats? Here are 5 reasons why upgrading to a private theatre in Vijayawada is worth it.',
     date: '2024-03-05',
+    category: 'Places & Activities',
+    image: '/images/theme_movie.jpg',
     content: `
       <h2>The Evolution of Movie Watching</h2>
       <p>Going to the movies is a classic pastime, but public cinemas come with a lot of frustrations—crying babies, people talking on their phones, and uncomfortable seating. This is why <strong>private theatres in Vijayawada</strong> are taking over.</p>
@@ -103,6 +113,8 @@ const postsData: Record<string, any> = {
     title: 'Best Movies to Watch for a Romantic Date Night in a Private Theatre',
     description: 'Planning a movie date? Here is a curated list of the best romantic movies to stream during your private theatre booking.',
     date: '2024-03-20',
+    category: 'Movies & Shows',
+    image: '/images/theme_proposal.jpg',
     content: `
       <h2>Setting the Mood</h2>
       <p>A great date night relies on a great movie. When you book a <strong>couple theatre in Vijayawada</strong>, you get access to all major streaming platforms. But what should you watch? Here are our top picks.</p>
@@ -155,24 +167,76 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <div style={{ padding: '8rem 5% 5rem', minHeight: '100vh', maxWidth: '800px', margin: '0 auto' }}>
-      <Link href="/blog" style={{ color: '#d4af37', textDecoration: 'none', marginBottom: '2rem', display: 'inline-block' }}>
-        &larr; Back to Blog
-      </Link>
-      
-      <h1 className="heading-luxury" style={{ color: 'white', marginBottom: '1rem', fontSize: '2.5rem' }}>{post.title}</h1>
-      <div style={{ color: '#d4af37', marginBottom: '3rem', fontSize: '0.9rem' }}>Published on {post.date}</div>
-      
-      <div 
-        style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '1.1rem' }}
-        className="blog-content"
-        dangerouslySetInnerHTML={{ __html: post.content }} 
-      />
+    <>
+      {/* Dynamic styles specifically for the blog content so we can style the raw HTML */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .blog-content h2 {
+            color: #d4af37;
+            font-size: 1.8rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            font-family: var(--font-playfair);
+          }
+          .blog-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+          }
+          .blog-content ul {
+            margin-bottom: 2rem;
+            padding-left: 1.5rem;
+          }
+          .blog-content li {
+            margin-bottom: 0.8rem;
+          }
+          .blog-content strong {
+            color: white;
+            font-weight: 600;
+          }
+        `
+      }} />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-    </div>
+      <div style={{ padding: '8rem 5% 5rem', minHeight: '100vh', maxWidth: '800px', margin: '0 auto' }}>
+        <Link href="/blog" style={{ color: '#d4af37', textDecoration: 'none', marginBottom: '2rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500, transition: 'all 0.3s ease' }}>
+          &larr; Back to Blog
+        </Link>
+        
+        {post.category && (
+          <div style={{ color: '#d4af37', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '1rem', letterSpacing: '1px' }}>
+            {post.category}
+          </div>
+        )}
+
+        <h1 className="heading-luxury" style={{ color: 'white', marginBottom: '1.5rem', fontSize: 'clamp(2rem, 5vw, 3.5rem)', lineHeight: '1.2' }}>{post.title}</h1>
+        
+        <div style={{ color: 'var(--text-secondary)', marginBottom: '3rem', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span>Published on {post.date}</span>
+          <span style={{ width: '4px', height: '4px', background: 'rgba(212, 175, 55, 0.5)', borderRadius: '50%' }}></span>
+          <span>5 min read</span>
+        </div>
+
+        {post.image && (
+          <div style={{ width: '100%', height: 'auto', aspectRatio: '16/9', position: 'relative', marginBottom: '4rem', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={post.image} 
+              alt={post.title} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
+        )}
+        
+        <div 
+          style={{ color: 'var(--text-secondary)', lineHeight: '1.8' }}
+          className="blog-content"
+          dangerouslySetInnerHTML={{ __html: post.content }} 
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        />
+      </div>
+    </>
   );
 }
