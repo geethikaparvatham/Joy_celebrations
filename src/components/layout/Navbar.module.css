@@ -138,6 +138,52 @@
 }
 
 @media (max-width: 768px) {
+  .mobileDropdown {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 1rem 2rem;
+    gap: 1.5rem;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease-in-out;
+    z-index: 999;
+  }
+
+  .mobileDropdown.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobileDropdownLink {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 500;
+    font-family: var(--font-playfair);
+    letter-spacing: 1px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.5rem;
+  }
+
+  .mobileDropdownLink:last-child {
+    border-bottom: none;
+  }
+
+  .mobileDropdownLink:hover {
+    color: var(--accent-gold);
+  }
+
   .navLinks {
     display: none;
   }

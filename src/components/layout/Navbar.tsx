@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Phone, Home, Gift, PartyPopper, Image as ImageIcon, PhoneCall } from "lucide-react";
+import { Menu, X, Phone, Home, Gift, PartyPopper, Image as ImageIcon, PhoneCall } from "lucide-react";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +16,8 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const closeMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <>
@@ -44,10 +47,27 @@ export default function Navbar() {
         </Link>
       </div>
 
-      <button className={styles.mobileMenuBtn} aria-label="Toggle Mobile Menu">
-        <Menu size={28} aria-hidden="true" />
+      <button 
+        className={styles.mobileMenuBtn} 
+        aria-label="Toggle Mobile Menu"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? <X size={28} aria-hidden="true" /> : <Menu size={28} aria-hidden="true" />}
       </button>
     </nav>
+    
+    {/* Mobile Dropdown Menu */}
+    <div className={`${styles.mobileDropdown} ${isMobileMenuOpen ? styles.open : ""}`}>
+      <Link href="/" className={styles.mobileDropdownLink} onClick={closeMenu}>Home</Link>
+      <Link href="/about" className={styles.mobileDropdownLink} onClick={closeMenu}>About</Link>
+      <Link href="/packages" className={styles.mobileDropdownLink} onClick={closeMenu}>Packages</Link>
+      <Link href="/themes" className={styles.mobileDropdownLink} onClick={closeMenu}>Themes</Link>
+      <Link href="/gallery" className={styles.mobileDropdownLink} onClick={closeMenu}>Gallery</Link>
+      <Link href="/add-ons" className={styles.mobileDropdownLink} onClick={closeMenu}>Add-ons</Link>
+      <Link href="/blog" className={styles.mobileDropdownLink} onClick={closeMenu}>Blog</Link>
+      <Link href="/faq" className={styles.mobileDropdownLink} onClick={closeMenu}>FAQ</Link>
+      <Link href="/contact" className={styles.mobileDropdownLink} onClick={closeMenu}>Contact</Link>
+    </div>
     
     {/* Mobile Bottom Navigation */}
     <div className={styles.mobileBottomNav}>
