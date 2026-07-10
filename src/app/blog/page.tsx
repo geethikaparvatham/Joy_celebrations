@@ -30,19 +30,19 @@ const posts = [
     slug: 'top-5-anniversary-surprise-ideas',
     title: 'Top 5 Anniversary Surprise Ideas Using a Private Theatre',
     category: 'Celebration Ideas',
-    image: '/bg1.jpg'
+    image: '/gallery5.jpg'
   },
   {
     slug: 'private-theatre-vs-public-cinema',
     title: '5 Reasons Why a Private Theatre is Better Than a Public Cinema',
     category: 'Places & Activities',
-    image: '/bg2.jpg'
+    image: '/gallery6.jpg'
   },
   {
     slug: 'best-romantic-movies-date-night',
     title: 'Best Movies to Watch for a Romantic Date Night in a Private Theatre',
     category: 'Movies & Shows',
-    image: '/bg3.jpg'
+    image: '/addon_candle_path.jpg'
   }
 ];
 
