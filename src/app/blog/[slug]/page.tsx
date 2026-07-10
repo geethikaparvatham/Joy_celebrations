@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   return {
-    title: \`\${post.title} | JOY Celebrations\`,
+    title: `${post.title} | JOY Celebrations`,
     description: post.description,
   };
 }
