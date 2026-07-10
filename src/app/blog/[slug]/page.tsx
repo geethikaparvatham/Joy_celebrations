@@ -59,6 +59,27 @@ const postsData: Record<string, any> = {
       <h2>The Verdict</h2>
       <p>If you just want a quick meal, a restaurant is fine. But if you want to create an unforgettable <em>experience</em>, a private celebration space wins every time. With packages starting at just ₹599, it's also incredibly budget-friendly!</p>
     `
+  },
+  'top-5-anniversary-surprise-ideas': {
+    title: 'Top 5 Anniversary Surprise Ideas Using a Private Theatre',
+    description: 'Make your anniversary unforgettable with these top 5 surprise ideas you can execute perfectly in a private party theatre.',
+    date: '2024-02-14',
+    content: `
+      <h2>Going Beyond the Usual Dinner</h2>
+      <p>Anniversaries are milestones that deserve more than just a standard dinner date. If you're looking for unique <strong>anniversary celebrations in Vijayawada</strong>, renting a private theatre opens up a world of creative possibilities.</p>
+      
+      <h2>Idea 1: The Memory Lane Movie</h2>
+      <p>Instead of watching a Hollywood movie, create a 10-minute video montage of your favorite moments, trips, and photos from the past year. Watching this on a 150-inch 4K screen with Dolby Atmos sound is an emotional and unforgettable experience.</p>
+
+      <h2>Idea 2: The "Fake" Movie Date</h2>
+      <p>Tell your partner you're going to see a regular movie. When they walk in, the room is completely decorated with balloons, LED letters spelling out your names, and their favorite songs playing in the background.</p>
+      
+      <h2>Idea 3: The Midnight Cake Cutting</h2>
+      <p>Book our exclusive Midnight Special package. Arrive just before 12:00 AM, and as the clock strikes midnight, a beautifully decorated cake is brought in along with a magical fog entry effect.</p>
+      
+      <h2>Book Your Experience</h2>
+      <p>At JOY Celebrations, we handle all the decorations, catering, and technical setup so you can focus entirely on your partner. Ready to plan the perfect surprise?</p>
+    `
   }
 };
 

@@ -25,6 +25,12 @@ const posts = [
     title: 'How Are Private Theaters in Vijayawada Replacing Boring Movie Nights?',
     category: 'Movies & Shows',
     image: '/bg3.jpg'
+  },
+  {
+    slug: 'top-5-anniversary-surprise-ideas',
+    title: 'Top 5 Anniversary Surprise Ideas Using a Private Theatre',
+    category: 'Celebration Ideas',
+    image: '/bg1.jpg'
   }
 ];
 
