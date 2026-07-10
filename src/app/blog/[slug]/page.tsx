@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const postsData: Record<string, any> = {
   'best-birthday-celebration-ideas-vijayawada': {
-    title: 'Best Birthday Celebration Ideas in Vijayawada',
+    title: 'Why Are Private Theater Parties the Next Big Trend in Vijayawada',
     description: 'Looking for the perfect way to celebrate a birthday in Vijayawada? Discover why private theatres are becoming the #1 choice.',
     date: '2023-11-15',
     content: `
@@ -23,7 +23,7 @@ const postsData: Record<string, any> = {
     `
   },
   'romantic-proposal-decoration-guide': {
-    title: 'The Ultimate Romantic Proposal Decoration Guide',
+    title: 'From Solo Chill to Group Thrills in Vijayawada — Why Private Experiences Always Win',
     description: 'Planning to pop the question? Learn how to create a breathtaking romantic setup that guarantees a "Yes!".',
     date: '2023-12-02',
     content: `
@@ -43,7 +43,7 @@ const postsData: Record<string, any> = {
     `
   },
   'private-theatre-vs-restaurant': {
-    title: 'Private Theatre vs. Restaurant: Which is Better for Celebrations?',
+    title: 'How Are Private Theaters in Vijayawada Replacing Boring Movie Nights?',
     description: 'Comparing the experience, privacy, and cost of celebrating at a busy restaurant versus a luxury private party theatre.',
     date: '2024-01-10',
     content: `
