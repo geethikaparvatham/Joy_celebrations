@@ -515,8 +515,8 @@ export default function BookNowPage() {
                 </div>
 
                 <h4 style={{ marginBottom: '1rem', fontSize: '1.2rem' }}>Select Payment Method</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                  {['UPI / GPay / PhonePe', 'Credit/Debit Card', 'Net Banking', 'Cash on Delivery'].map(method => {
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                  {['UPI / GPay / PhonePe', 'Net Banking'].map(method => {
                     const isSelected = paymentMethod === method;
                     return (
                       <label 
