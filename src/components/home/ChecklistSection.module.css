@@ -1,5 +1,5 @@
 .section {
-  background-color: #FFFFFF;
+  background-color: transparent;
   padding: 80px 5%;
   display: flex;
   justify-content: center;
@@ -12,7 +12,7 @@
 }
 
 .heading {
-  color: #1F2937;
+  color: #FFFFFF;
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 3rem;
@@ -32,10 +32,11 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
   padding: 16px 24px;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
   transform: translateY(20px);
@@ -44,7 +45,9 @@
 
 .listItem:hover {
   transform: translateX(10px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.1);
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.5);
 }
 
 .iconWrapper {
@@ -65,7 +68,7 @@
 }
 
 .text {
-  color: #1F2937;
+  color: #FFFFFF;
   font-size: 18px;
   font-weight: 600;
   margin: 0;
