@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle } from "lucide-react";
+import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle, Upload } from "lucide-react";
 import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
+import Tesseract from "tesseract.js";
 
 const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details", "Summary"];
 
@@ -70,6 +71,8 @@ export default function BookNowPage() {
   const [showUpiModal, setShowUpiModal] = useState(false);
   const [selectedUpiApp, setSelectedUpiApp] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'share'>('pending');
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanError, setScanError] = useState('');
 
   // Dynamic pricing calculation
   const selectedPackage = useBookingStore(state => state.selectedPackage);
@@ -151,6 +154,7 @@ export default function BookNowPage() {
     if (paymentMethod === 'UPI / GPay / PhonePe') {
       setSelectedUpiApp(null);
       setPaymentStatus('pending');
+      setScanError('');
     } else {
       // Skip QR code for other methods and show success directly
       setSelectedUpiApp('Direct');
@@ -158,6 +162,38 @@ export default function BookNowPage() {
       setTimeout(() => {
         setPaymentStatus('share');
       }, 1000);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsScanning(true);
+    setScanError('');
+
+    try {
+      const result = await Tesseract.recognize(file, 'eng');
+      
+      // Clean up the text: remove commas, spaces, decimals to find the raw number
+      const text = result.data.text.replace(/,/g, '');
+      const targetAmount = currentTotal.toString();
+      
+      if (text.includes(targetAmount)) {
+        // Match found!
+        setIsScanning(false);
+        setPaymentStatus('success');
+        setTimeout(() => {
+          setPaymentStatus('share');
+        }, 1000);
+      } else {
+        setIsScanning(false);
+        setScanError(`Verification Failed: We could not detect a payment of ₹${currentTotal} in this screenshot. Please upload a clearer image.`);
+      }
+    } catch (error) {
+      console.error(error);
+      setIsScanning(false);
+      setScanError("Failed to process the image. Please try again.");
     }
   };
 
@@ -605,26 +641,58 @@ export default function BookNowPage() {
                 
                 {selectedUpiApp && (
                   <div style={{ marginBottom: '1.5rem', animation: 'fadeIn 0.5s ease' }}>
-                    <p style={{ marginBottom: '1rem', color: '#d4af37' }}>Scan with {selectedUpiApp}</p>
+                    <p style={{ marginBottom: '1rem', color: '#d4af37' }}>Scan with {selectedUpiApp} to pay ₹ {currentTotal.toLocaleString('en-IN')}</p>
                     <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '200px', height: '200px', objectFit: 'contain', margin: '0 auto', borderRadius: '8px', background: 'white', padding: '0.5rem' }} />
                   </div>
                 )}
                 
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                  <button className="btn-secondary" onClick={() => setShowUpiModal(false)}>Cancel</button>
-                  <button 
-                    className="btn-primary" 
-                    disabled={!selectedUpiApp}
-                    style={{ opacity: !selectedUpiApp ? 0.5 : 1 }}
-                    onClick={() => {
-                      setPaymentStatus('success');
-                      setTimeout(() => {
-                        setPaymentStatus('share');
-                      }, 1000);
-                    }}
-                  >
-                    I have paid ₹ {currentTotal.toLocaleString('en-IN')}
-                  </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
+                  {selectedUpiApp && (
+                    <>
+                      <label style={{
+                        background: '#22C55E', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '8px',
+                        cursor: isScanning ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                        transition: 'all 0.3s', opacity: isScanning ? 0.7 : 1, width: '100%', justifyContent: 'center'
+                      }}>
+                        {isScanning ? (
+                          <>Scanning Receipt... Please wait.</>
+                        ) : (
+                          <><Upload size={18} /> Upload Payment Screenshot</>
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          style={{ display: 'none' }}
+                          onChange={handleFileUpload}
+                          disabled={isScanning}
+                        />
+                      </label>
+                      
+                      {scanError && (
+                        <p style={{ color: '#EF4444', fontSize: '0.9rem', maxWidth: '350px', background: 'rgba(239, 68, 68, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
+                          {scanError}
+                        </p>
+                      )}
+                    </>
+                  )}
+
+                  <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
+                    <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setShowUpiModal(false)}>Cancel</button>
+                    {selectedUpiApp && (
+                      <button 
+                        className="btn-secondary" 
+                        style={{ flex: 1, fontSize: '0.85rem', opacity: 0.8 }}
+                        onClick={() => {
+                          setPaymentStatus('success');
+                          setTimeout(() => {
+                            setPaymentStatus('share');
+                          }, 1000);
+                        }}
+                      >
+                        Skip & Verify Manually
+                      </button>
+                    )}
+                  </div>
                 </div>
               </>
             ) : paymentStatus === 'success' ? (
