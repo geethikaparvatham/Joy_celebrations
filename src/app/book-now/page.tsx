@@ -73,6 +73,7 @@ export default function BookNowPage() {
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'share'>('pending');
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState('');
+  const [scanSuccess, setScanSuccess] = useState(false);
 
   // Dynamic pricing calculation
   const selectedPackage = useBookingStore(state => state.selectedPackage);
@@ -155,6 +156,7 @@ export default function BookNowPage() {
       setSelectedUpiApp(null);
       setPaymentStatus('pending');
       setScanError('');
+      setScanSuccess(false);
     } else {
       // Skip QR code for other methods and show success directly
       setSelectedUpiApp('Direct');
@@ -171,6 +173,7 @@ export default function BookNowPage() {
 
     setIsScanning(true);
     setScanError('');
+    setScanSuccess(false);
 
     try {
       const result = await Tesseract.recognize(file, 'eng');
@@ -182,10 +185,7 @@ export default function BookNowPage() {
       if (text.includes(targetAmount)) {
         // Match found!
         setIsScanning(false);
-        setPaymentStatus('success');
-        setTimeout(() => {
-          setPaymentStatus('share');
-        }, 1000);
+        setScanSuccess(true);
       } else {
         setIsScanning(false);
         setScanError(`Verification Failed: We could not detect a payment of ₹${currentTotal} in this screenshot. Please upload a clearer image.`);
@@ -647,41 +647,12 @@ export default function BookNowPage() {
                 )}
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
-                  {selectedUpiApp && (
-                    <>
-                      <label style={{
-                        background: '#22C55E', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '8px',
-                        cursor: isScanning ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                        transition: 'all 0.3s', opacity: isScanning ? 0.7 : 1, width: '100%', justifyContent: 'center'
-                      }}>
-                        {isScanning ? (
-                          <>Scanning Receipt... Please wait.</>
-                        ) : (
-                          <><Upload size={18} /> Upload Payment Screenshot</>
-                        )}
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          style={{ display: 'none' }}
-                          onChange={handleFileUpload}
-                          disabled={isScanning}
-                        />
-                      </label>
-                      
-                      {scanError && (
-                        <p style={{ color: '#EF4444', fontSize: '0.9rem', maxWidth: '350px', background: 'rgba(239, 68, 68, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
-                          {scanError}
-                        </p>
-                      )}
-                    </>
-                  )}
-
-                  <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-                    <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setShowUpiModal(false)}>Cancel</button>
-                    {selectedUpiApp && (
+                  {scanSuccess ? (
+                    <div style={{ marginTop: '0.5rem', width: '100%', animation: 'fadeIn 0.5s ease' }}>
+                      <p style={{ color: '#22C55E', fontWeight: 'bold', marginBottom: '1rem' }}>✓ Payment Verified!</p>
                       <button 
-                        className="btn-secondary" 
-                        style={{ flex: 1, fontSize: '0.85rem', opacity: 0.8 }}
+                        className="btn-primary" 
+                        style={{ width: '100%', background: '#22C55E', border: 'none', color: 'white', padding: '1rem', fontSize: '1.1rem' }}
                         onClick={() => {
                           setPaymentStatus('success');
                           setTimeout(() => {
@@ -689,10 +660,45 @@ export default function BookNowPage() {
                           }, 1000);
                         }}
                       >
-                        Skip & Verify Manually
+                        PROCEED
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <>
+                      {selectedUpiApp && (
+                        <>
+                          <label style={{
+                            background: '#22C55E', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '8px',
+                            cursor: isScanning ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                            transition: 'all 0.3s', opacity: isScanning ? 0.7 : 1, width: '100%', justifyContent: 'center'
+                          }}>
+                            {isScanning ? (
+                              <>Scanning Receipt... Please wait.</>
+                            ) : (
+                              <><Upload size={18} /> Upload Payment Screenshot</>
+                            )}
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              style={{ display: 'none' }}
+                              onChange={handleFileUpload}
+                              disabled={isScanning}
+                            />
+                          </label>
+                          
+                          {scanError && (
+                            <p style={{ color: '#EF4444', fontSize: '0.9rem', maxWidth: '350px', background: 'rgba(239, 68, 68, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
+                              {scanError}
+                            </p>
+                          )}
+                        </>
+                      )}
+
+                      <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
+                        <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setShowUpiModal(false)}>Cancel</button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </>
             ) : paymentStatus === 'success' ? (
