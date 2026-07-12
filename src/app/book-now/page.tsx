@@ -430,10 +430,6 @@ export default function BookNowPage() {
                       style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', cursor: 'pointer' }} 
                     />
                   </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem', justifyContent: 'flex-start', paddingLeft: '0.5rem' }}>
-                    <span>🍿</span> Food and Beverages can be ordered at theater
-                  </div>
                 </div>
 
                 {date && (
