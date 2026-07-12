@@ -627,14 +627,35 @@ export default function BookNowPage() {
               <div style={{ textAlign: 'center', maxWidth: '500px', margin: '0 auto' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
                   <input type="text" placeholder="Full Name" value={customerName} onChange={e => setCustomerName(e.target.value)} className={styles.inputField} style={inputStyles} />
-                  <input type="tel" placeholder="Phone Number" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className={styles.inputField} style={inputStyles} />
+                  <input 
+                    type="tel" 
+                    placeholder="Phone Number (10 Digits)" 
+                    value={customerPhone} 
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      if (val === '') {
+                        setCustomerPhone('');
+                      } else if (/^[6-9]/.test(val)) {
+                        setCustomerPhone(val.slice(0, 10));
+                      }
+                    }} 
+                    className={styles.inputField} 
+                    style={inputStyles} 
+                  />
                   <input type="email" placeholder="Email Address" className={styles.inputField} style={inputStyles} />
                   <textarea placeholder="Any Special Requests?" rows={3} className={styles.inputField} style={{...inputStyles, resize: 'vertical'}}></textarea>
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
                   <button className="btn-secondary" onClick={() => setCurrentStep(4)}>Previous</button>
-                  <button className="btn-primary" onClick={() => setCurrentStep(6)}>Next Step</button>
+                  <button 
+                    className="btn-primary" 
+                    disabled={!customerName.trim() || customerPhone.length !== 10}
+                    style={{ opacity: (!customerName.trim() || customerPhone.length !== 10) ? 0.5 : 1, cursor: (!customerName.trim() || customerPhone.length !== 10) ? 'not-allowed' : 'pointer' }}
+                    onClick={() => setCurrentStep(6)}
+                  >
+                    Next Step
+                  </button>
                 </div>
               </div>
             )}
