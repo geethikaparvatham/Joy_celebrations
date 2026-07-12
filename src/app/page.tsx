@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import TypingAnimation from "@/components/ui/TypingAnimation";
 
 const heroBackgrounds = [
-  "/bg1.jpg",
+  "/bg2.jpg",
   "/bg3.jpg"
 ];
 
