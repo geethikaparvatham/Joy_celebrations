@@ -75,6 +75,7 @@ export default function BookNowPage() {
   const [scanError, setScanError] = useState('');
   const [scanSuccess, setScanSuccess] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
     if (showUpiModal && paymentStatus === 'pending') {
@@ -805,9 +806,19 @@ export default function BookNowPage() {
                 <div style={{ flex: 1 }} />
                 <h3 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#333', margin: 0 }}>Payment Options</h3>
                 <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                  <button onClick={() => setShowUpiModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: '#666' }}>×</button>
+                  <button onClick={() => setShowCancelConfirm(true)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: '#666' }}>×</button>
                 </div>
               </div>
+              {showCancelConfirm && (
+                <div style={{ position: 'absolute', inset: 0, background: 'white', zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', animation: 'fadeIn 0.2s ease', borderRadius: '12px' }}>
+                  <div style={{ width: '56px', height: '56px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>पे</div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#111', marginBottom: '1rem' }}>Cancel Payment?</h3>
+                  <p style={{ color: '#666', textAlign: 'center', fontSize: '0.95rem', maxWidth: '320px', marginBottom: '2.5rem', lineHeight: '1.5' }}>Your payment may be ongoing. Are you sure you want to cancel the payment?</p>
+                  
+                  <button onClick={() => setShowCancelConfirm(false)} style={{ width: '100%', maxWidth: '320px', padding: '1rem', background: '#5f259f', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', marginBottom: '1rem', transition: 'opacity 0.2s' }} onMouseOver={e => e.currentTarget.style.opacity = '0.9'} onMouseOut={e => e.currentTarget.style.opacity = '1'}>No, wait</button>
+                  <button onClick={() => { setShowCancelConfirm(false); setShowUpiModal(false); }} style={{ width: '100%', maxWidth: '320px', padding: '1rem', background: 'transparent', color: '#5f259f', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' }}>Yes, cancel</button>
+                </div>
+              )}
 
               {paymentStatus === 'pending' ? (
                 <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
