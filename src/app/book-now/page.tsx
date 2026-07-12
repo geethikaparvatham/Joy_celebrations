@@ -13,8 +13,7 @@ const ADDONS_LIST = [
   { name: 'Cinematic Reel', price: 1500, image: '/addon_cinematic_reel.jpg' },
   { name: 'Fog Effect', price: 799, image: '/addon_fog.jpg' },
   { name: 'Bubble Entry', price: 299, image: '/addon_bubble_entry.jpg' },
-  { name: 'Rose Petals Entry', price: 699, image: '/addon_rose_petals.jpg' },
-  { name: 'Custom Cake', price: 'On Request', image: '/addon_custom_cake.jpg' }
+  { name: 'Rose Petals Entry', price: 699, image: '/addon_rose_petals.jpg' }
 ];
 
 const PACKAGES_LIST = [
