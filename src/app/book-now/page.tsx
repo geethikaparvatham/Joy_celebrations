@@ -858,7 +858,9 @@ export default function BookNowPage() {
                         <div style={{ width: '14px', height: '14px', background: '#00529b', borderRadius: '50%' }}></div>
                         <div style={{ width: '22px', height: '14px', background: '#f8f9fa', color: '#333', fontSize: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ddd', borderRadius: '8px' }}>+57</div>
                       </div>
-                    </div>                  {/* QR Area */}
+                    </div>
+                  </div>
+                  {/* QR Area */}
                   <div style={{ width: '55%', background: '#fafafa', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', overflowY: 'auto' }}>
                     <div style={{ margin: 'auto 0', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div style={{ background: 'white', padding: '2rem 1.5rem', borderRadius: '12px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)', textAlign: 'center', width: '100%', maxWidth: '320px', border: '1px solid #eaeaea' }}>
