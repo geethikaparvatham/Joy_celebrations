@@ -377,81 +377,124 @@ export default function BookNowPage() {
 
             {currentStep === 3 && (
               <div style={{ textAlign: 'center', maxWidth: '450px', margin: '0 auto' }}>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Select your preferred date and time.</p>
                 
-                <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-                  <input 
-                    type="date" 
-                    value={date || ''}
-                    onChange={(e) => useBookingStore.setState({ date: e.target.value })}
-                    ref={dateInputRef}
-                    className={`${styles.inputField} ${styles.dateInput}`}
-                    style={{ 
-                      width: '100%', 
-                      padding: '1rem 3rem 1rem 1rem', 
-                      background: 'rgba(255, 255, 255, 0.05)', 
-                      border: '1px solid rgba(212, 175, 55, 0.3)', 
-                      borderRadius: '8px',
-                      color: 'white',
-                      fontFamily: 'inherit',
-                      outline: 'none',
-                      fontSize: '1.1rem',
-                      position: 'relative',
-                      zIndex: 2,
-                      cursor: 'pointer'
-                    }}
-                    onClick={(e) => e.currentTarget.showPicker()}
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                  <Calendar 
-                    size={20} 
-                    onClick={() => dateInputRef.current?.showPicker()}
-                    style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', cursor: 'pointer', zIndex: 3 }} 
-                  />
+                <div style={{ 
+                  background: 'rgba(255,255,255,0.95)', 
+                  padding: '1.5rem 1rem 1rem', 
+                  borderRadius: '12px', 
+                  position: 'relative',
+                  marginBottom: '2rem',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                }}>
+                  <div style={{ 
+                    position: 'absolute', 
+                    top: '-10px', 
+                    left: '20px', 
+                    background: '#ffffff', 
+                    padding: '0 10px', 
+                    color: '#666', 
+                    fontSize: '0.8rem',
+                    borderRadius: '4px',
+                    fontWeight: 'bold',
+                    border: '1px solid #ddd'
+                  }}>
+                    Check Slot Availability
+                  </div>
+                  
+                  <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                    <input 
+                      type="date" 
+                      value={date || ''}
+                      onChange={(e) => useBookingStore.setState({ date: e.target.value })}
+                      ref={dateInputRef}
+                      className={`${styles.inputField} ${styles.dateInput}`}
+                      style={{ 
+                        width: '100%', 
+                        padding: '0.8rem', 
+                        background: 'transparent', 
+                        border: '1px solid #ccc', 
+                        borderRadius: '8px',
+                        color: '#333',
+                        fontFamily: 'inherit',
+                        outline: 'none',
+                        fontSize: '1.1rem',
+                        cursor: 'pointer'
+                      }}
+                      onClick={(e) => e.currentTarget.showPicker()}
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                    <Calendar 
+                      size={20} 
+                      onClick={() => dateInputRef.current?.showPicker()}
+                      style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#666', cursor: 'pointer' }} 
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#555', fontSize: '0.85rem', justifyContent: 'flex-start', paddingLeft: '0.5rem' }}>
+                    <span>🍿</span> Food and Beverages can be ordered at theater
+                  </div>
                 </div>
 
                 {date && (
                   <div style={{ animation: 'fadeIn 0.5s ease', marginBottom: '2rem' }}>
-                    <div style={{ background: 'rgba(212, 175, 55, 0.05)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-                      <h4 style={{ color: '#d4af37', marginBottom: '0.5rem', fontSize: '0.95rem', letterSpacing: '1px' }}>OPERATING HOURS</h4>
-                      <p style={{ color: 'white', fontSize: '1rem', margin: 0 }}>Every Day: <span style={{ fontWeight: 'bold' }}>9:00 AM – 2:00 AM</span></p>
-                    </div>
-
-                    <div style={{ position: 'relative' }}>
-                      <select 
-                        value={timeSlot || ''}
-                        onChange={(e) => useBookingStore.setState({ timeSlot: e.target.value })}
-                        className={`${styles.inputField} ${styles.dateInput}`}
-                        style={{ 
-                          width: '100%', 
-                          padding: '1rem 3rem 1rem 1rem', 
-                          background: 'rgba(255, 255, 255, 0.05)', 
-                          border: '1px solid rgba(212, 175, 55, 0.3)', 
-                          borderRadius: '8px',
-                          color: 'white',
-                          fontFamily: 'inherit',
-                          outline: 'none',
-                          fontSize: '1.1rem',
-                          appearance: 'none',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <option value="" disabled style={{ background: '#111', color: 'white' }}>Select Time</option>
-                        {[
-                          "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-                          "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM",
-                          "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM",
-                          "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM", "08:00 PM", "08:30 PM",
-                          "09:00 PM", "09:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM",
-                          "12:00 AM", "12:30 AM", "01:00 AM", "01:30 AM", "02:00 AM"
-                        ].map(time => (
-                          <option key={time} value={time} style={{ background: '#111', color: 'white' }}>{time}</option>
-                        ))}
-                      </select>
-                      <Clock 
-                        size={20} 
-                        style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', pointerEvents: 'none' }} 
-                      />
+                    <div style={{ 
+                      background: 'rgba(255,255,255,0.95)', 
+                      padding: '1.5rem 1rem 1rem', 
+                      borderRadius: '12px', 
+                      position: 'relative',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                    }}>
+                      <div style={{ 
+                        position: 'absolute', 
+                        top: '-10px', 
+                        left: '20px', 
+                        background: '#ffffff', 
+                        padding: '0 10px', 
+                        color: '#666', 
+                        fontSize: '0.8rem',
+                        borderRadius: '4px',
+                        fontWeight: 'bold',
+                        border: '1px solid #ddd'
+                      }}>
+                        Select Time
+                      </div>
+                      
+                      <div style={{ position: 'relative' }}>
+                        <select 
+                          value={timeSlot || ''}
+                          onChange={(e) => useBookingStore.setState({ timeSlot: e.target.value })}
+                          className={`${styles.inputField} ${styles.dateInput}`}
+                          style={{ 
+                            width: '100%', 
+                            padding: '0.8rem', 
+                            background: 'transparent', 
+                            border: '1px solid #ccc', 
+                            borderRadius: '8px',
+                            color: '#333',
+                            fontFamily: 'inherit',
+                            outline: 'none',
+                            fontSize: '1.1rem',
+                            appearance: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <option value="" disabled>Select Time</option>
+                          {[
+                            "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+                            "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM",
+                            "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM",
+                            "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM", "08:00 PM", "08:30 PM",
+                            "09:00 PM", "09:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM",
+                            "12:00 AM", "12:30 AM", "01:00 AM", "01:30 AM", "02:00 AM"
+                          ].map(time => (
+                            <option key={time} value={time}>{time}</option>
+                          ))}
+                        </select>
+                        <Clock 
+                          size={20} 
+                          style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#666', pointerEvents: 'none' }} 
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
