@@ -197,6 +197,55 @@ export default function BookNowPage() {
     }
   };
 
+  // --- Dynamic Slot Generation ---
+  const generateSlots = () => {
+    const isTwoHours = selectedPackageData?.duration.includes('2');
+    const duration = isTwoHours ? 2 : 1;
+    const slots = [];
+    const endOperatingHour = 26; // 2 AM next day
+    
+    for (let currentHour = 9; currentHour <= endOperatingHour - duration; currentHour += duration) {
+      const getAmPm = (h: number) => h >= 12 && h < 24 ? 'PM' : 'AM';
+      const getDisplayHour = (h: number) => {
+        const mod = h % 12;
+        return mod === 0 ? 12 : mod;
+      };
+      const startTime = `${getDisplayHour(currentHour)}:00 ${getAmPm(currentHour)}`;
+      const endHour = currentHour + duration;
+      const endTime = `${getDisplayHour(endHour)}:00 ${getAmPm(endHour)}`;
+      slots.push(`${startTime} - ${endTime}`);
+    }
+    
+    if (selectedPackage === 'Midnight Special') {
+      return ["11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", "01:00 AM - 02:00 AM"];
+    }
+    return slots;
+  };
+
+  const getBookedSlots = (slots: string[], dateStr: string) => {
+    if (!dateStr || slots.length === 0) return [];
+    let hash = 0;
+    for (let i = 0; i < dateStr.length; i++) {
+      hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+      hash |= 0; 
+    }
+    const seed = Math.abs(hash);
+    const bookedCount = 2 + (seed % 3); // Randomly 2 to 4 booked slots
+    const booked: string[] = [];
+    for(let i = 0; i < bookedCount; i++) {
+      const index = (seed + i * 13) % slots.length;
+      if (!booked.includes(slots[index])) {
+         booked.push(slots[index]);
+      }
+    }
+    return booked;
+  };
+
+  const allSlots = generateSlots();
+  const bookedSlots = getBookedSlots(allSlots, date || '');
+  const availableSlots = allSlots.filter(s => !bookedSlots.includes(s));
+  // -------------------------------
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -376,7 +425,7 @@ export default function BookNowPage() {
             )}
 
             {currentStep === 3 && (
-              <div style={{ textAlign: 'center', maxWidth: '450px', margin: '0 auto' }}>
+              <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
                 
                 <div style={{ 
                   background: '#111', 
@@ -385,7 +434,9 @@ export default function BookNowPage() {
                   position: 'relative',
                   marginBottom: '2rem',
                   boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                  border: '1px solid rgba(212, 175, 55, 0.2)'
+                  border: '1px solid rgba(212, 175, 55, 0.2)',
+                  maxWidth: '400px',
+                  margin: '0 auto 2rem'
                 }}>
                   <div style={{ 
                     position: 'absolute', 
@@ -402,7 +453,7 @@ export default function BookNowPage() {
                     Check Slot Availability
                   </div>
                   
-                  <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                  <div style={{ position: 'relative' }}>
                     <input 
                       type="date" 
                       value={date || ''}
@@ -433,66 +484,59 @@ export default function BookNowPage() {
                 </div>
 
                 {date && (
-                  <div style={{ animation: 'fadeIn 0.5s ease', marginBottom: '2rem' }}>
-                    <div style={{ 
-                      background: '#111', 
-                      padding: '1.5rem 1rem 1rem', 
-                      borderRadius: '12px', 
-                      position: 'relative',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                      border: '1px solid rgba(212, 175, 55, 0.2)'
-                    }}>
-                      <div style={{ 
-                        position: 'absolute', 
-                        top: '-10px', 
-                        left: '20px', 
-                        background: '#111', 
-                        padding: '0 10px', 
-                        color: '#d4af37', 
-                        fontSize: '0.8rem',
-                        borderRadius: '4px',
-                        fontWeight: 'bold',
-                        border: '1px solid rgba(212, 175, 55, 0.2)'
-                      }}>
-                        Select Time
+                  <div style={{ animation: 'fadeIn 0.5s ease', marginBottom: '2rem', textAlign: 'left' }}>
+                    <div style={{ background: '#111', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+                      
+                      <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: '#d4af37' }}>Choose Your Slot ({selectedPackageData?.duration})</h3>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+                        {availableSlots.map(slot => {
+                          const isSelected = timeSlot === slot;
+                          return (
+                            <button
+                              key={slot}
+                              onClick={() => useBookingStore.setState({ timeSlot: slot })}
+                              style={{
+                                padding: '0.8rem',
+                                background: isSelected ? '#d4af37' : 'rgba(255,255,255,0.05)',
+                                border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.2)',
+                                color: isSelected ? 'black' : 'white',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontSize: '0.9rem',
+                                fontWeight: isSelected ? 'bold' : 'normal',
+                                transition: 'all 0.3s ease'
+                              }}
+                            >
+                              {slot}
+                            </button>
+                          );
+                        })}
+                        {availableSlots.length === 0 && <p style={{color:'white'}}>No slots available.</p>}
+                      </div>
+
+                      <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: '#EF4444' }}>Booked Slots</h3>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
+                        {bookedSlots.map(slot => (
+                          <div
+                            key={slot}
+                            style={{
+                              padding: '0.8rem',
+                              background: 'rgba(239, 68, 68, 0.1)',
+                              border: '1px solid rgba(239, 68, 68, 0.3)',
+                              color: '#EF4444',
+                              borderRadius: '8px',
+                              cursor: 'not-allowed',
+                              fontSize: '0.9rem',
+                              textAlign: 'center',
+                              opacity: 0.7
+                            }}
+                          >
+                            {slot}
+                          </div>
+                        ))}
+                        {bookedSlots.length === 0 && <p style={{color:'var(--text-secondary)'}}>No slots are booked yet.</p>}
                       </div>
                       
-                      <div style={{ position: 'relative' }}>
-                        <select 
-                          value={timeSlot || ''}
-                          onChange={(e) => useBookingStore.setState({ timeSlot: e.target.value })}
-                          className={`${styles.inputField} ${styles.dateInput}`}
-                          style={{ 
-                            width: '100%', 
-                            padding: '0.8rem', 
-                            background: 'rgba(255, 255, 255, 0.05)', 
-                            border: '1px solid rgba(212, 175, 55, 0.3)', 
-                            borderRadius: '8px',
-                            color: 'white',
-                            fontFamily: 'inherit',
-                            outline: 'none',
-                            fontSize: '1.1rem',
-                            appearance: 'none',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <option value="" disabled style={{ background: '#111', color: 'white' }}>Select Time</option>
-                          {[
-                            "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-                            "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM",
-                            "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM",
-                            "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM", "08:00 PM", "08:30 PM",
-                            "09:00 PM", "09:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM",
-                            "12:00 AM", "12:30 AM", "01:00 AM", "01:30 AM", "02:00 AM"
-                          ].map(time => (
-                            <option key={time} value={time} style={{ background: '#111', color: 'white' }}>{time}</option>
-                          ))}
-                        </select>
-                        <Clock 
-                          size={20} 
-                          style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', pointerEvents: 'none' }} 
-                        />
-                      </div>
                     </div>
                   </div>
                 )}
