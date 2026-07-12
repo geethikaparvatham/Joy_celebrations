@@ -866,10 +866,32 @@ export default function BookNowPage() {
                       <div style={{ background: 'white', padding: '2rem 1.5rem', borderRadius: '12px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)', textAlign: 'center', width: '100%', maxWidth: '320px', border: '1px solid #eaeaea' }}>
                         <h4 style={{ fontWeight: 'bold', color: '#111', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Scan via any UPI app</h4>
                         
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
-                          <span style={{ width: '24px', height: '24px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>पे</span>
-                          <span style={{ width: '24px', height: '24px', background: 'var(--google-blue, #4285F4)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>G</span>
-                          <span style={{ width: '24px', height: '24px', background: 'var(--paytm-blue, #00BAF2)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>P</span>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
+                          {/* PhonePe */}
+                          <span style={{ width: '22px', height: '22px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 'bold' }}>पे</span>
+                          
+                          {/* G Pay */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', fontWeight: '500', fontSize: '0.85rem', fontFamily: 'sans-serif' }}>
+                            <span style={{ color: '#4285F4', fontWeight: 'bold', fontSize: '0.95rem' }}>G</span>
+                            <span style={{ color: '#5f6368' }}>Pay</span>
+                          </div>
+                          
+                          {/* Paytm */}
+                          <div style={{ fontWeight: '900', fontSize: '0.85rem', fontStyle: 'italic', display: 'flex', alignItems: 'center', fontFamily: 'sans-serif' }}>
+                            <span style={{ color: '#002970' }}>Pay</span>
+                            <span style={{ color: '#00baf2' }}>tm</span>
+                          </div>
+                          
+                          {/* CRED */}
+                          <div style={{ width: '16px', height: '18px', border: '1.5px solid #111', borderRadius: '3px 3px 8px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '0.45rem', color: '#111' }}>
+                            C
+                          </div>
+                          
+                          {/* BHIM UPI */}
+                          <div style={{ display: 'flex', alignItems: 'center', opacity: 0.9 }}>
+                             <div style={{ width: '0', height: '0', borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderLeft: '6px solid #f5a623', marginRight: '-2px', zIndex: 1 }}></div>
+                             <div style={{ width: '0', height: '0', borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderLeft: '6px solid #22c55e' }}></div>
+                          </div>
                         </div>
                         
                         <div style={{ margin: '0 auto 1.5rem', display: 'inline-block' }}>
