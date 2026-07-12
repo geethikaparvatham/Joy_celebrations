@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle, Upload } from "lucide-react";
+import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle, Upload, ShoppingBag, ChevronDown } from "lucide-react";
 import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
 import Tesseract from "tesseract.js";
@@ -753,11 +753,11 @@ export default function BookNowPage() {
           fontFamily: 'sans-serif'
         }}>
           <div style={{
-            background: 'white', 
+            background: '#f9fafb', 
             borderRadius: '12px',
-            maxWidth: '900px', width: '95%',
-            height: '550px', maxHeight: '90vh',
-            display: 'flex', 
+            maxWidth: '920px', width: '95%',
+            height: '600px', maxHeight: '90vh',
+            display: 'flex', gap: '1rem', padding: '1rem',
             boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
             color: '#333',
             position: 'relative'
@@ -765,39 +765,45 @@ export default function BookNowPage() {
             
             {/* Left Sidebar */}
             <div style={{
-              width: '280px', borderRight: '1px solid #eaeaea', 
+              width: '280px', 
               padding: '2rem', display: 'flex', flexDirection: 'column', 
               background: '#ffffff',
-              borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px'
+              borderRadius: '12px', border: '1px solid #eaeaea'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '3rem' }}>
-                <div style={{ width: '32px', height: '32px', background: '#f5a623', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
-                  J
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '3rem' }}>
+                <div style={{ width: '32px', height: '32px', background: '#f5a623', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                  <ShoppingBag size={18} />
                 </div>
-                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#111' }}>Joy Celebrations</span>
+                <span style={{ fontWeight: '600', fontSize: '1.1rem', color: '#111' }}>Joy Celebrations</span>
               </div>
               
               <div style={{ 
-                border: '1px solid #e0e0e0', borderRadius: '24px', 
-                padding: '0.8rem 1.5rem', display: 'flex', justifyContent: 'space-between', 
+                border: '1px solid #e0e0e0', borderRadius: '8px', 
+                padding: '0.8rem 1rem', display: 'flex', justifyContent: 'space-between', 
                 alignItems: 'center' 
               }}>
-                <span style={{ fontSize: '1.1rem', color: '#555', fontWeight: '500' }}>Total</span>
-                <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#111' }}>₹{currentTotal.toLocaleString('en-IN')}.00</span>
+                <span style={{ fontSize: '1.1rem', color: '#333', fontWeight: '600' }}>Total</span>
+                <span style={{ color: '#aaa', margin: '0 0.5rem' }}>:</span>
+                <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#111', flex: 1, textAlign: 'right' }}>₹{currentTotal.toLocaleString('en-IN')}.00</span>
+                <ChevronDown size={20} color="#666" style={{ marginLeft: '0.5rem' }} />
               </div>
 
-              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#666', fontSize: '0.9rem' }}>
-                Powered by <span style={{ color: '#5f259f', fontWeight: 'bold' }}>PhonePe</span>
+              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#666', fontSize: '0.85rem' }}>
+                Powered by <span style={{ color: '#5f259f', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <div style={{ background: '#5f259f', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: 'white', fontSize: '0.6rem' }}>पे</span>
+                  </div> PhonePe
+                </span>
               </div>
             </div>
 
             {/* Right Main Area */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#ffffff', position: 'relative', borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#ffffff', position: 'relative', borderRadius: '12px', border: '1px solid #eaeaea', overflow: 'hidden' }}>
               
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 2rem', borderBottom: '1px solid #eaeaea' }}>
                 <div style={{ flex: 1 }} />
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#333', margin: 0 }}>Payment Options</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#333', margin: 0 }}>Payment Options</h3>
                 <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
                   <button onClick={() => setShowUpiModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: '#666' }}>×</button>
                 </div>
@@ -807,9 +813,9 @@ export default function BookNowPage() {
                 <div style={{ display: 'flex', flex: 1 }}>
                   
                   {/* Options List */}
-                  <div style={{ width: '45%', padding: '2rem', borderRight: '1px solid #eaeaea', overflowY: 'auto' }}>
+                  <div style={{ width: '45%', padding: '1.5rem', borderRight: '1px solid #f0f0f0', overflowY: 'auto' }}>
                     
-                    <p style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '1rem' }}>UPI Payment</p>
+                    <p style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '1rem', marginTop: '0.5rem' }}>UPI Payment</p>
                     
                     <div style={{ 
                       background: '#f8f4ff', 
@@ -820,51 +826,64 @@ export default function BookNowPage() {
                       marginBottom: '2rem',
                       cursor: 'pointer'
                     }}>
-                      <div style={{ width: '32px', height: '32px', background: '#5f259f', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(15deg)' }}>
-                        <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1rem', transform: 'rotate(-15deg)' }}>पे</span>
+                      <div style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'center' }}>
+                           <div style={{ width: '0', height: '0', borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '12px solid #f5a623' }}></div>
+                           <div style={{ width: '0', height: '0', borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: '12px solid #22c55e' }}></div>
+                        </div>
                       </div>
                       <div>
                         <div style={{ fontWeight: 'bold', color: '#111', fontSize: '0.9rem' }}>UPI</div>
-                        <div style={{ fontSize: '0.75rem', color: '#666' }}>Pay via UPI apps, number or ID</div>
+                        <div style={{ fontSize: '0.75rem', color: '#888' }}>Pay via UPI apps, number or ID</div>
                       </div>
                     </div>
 
                     <p style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '1rem' }}>Other Methods</p>
                     
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderBottom: '1px solid #eaeaea', cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 0', borderBottom: '1px solid #f0f0f0', cursor: 'pointer' }}>
                       <CreditCard size={20} color="#666" />
-                      <span style={{ color: '#444', fontSize: '0.9rem' }}>Debit/Credit Card</span>
+                      <div style={{ flex: 1, color: '#444', fontSize: '0.9rem', fontWeight: '500' }}>Debit/Credit Card</div>
+                      <div style={{ display: 'flex', gap: '2px', opacity: 0.8 }}>
+                        <div style={{ width: '22px', height: '14px', background: '#1a1f71', color: 'white', fontSize: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '2px' }}>VISA</div>
+                        <div style={{ width: '22px', height: '14px', background: '#ff5f00', color: 'white', fontSize: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '2px' }}>MC</div>
+                        <div style={{ width: '22px', height: '14px', background: '#f8f9fa', color: '#333', fontSize: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ddd', borderRadius: '2px' }}>+2</div>
+                      </div>
                     </div>
                     
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', cursor: 'pointer' }}>
-                      <span style={{ fontSize: '1.2rem' }}>🏛️</span>
-                      <span style={{ color: '#444', fontSize: '0.9rem' }}>Net Banking</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 0', cursor: 'pointer' }}>
+                      <span style={{ fontSize: '1.2rem', color: '#666' }}>🏛️</span>
+                      <div style={{ flex: 1, color: '#444', fontSize: '0.9rem', fontWeight: '500' }}>Net Banking</div>
+                      <div style={{ display: 'flex', gap: '2px', opacity: 0.8 }}>
+                        <div style={{ width: '14px', height: '14px', background: '#ed1c24', borderRadius: '50%' }}></div>
+                        <div style={{ width: '14px', height: '14px', background: '#00529b', borderRadius: '50%' }}></div>
+                        <div style={{ width: '22px', height: '14px', background: '#f8f9fa', color: '#333', fontSize: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ddd', borderRadius: '8px' }}>+57</div>
+                      </div>
                     </div>
 
                   </div>
 
                   {/* QR Area */}
-                  <div style={{ width: '55%', background: '#f8f9fa', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderBottomRightRadius: '12px' }}>
+                  <div style={{ width: '55%', background: '#fafafa', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
                     
-                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 2px 15px rgba(0,0,0,0.05)', textAlign: 'center', width: '100%', maxWidth: '300px', border: '1px solid #eaeaea' }}>
-                      <h4 style={{ fontWeight: 'bold', color: '#111', marginBottom: '1rem', fontSize: '1rem' }}>Scan via any UPI app</h4>
+                    <div style={{ background: 'white', padding: '2rem 1.5rem', borderRadius: '12px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)', textAlign: 'center', width: '100%', maxWidth: '320px', border: '1px solid #eaeaea' }}>
+                      <h4 style={{ fontWeight: 'bold', color: '#111', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Scan via any UPI app</h4>
                       
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
-                        <span style={{ width: '22px', height: '22px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>पे</span>
-                        <span style={{ width: '22px', height: '22px', background: '#4285F4', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>G</span>
-                        <span style={{ width: '22px', height: '22px', background: '#00BAF2', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>P</span>
+                        <span style={{ width: '24px', height: '24px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>पे</span>
+                        <span style={{ width: '24px', height: '24px', background: '#4285F4', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>G</span>
+                        <span style={{ width: '24px', height: '24px', background: '#00BAF2', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>P</span>
                       </div>
                       
-                      <div style={{ border: '1px solid #eaeaea', padding: '0.5rem', borderRadius: '8px', marginBottom: '1.5rem', background: 'white', display: 'inline-block' }}>
-                        <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '180px', height: '180px', objectFit: 'contain' }} />
+                      <div style={{ margin: '0 auto 1.5rem', display: 'inline-block' }}>
+                        <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '200px', height: '200px', objectFit: 'contain' }} />
                       </div>
                       
                       {scanSuccess ? (
-                        <div style={{ color: '#22C55E', fontWeight: 'bold', background: '#dcfce7', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.8rem', display: 'inline-block' }}>
+                        <div style={{ color: '#22C55E', fontWeight: 'bold', background: '#dcfce7', padding: '0.6rem 1.2rem', borderRadius: '24px', fontSize: '0.85rem', display: 'inline-block' }}>
                           ✓ Payment Verified!
                         </div>
                       ) : (
-                        <div style={{ background: '#f1f5f9', color: '#64748b', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.8rem', display: 'inline-block' }}>
+                        <div style={{ background: '#f1f5f9', color: '#64748b', padding: '0.6rem 1.2rem', borderRadius: '24px', fontSize: '0.85rem', display: 'inline-block' }}>
                           This QR will expire in {formatTime(timeLeft)}
                         </div>
                       )}
