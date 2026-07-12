@@ -32,7 +32,7 @@ export default function Home() {
             key={bg}
             className={styles.heroBackground}
             style={{
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)), url('${bg}')`,
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.8)), url('${bg}')`,
               opacity: currentBg === index ? 1 : 0,
               transition: 'opacity 1s ease-in-out',
               zIndex: currentBg === index ? 1 : 0
@@ -50,6 +50,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}
           >
             ✨ VIJAYAWADA'S PREMIER PRIVATE PARTY THEATRE ✨
           </motion.div>
@@ -59,6 +60,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            style={{ textShadow: "0 4px 15px rgba(0,0,0,0.6)" }}
           >
             <span style={{ display: 'none' }}>Private Party Theatre in Vijayawada - </span>Let's Celebrate Your <br/> <TypingAnimation /> <span className="gold-text">With Us</span>
           </motion.h1>
@@ -68,6 +70,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)", fontWeight: 500 }}
           >
             Birthdays, anniversaries, proposals & movie nights —<br/>crafted with love, starting at just ₹599/hr
           </motion.p>
