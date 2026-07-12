@@ -55,12 +55,19 @@
 
 .heroPreTitle {
   font-family: var(--font-outfit), sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   letter-spacing: 0.2em;
-  color: var(--accent-gold);
+  color: #f9f0c2;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
-  font-weight: 500;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.6rem 1.5rem;
+  border-radius: 30px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 .title {
