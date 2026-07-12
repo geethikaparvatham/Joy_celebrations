@@ -9,11 +9,11 @@ import Tesseract from "tesseract.js";
 const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details", "Summary"];
 
 const ADDONS_LIST = [
-  { name: 'Photography', price: 1500 },
-  { name: 'Fog Entry', price: 799 },
-  { name: 'Rose Petal Pathway', price: 699 },
-  { name: 'Custom Cake', price: 'On Request' },
-  { name: 'Cold Sparklers', price: 499 }
+  { name: 'Photography', price: 1500, image: '/addon_photography.jpg' },
+  { name: 'Fog Entry', price: 799, image: '/addon_fog.jpg' },
+  { name: 'Rose Petal Pathway', price: 699, image: '/addon_rose_petals.jpg' },
+  { name: 'Custom Cake', price: 'On Request', image: '/addon_party_props.jpg' },
+  { name: 'Cold Sparklers', price: 499, image: '/addon_cold_fire.jpg' }
 ];
 
 const PACKAGES_LIST = [
@@ -471,23 +471,27 @@ export default function BookNowPage() {
             )}
 
             {currentStep === 4 && (
-              <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ textAlign: 'center', width: '100%', margin: '0 auto' }}>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
+                  gap: '1.5rem', 
+                  marginBottom: '2rem',
+                  justifyContent: 'center'
+                }}>
                   {ADDONS_LIST.map(addon => {
                     const isSelected = selectedAddons.includes(addon.name);
                     return (
-                      <button 
+                      <div 
                         key={addon.name}
-                        className="btn-secondary"
                         style={{ 
-                          padding: '1rem', 
                           display: 'flex', 
                           flexDirection: 'column', 
                           alignItems: 'center', 
-                          gap: '0.5rem',
-                          background: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
-                          borderColor: isSelected ? '#d4af37' : '',
-                          transition: 'all 0.3s ease'
+                          gap: '0.8rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          transform: isSelected ? 'scale(1.05)' : 'scale(1)'
                         }}
                         onClick={() => {
                           if (isSelected) {
@@ -497,14 +501,29 @@ export default function BookNowPage() {
                           }
                         }}
                       >
-                        <span style={{ fontWeight: 'bold', color: isSelected ? '#d4af37' : 'white' }}>{addon.name}</span>
-                        <span style={{ fontSize: '0.95rem', color: isSelected ? '#d4af37' : 'var(--text-secondary)' }}>
-                          {typeof addon.price === 'number' ? `₹ ${addon.price}` : addon.price}
-                        </span>
-                        <span style={{ fontSize: '0.8rem', color: isSelected ? '#d4af37' : 'var(--text-secondary)' }}>
-                          {isSelected ? '✓ ADDED' : '+ ADD'}
-                        </span>
-                      </button>
+                        <div style={{ 
+                          width: '120px', 
+                          height: '120px', 
+                          borderRadius: '50%', 
+                          overflow: 'hidden',
+                          border: isSelected ? '3px solid #d4af37' : '2px solid transparent',
+                          boxShadow: isSelected ? '0 0 15px rgba(212,175,55,0.5)' : '0 4px 10px rgba(0,0,0,0.5)',
+                          position: 'relative'
+                        }}>
+                          <img src={addon.image} alt={addon.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {isSelected && (
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Check size={32} color="#d4af37" />
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <h4 style={{ fontSize: '0.9rem', color: isSelected ? '#d4af37' : 'white', marginBottom: '0.2rem', lineHeight: '1.2' }}>{addon.name}</h4>
+                          <span style={{ fontSize: '0.85rem', color: isSelected ? '#d4af37' : 'var(--text-secondary)' }}>
+                            {typeof addon.price === 'number' ? `₹ ${addon.price}` : addon.price}
+                          </span>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
