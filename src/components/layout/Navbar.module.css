@@ -11,6 +11,7 @@
   z-index: 1000;
   transition: var(--transition);
   border-bottom: 1px solid transparent;
+  background: linear-gradient(rgba(0,0,0,0.8), transparent);
 }
 
 .scrolled {
@@ -45,14 +46,17 @@
 }
 
 .link {
-  color: var(--text-secondary);
+  color: #ffffff;
+  font-weight: 500;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
   transition: var(--transition);
 }
 
 .link:hover {
-  color: var(--text-primary);
+  color: var(--accent-gold);
 }
 
 .link::after {
@@ -85,14 +89,16 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-secondary);
+  color: #ffffff;
+  font-weight: 500;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   transition: var(--transition);
 }
 
 .phoneLink:hover {
-  color: var(--text-primary);
+  color: var(--accent-gold);
 }
 
 .mobileMenuBtn {
