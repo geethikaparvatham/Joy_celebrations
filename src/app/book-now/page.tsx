@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle, Upload } from "lucide-react";
 import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
@@ -74,6 +74,24 @@ export default function BookNowPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState('');
   const [scanSuccess, setScanSuccess] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+
+  useEffect(() => {
+    if (showUpiModal && paymentStatus === 'pending') {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    } else {
+      setTimeLeft(600);
+    }
+  }, [showUpiModal, paymentStatus]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   // Dynamic pricing calculation
   const selectedPackage = useBookingStore(state => state.selectedPackage);
@@ -847,7 +865,7 @@ export default function BookNowPage() {
                         </div>
                       ) : (
                         <div style={{ background: '#f1f5f9', color: '#64748b', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.8rem', display: 'inline-block' }}>
-                          This QR will expire in 10:00
+                          This QR will expire in {formatTime(timeLeft)}
                         </div>
                       )}
                     </div>
@@ -917,7 +935,7 @@ export default function BookNowPage() {
             
             {/* Timeout warning outside */}
             <div style={{ position: 'absolute', bottom: '-40px', right: '0', color: 'rgba(255,255,255,0.7)', padding: '0.5rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>
-              <Clock size={14} /> This page will timeout in 10:00 mins
+              <Clock size={14} /> This page will timeout in {formatTime(timeLeft)} mins
             </div>
           </div>
         </div>
