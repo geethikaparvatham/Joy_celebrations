@@ -379,24 +379,25 @@ export default function BookNowPage() {
               <div style={{ textAlign: 'center', maxWidth: '450px', margin: '0 auto' }}>
                 
                 <div style={{ 
-                  background: 'rgba(255,255,255,0.95)', 
+                  background: '#111', 
                   padding: '1.5rem 1rem 1rem', 
                   borderRadius: '12px', 
                   position: 'relative',
                   marginBottom: '2rem',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                  border: '1px solid rgba(212, 175, 55, 0.2)'
                 }}>
                   <div style={{ 
                     position: 'absolute', 
                     top: '-10px', 
                     left: '20px', 
-                    background: '#ffffff', 
+                    background: '#111', 
                     padding: '0 10px', 
-                    color: '#666', 
+                    color: '#d4af37', 
                     fontSize: '0.8rem',
                     borderRadius: '4px',
                     fontWeight: 'bold',
-                    border: '1px solid #ddd'
+                    border: '1px solid rgba(212, 175, 55, 0.2)'
                   }}>
                     Check Slot Availability
                   </div>
@@ -411,10 +412,10 @@ export default function BookNowPage() {
                       style={{ 
                         width: '100%', 
                         padding: '0.8rem', 
-                        background: 'transparent', 
-                        border: '1px solid #ccc', 
+                        background: 'rgba(255, 255, 255, 0.05)', 
+                        border: '1px solid rgba(212, 175, 55, 0.3)', 
                         borderRadius: '8px',
-                        color: '#333',
+                        color: 'white',
                         fontFamily: 'inherit',
                         outline: 'none',
                         fontSize: '1.1rem',
@@ -426,11 +427,11 @@ export default function BookNowPage() {
                     <Calendar 
                       size={20} 
                       onClick={() => dateInputRef.current?.showPicker()}
-                      style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#666', cursor: 'pointer' }} 
+                      style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', cursor: 'pointer' }} 
                     />
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#555', fontSize: '0.85rem', justifyContent: 'flex-start', paddingLeft: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem', justifyContent: 'flex-start', paddingLeft: '0.5rem' }}>
                     <span>🍿</span> Food and Beverages can be ordered at theater
                   </div>
                 </div>
@@ -438,23 +439,24 @@ export default function BookNowPage() {
                 {date && (
                   <div style={{ animation: 'fadeIn 0.5s ease', marginBottom: '2rem' }}>
                     <div style={{ 
-                      background: 'rgba(255,255,255,0.95)', 
+                      background: '#111', 
                       padding: '1.5rem 1rem 1rem', 
                       borderRadius: '12px', 
                       position: 'relative',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                      border: '1px solid rgba(212, 175, 55, 0.2)'
                     }}>
                       <div style={{ 
                         position: 'absolute', 
                         top: '-10px', 
                         left: '20px', 
-                        background: '#ffffff', 
+                        background: '#111', 
                         padding: '0 10px', 
-                        color: '#666', 
+                        color: '#d4af37', 
                         fontSize: '0.8rem',
                         borderRadius: '4px',
                         fontWeight: 'bold',
-                        border: '1px solid #ddd'
+                        border: '1px solid rgba(212, 175, 55, 0.2)'
                       }}>
                         Select Time
                       </div>
@@ -467,10 +469,10 @@ export default function BookNowPage() {
                           style={{ 
                             width: '100%', 
                             padding: '0.8rem', 
-                            background: 'transparent', 
-                            border: '1px solid #ccc', 
+                            background: 'rgba(255, 255, 255, 0.05)', 
+                            border: '1px solid rgba(212, 175, 55, 0.3)', 
                             borderRadius: '8px',
-                            color: '#333',
+                            color: 'white',
                             fontFamily: 'inherit',
                             outline: 'none',
                             fontSize: '1.1rem',
@@ -478,7 +480,7 @@ export default function BookNowPage() {
                             cursor: 'pointer'
                           }}
                         >
-                          <option value="" disabled>Select Time</option>
+                          <option value="" disabled style={{ background: '#111', color: 'white' }}>Select Time</option>
                           {[
                             "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
                             "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM",
@@ -487,12 +489,12 @@ export default function BookNowPage() {
                             "09:00 PM", "09:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM",
                             "12:00 AM", "12:30 AM", "01:00 AM", "01:30 AM", "02:00 AM"
                           ].map(time => (
-                            <option key={time} value={time}>{time}</option>
+                            <option key={time} value={time} style={{ background: '#111', color: 'white' }}>{time}</option>
                           ))}
                         </select>
                         <Clock 
                           size={20} 
-                          style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#666', pointerEvents: 'none' }} 
+                          style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', pointerEvents: 'none' }} 
                         />
                       </div>
                     </div>
