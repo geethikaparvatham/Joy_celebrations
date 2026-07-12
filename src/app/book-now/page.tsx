@@ -9,11 +9,12 @@ import Tesseract from "tesseract.js";
 const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details", "Summary"];
 
 const ADDONS_LIST = [
-  { name: 'Photography', price: 1500, image: '/addon_photography.jpg' },
-  { name: 'Fog Entry', price: 799, image: '/addon_fog.jpg' },
-  { name: 'Rose Petal Pathway', price: 699, image: '/addon_rose_petals.jpg' },
-  { name: 'Custom Cake', price: 'On Request', image: '/addon_party_props.jpg' },
-  { name: 'Cold Sparklers', price: 499, image: '/addon_cold_fire.jpg' }
+  { name: 'Professional Photography (1 Hour)', price: 1500, image: '/addon_photography.jpg', note: '• Unlimited Photos' },
+  { name: 'Cinematic Reel', price: 1500, image: '/addon_cinematic_reel.jpg' },
+  { name: 'Fog Effect', price: 799, image: '/addon_fog.jpg' },
+  { name: 'Bubble Entry', price: 299, image: '/addon_bubble_entry.jpg' },
+  { name: 'Rose Petals Entry', price: 699, image: '/addon_rose_petals.jpg' },
+  { name: 'Custom Cake', price: 'On Request', image: '/addon_custom_cake.jpg' }
 ];
 
 const PACKAGES_LIST = [
@@ -607,6 +608,7 @@ export default function BookNowPage() {
                           <span style={{ fontSize: '0.85rem', color: isSelected ? '#d4af37' : 'var(--text-secondary)' }}>
                             {typeof addon.price === 'number' ? `₹ ${addon.price}` : addon.price}
                           </span>
+                          {addon.note && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.3rem' }}>{addon.note}</div>}
                         </div>
                       </div>
                     );
