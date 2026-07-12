@@ -730,160 +730,195 @@ export default function BookNowPage() {
       {showUpiModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(5px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+          fontFamily: 'sans-serif'
         }}>
           <div style={{
-            background: 'var(--bg-secondary)', padding: '2rem', borderRadius: '12px',
-            maxWidth: '450px', width: '90%', border: '1px solid #d4af37',
-            textAlign: 'center', boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+            background: 'white', 
+            borderRadius: '12px',
+            maxWidth: '900px', width: '95%',
+            height: '550px', maxHeight: '90vh',
+            display: 'flex', 
+            boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+            color: '#333',
+            position: 'relative'
           }}>
-            <h3 style={{ color: '#d4af37', marginBottom: '1.5rem', fontSize: '1.5rem' }}>
-              {paymentMethod === 'UPI / GPay / PhonePe' ? 'Complete UPI Payment' : 'Booking Confirmation'}
-            </h3>
             
-            {paymentStatus === 'pending' ? (
-              <>
-                <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Select your preferred UPI App to scan the QR code.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                  {['GPay', 'PhonePe', 'Paytm'].map(app => (
-                    <button 
-                      key={app}
-                      onClick={() => setSelectedUpiApp(app)}
-                      style={{
-                        padding: '0.8rem 0.5rem',
-                        background: selectedUpiApp === app ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.05)',
-                        border: selectedUpiApp === app ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.1)',
-                        color: selectedUpiApp === app ? '#d4af37' : 'white',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      {app}
-                    </button>
-                  ))}
+            {/* Left Sidebar */}
+            <div style={{
+              width: '280px', borderRight: '1px solid #eaeaea', 
+              padding: '2rem', display: 'flex', flexDirection: 'column', 
+              background: '#ffffff',
+              borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '3rem' }}>
+                <div style={{ width: '32px', height: '32px', background: '#f5a623', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
+                  J
                 </div>
-                
-                {selectedUpiApp && (
-                  <div style={{ marginBottom: '1.5rem', animation: 'fadeIn 0.5s ease' }}>
-                    <p style={{ marginBottom: '1rem', color: '#d4af37' }}>Scan with {selectedUpiApp} to pay ₹ {currentTotal.toLocaleString('en-IN')}</p>
-                    <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '200px', height: '200px', objectFit: 'contain', margin: '0 auto', borderRadius: '8px', background: 'white', padding: '0.5rem' }} />
-                  </div>
-                )}
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
-                  {scanSuccess ? (
-                    <div style={{ marginTop: '0.5rem', width: '100%', animation: 'fadeIn 0.5s ease' }}>
-                      <p style={{ color: '#22C55E', fontWeight: 'bold', marginBottom: '1rem' }}>✓ Payment Verified!</p>
-                      <button 
-                        className="btn-primary" 
-                        style={{ width: '100%', background: '#22C55E', border: 'none', color: 'white', padding: '1rem', fontSize: '1.1rem' }}
-                        onClick={() => {
-                          setPaymentStatus('success');
-                          setTimeout(() => {
-                            setPaymentStatus('share');
-                          }, 1000);
-                        }}
-                      >
-                        PROCEED
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      {selectedUpiApp && (
-                        <>
-                          <label style={{
-                            background: '#22C55E', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '8px',
-                            cursor: isScanning ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                            transition: 'all 0.3s', opacity: isScanning ? 0.7 : 1, width: '100%', justifyContent: 'center'
-                          }}>
-                            {isScanning ? (
-                              <>Scanning Receipt... Please wait.</>
-                            ) : (
-                              <><Upload size={18} /> Upload Payment Screenshot</>
-                            )}
-                            <input 
-                              type="file" 
-                              accept="image/*" 
-                              style={{ display: 'none' }}
-                              onChange={handleFileUpload}
-                              disabled={isScanning}
-                            />
-                          </label>
-                          
-                          {scanError && (
-                            <p style={{ color: '#EF4444', fontSize: '0.9rem', maxWidth: '350px', background: 'rgba(239, 68, 68, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
-                              {scanError}
-                            </p>
-                          )}
-                        </>
-                      )}
+                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#111' }}>Joy Celebrations</span>
+              </div>
+              
+              <div style={{ 
+                border: '1px solid #e0e0e0', borderRadius: '24px', 
+                padding: '0.8rem 1.5rem', display: 'flex', justifyContent: 'space-between', 
+                alignItems: 'center' 
+              }}>
+                <span style={{ fontSize: '1.1rem', color: '#555', fontWeight: '500' }}>Total</span>
+                <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#111' }}>₹{currentTotal.toLocaleString('en-IN')}.00</span>
+              </div>
 
-                      <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-                        <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setShowUpiModal(false)}>Cancel</button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </>
-            ) : paymentStatus === 'success' ? (
-              <div style={{ padding: '2rem 0', animation: 'fadeIn 0.5s ease' }}>
-                <div style={{ width: '60px', height: '60px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
-                  <Check size={32} color="white" />
-                </div>
-                <h4 style={{ color: '#25D366', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-                  Payment Confirmed!
-                </h4>
+              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#666', fontSize: '0.9rem' }}>
+                Powered by <span style={{ color: '#5f259f', fontWeight: 'bold' }}>PhonePe</span>
               </div>
-            ) : (
-              <div style={{ padding: '1rem 0', animation: 'fadeIn 0.5s ease' }}>
-                <div style={{ width: '60px', height: '60px', background: '#d4af37', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
-                  <Check size={32} color="black" />
+            </div>
+
+            {/* Right Main Area */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#ffffff', position: 'relative', borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}>
+              
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 2rem', borderBottom: '1px solid #eaeaea' }}>
+                <div style={{ flex: 1 }} />
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#333', margin: 0 }}>Payment Options</h3>
+                <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                  <button onClick={() => setShowUpiModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: '#666' }}>×</button>
                 </div>
-                <h4 style={{ color: '#d4af37', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-                  Booking Successful!
-                </h4>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-                  Send your booking details to our admin to confirm your slot, or share it with your friends!
-                </p>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <button 
-                    className="btn-primary" 
-                    onClick={handleFinalSubmit}
-                    style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', background: '#25D366', color: 'white', border: 'none' }}
-                  >
-                    <MessageCircle size={20} /> Send Details to Admin (WhatsApp)
-                  </button>
+              </div>
+
+              {paymentStatus === 'pending' ? (
+                <div style={{ display: 'flex', flex: 1 }}>
                   
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button 
-                      onClick={() => handleCustomerShare('whatsapp')}
-                      style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s' }}
-                    >
-                      <Share2 size={18} /> Share WhatsApp
-                    </button>
-                    <button 
-                      onClick={() => handleCustomerShare('instagram')}
-                      style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s' }}
-                    >
-                      <Camera size={18} /> Share Instagram
-                    </button>
+                  {/* Options List */}
+                  <div style={{ width: '45%', padding: '2rem', borderRight: '1px solid #eaeaea', overflowY: 'auto' }}>
+                    
+                    <p style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '1rem' }}>UPI Payment</p>
+                    
+                    <div style={{ 
+                      background: '#f8f4ff', 
+                      borderLeft: '4px solid #5f259f', 
+                      borderRadius: '0 8px 8px 0', 
+                      padding: '1rem', 
+                      display: 'flex', alignItems: 'center', gap: '1rem',
+                      marginBottom: '2rem',
+                      cursor: 'pointer'
+                    }}>
+                      <div style={{ width: '32px', height: '32px', background: '#5f259f', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(15deg)' }}>
+                        <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1rem', transform: 'rotate(-15deg)' }}>पे</span>
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 'bold', color: '#111', fontSize: '0.9rem' }}>UPI</div>
+                        <div style={{ fontSize: '0.75rem', color: '#666' }}>Pay via UPI apps, number or ID</div>
+                      </div>
+                    </div>
+
+                    <p style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '1rem' }}>Other Methods</p>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderBottom: '1px solid #eaeaea', cursor: 'pointer' }}>
+                      <CreditCard size={20} color="#666" />
+                      <span style={{ color: '#444', fontSize: '0.9rem' }}>Debit/Credit Card</span>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', cursor: 'pointer' }}>
+                      <span style={{ fontSize: '1.2rem' }}>🏛️</span>
+                      <span style={{ color: '#444', fontSize: '0.9rem' }}>Net Banking</span>
+                    </div>
+
+                  </div>
+
+                  {/* QR Area */}
+                  <div style={{ width: '55%', background: '#f8f9fa', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderBottomRightRadius: '12px' }}>
+                    
+                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 2px 15px rgba(0,0,0,0.05)', textAlign: 'center', width: '100%', maxWidth: '300px', border: '1px solid #eaeaea' }}>
+                      <h4 style={{ fontWeight: 'bold', color: '#111', marginBottom: '1rem', fontSize: '1rem' }}>Scan via any UPI app</h4>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
+                        <span style={{ width: '22px', height: '22px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>पे</span>
+                        <span style={{ width: '22px', height: '22px', background: '#4285F4', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>G</span>
+                        <span style={{ width: '22px', height: '22px', background: '#00BAF2', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>P</span>
+                      </div>
+                      
+                      <div style={{ border: '1px solid #eaeaea', padding: '0.5rem', borderRadius: '8px', marginBottom: '1.5rem', background: 'white', display: 'inline-block' }}>
+                        <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '180px', height: '180px', objectFit: 'contain' }} />
+                      </div>
+                      
+                      {scanSuccess ? (
+                        <div style={{ color: '#22C55E', fontWeight: 'bold', background: '#dcfce7', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.8rem', display: 'inline-block' }}>
+                          ✓ Payment Verified!
+                        </div>
+                      ) : (
+                        <div style={{ background: '#f1f5f9', color: '#64748b', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.8rem', display: 'inline-block' }}>
+                          This QR will expire in 10:00
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div style={{ marginTop: '1.5rem', width: '100%', maxWidth: '300px' }}>
+                      {scanSuccess ? (
+                        <button 
+                          onClick={() => {
+                            setPaymentStatus('success');
+                            setTimeout(() => setPaymentStatus('share'), 1000);
+                          }}
+                          style={{ width: '100%', background: '#22C55E', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' }}
+                        >
+                          PROCEED
+                        </button>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <label style={{
+                            background: '#5f259f', color: 'white', padding: '0.8rem', borderRadius: '8px',
+                            cursor: isScanning ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                            transition: 'all 0.3s', opacity: isScanning ? 0.7 : 1, width: '100%', justifyContent: 'center', fontSize: '0.9rem'
+                          }}>
+                            {isScanning ? 'Scanning...' : <><Upload size={16} /> Verify Screenshot</>}
+                            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileUpload} disabled={isScanning} />
+                          </label>
+                          {scanError && (
+                            <p style={{ color: '#EF4444', fontSize: '0.8rem', textAlign: 'center', marginTop: '0.5rem' }}>{scanError}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
                   </div>
                 </div>
-                
-                <button 
-                  onClick={() => {
-                    setShowUpiModal(false);
-                    window.location.href = generateReceiptUrl();
-                  }}
-                  style={{ marginTop: '1.5rem', background: 'none', border: 'none', color: '#d4af37', textDecoration: 'underline', cursor: 'pointer' }}
-                >
-                  View My Digital Receipt
-                </button>
-              </div>
-            )}
+              ) : (
+                <div style={{ display: 'flex', flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+                   {/* Success or Share state */}
+                   {paymentStatus === 'success' ? (
+                     <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s ease' }}>
+                        <div style={{ width: '70px', height: '70px', background: '#22C55E', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+                          <Check size={36} color="white" />
+                        </div>
+                        <h2 style={{ color: '#111', marginBottom: '1rem', fontSize: '1.5rem' }}>Payment Successful!</h2>
+                        <p style={{ color: '#666' }}>Your payment of ₹{currentTotal.toLocaleString('en-IN')} has been received.</p>
+                     </div>
+                   ) : (
+                     <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s ease', maxWidth: '350px' }}>
+                        <div style={{ width: '60px', height: '60px', background: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                          <Check size={32} color="white" />
+                        </div>
+                        <h2 style={{ color: '#111', marginBottom: '1rem', fontSize: '1.5rem' }}>Booking Confirmed!</h2>
+                        <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.95rem' }}>Send your booking details to our admin to finalize your slot, or share it with your friends!</p>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                          <button onClick={handleFinalSubmit} style={{ background: '#25D366', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                            <MessageCircle size={18} /> Send to Admin (WhatsApp)
+                          </button>
+                          <button onClick={() => handleCustomerShare('whatsapp')} style={{ background: 'white', color: '#333', border: '1px solid #ccc', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                            <Share2 size={18} /> Share with Friends
+                          </button>
+                        </div>
+                     </div>
+                   )}
+                </div>
+              )}
+            </div>
+            
+            {/* Timeout warning outside */}
+            <div style={{ position: 'absolute', bottom: '-40px', right: '0', color: 'rgba(255,255,255,0.7)', padding: '0.5rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>
+              <Clock size={14} /> This page will timeout in 10:00 mins
+            </div>
           </div>
         </div>
       )}
