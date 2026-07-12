@@ -810,7 +810,7 @@ export default function BookNowPage() {
               </div>
 
               {paymentStatus === 'pending' ? (
-                <div style={{ display: 'flex', flex: 1 }}>
+                <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
                   
                   {/* Options List */}
                   <div style={{ width: '45%', padding: '1.5rem', borderRight: '1px solid #f0f0f0', overflowY: 'auto' }}>
