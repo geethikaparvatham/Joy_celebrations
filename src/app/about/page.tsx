@@ -20,7 +20,7 @@ export default function AboutPage() {
       <div className={styles.contentGrid}>
         <div className={styles.imageWrapper}>
           <img 
-            src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEBXYZIaDJpRx4V8oqI8eiVbRYOeSkWW0VIYrqUcJOvK6_aZFcTRApXaBNGz0tsob8r9652YaIzMrIXeBvkAIpLiJRAvQHkavo5_CfJD13WOXua9Kpa5S6iIm7CZ_lw8b1Nbi7G2UPj39s=w1200-h800-k-no" 
+            src="/gallery5.jpg" 
             alt="JOY Celebrations Theatre" 
             className={styles.aboutImage} 
           />
