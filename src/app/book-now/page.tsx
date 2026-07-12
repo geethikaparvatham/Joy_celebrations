@@ -229,7 +229,7 @@ export default function BookNowPage() {
           
           <div style={{ marginTop: '2rem' }}>
             {currentStep === 1 && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
                 {PACKAGES_LIST.map((pkg) => {
                   const isSelected = selectedPackage === pkg.name;
                   return (
@@ -237,7 +237,7 @@ export default function BookNowPage() {
                       key={pkg.name}
                       style={{ 
                         position: 'relative',
-                        padding: '2rem 1.5rem', 
+                        padding: '1.5rem 1.2rem', 
                         display: 'flex', 
                         flexDirection: 'column', 
                         alignItems: 'flex-start', 
@@ -278,8 +278,8 @@ export default function BookNowPage() {
                       <div style={{ width: '100%' }}>
                         <h3 style={{ color: '#d4af37', fontSize: '1.4rem', marginBottom: '0.5rem' }}>{pkg.name}</h3>
                         <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                          <span style={{ color: 'white', fontSize: '1.2rem', marginTop: '0.2rem', marginRight: '0.2rem' }}>₹</span>
-                          <span style={{ color: 'white', fontSize: '2.5rem', fontWeight: 'bold', lineHeight: '1' }}>{pkg.price}</span>
+                          <span style={{ color: 'white', fontSize: '1rem', marginTop: '0.2rem', marginRight: '0.2rem' }}>₹</span>
+                          <span style={{ color: 'white', fontSize: '2rem', fontWeight: 'bold', lineHeight: '1' }}>{pkg.price}</span>
                         </div>
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
