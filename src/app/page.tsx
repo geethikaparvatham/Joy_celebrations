@@ -32,7 +32,7 @@ export default function Home() {
             key={bg}
             className={styles.heroBackground}
             style={{
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.8)), url('${bg}')`,
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('${bg}')`,
               opacity: currentBg === index ? 1 : 0,
               transition: 'opacity 1s ease-in-out',
               zIndex: currentBg === index ? 1 : 0
