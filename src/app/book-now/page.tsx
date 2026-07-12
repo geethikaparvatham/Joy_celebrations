@@ -858,65 +858,61 @@ export default function BookNowPage() {
                         <div style={{ width: '14px', height: '14px', background: '#00529b', borderRadius: '50%' }}></div>
                         <div style={{ width: '22px', height: '14px', background: '#f8f9fa', color: '#333', fontSize: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ddd', borderRadius: '8px' }}>+57</div>
                       </div>
-                    </div>
-
-                  </div>
-
-                  {/* QR Area */}
-                  <div style={{ width: '55%', background: '#fafafa', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-                    
-                    <div style={{ background: 'white', padding: '2rem 1.5rem', borderRadius: '12px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)', textAlign: 'center', width: '100%', maxWidth: '320px', border: '1px solid #eaeaea' }}>
-                      <h4 style={{ fontWeight: 'bold', color: '#111', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Scan via any UPI app</h4>
-                      
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
-                        <span style={{ width: '24px', height: '24px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>पे</span>
-                        <span style={{ width: '24px', height: '24px', background: '#4285F4', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>G</span>
-                        <span style={{ width: '24px', height: '24px', background: '#00BAF2', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>P</span>
+                    </div>                  {/* QR Area */}
+                  <div style={{ width: '55%', background: '#fafafa', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', overflowY: 'auto' }}>
+                    <div style={{ margin: 'auto 0', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ background: 'white', padding: '2rem 1.5rem', borderRadius: '12px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)', textAlign: 'center', width: '100%', maxWidth: '320px', border: '1px solid #eaeaea' }}>
+                        <h4 style={{ fontWeight: 'bold', color: '#111', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Scan via any UPI app</h4>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
+                          <span style={{ width: '24px', height: '24px', background: '#5f259f', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>पे</span>
+                          <span style={{ width: '24px', height: '24px', background: 'var(--google-blue, #4285F4)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>G</span>
+                          <span style={{ width: '24px', height: '24px', background: 'var(--paytm-blue, #00BAF2)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>P</span>
+                        </div>
+                        
+                        <div style={{ margin: '0 auto 1.5rem', display: 'inline-block' }}>
+                          <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '200px', height: '200px', objectFit: 'contain' }} />
+                        </div>
+                        
+                        {scanSuccess ? (
+                          <div style={{ color: '#22C55E', fontWeight: 'bold', background: '#dcfce7', padding: '0.6rem 1.2rem', borderRadius: '24px', fontSize: '0.85rem', display: 'inline-block' }}>
+                            ✓ Payment Verified!
+                          </div>
+                        ) : (
+                          <div style={{ background: '#f1f5f9', color: '#64748b', padding: '0.6rem 1.2rem', borderRadius: '24px', fontSize: '0.85rem', display: 'inline-block' }}>
+                            This QR will expire in {formatTime(timeLeft)}
+                          </div>
+                        )}
                       </div>
                       
-                      <div style={{ margin: '0 auto 1.5rem', display: 'inline-block' }}>
-                        <img src="/upi_qr.jpg" alt="UPI QR Code" style={{ width: '200px', height: '200px', objectFit: 'contain' }} />
+                      <div style={{ marginTop: '1.5rem', width: '100%', maxWidth: '300px' }}>
+                        {scanSuccess ? (
+                          <button 
+                            onClick={() => {
+                              setPaymentStatus('success');
+                              setTimeout(() => setPaymentStatus('share'), 1000);
+                            }}
+                            style={{ width: '100%', background: '#22C55E', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' }}
+                          >
+                            PROCEED
+                          </button>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <label style={{
+                              background: '#5f259f', color: 'white', padding: '0.8rem', borderRadius: '8px',
+                              cursor: isScanning ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                              transition: 'all 0.3s', opacity: isScanning ? 0.7 : 1, width: '100%', justifyContent: 'center', fontSize: '0.9rem'
+                            }}>
+                              {isScanning ? 'Scanning...' : <><Upload size={16} /> Verify Screenshot</>}
+                              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileUpload} disabled={isScanning} />
+                            </label>
+                            {scanError && (
+                              <p style={{ color: '#EF4444', fontSize: '0.8rem', textAlign: 'center', marginTop: '0.5rem' }}>{scanError}</p>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      
-                      {scanSuccess ? (
-                        <div style={{ color: '#22C55E', fontWeight: 'bold', background: '#dcfce7', padding: '0.6rem 1.2rem', borderRadius: '24px', fontSize: '0.85rem', display: 'inline-block' }}>
-                          ✓ Payment Verified!
-                        </div>
-                      ) : (
-                        <div style={{ background: '#f1f5f9', color: '#64748b', padding: '0.6rem 1.2rem', borderRadius: '24px', fontSize: '0.85rem', display: 'inline-block' }}>
-                          This QR will expire in {formatTime(timeLeft)}
-                        </div>
-                      )}
                     </div>
-                    
-                    <div style={{ marginTop: '1.5rem', width: '100%', maxWidth: '300px' }}>
-                      {scanSuccess ? (
-                        <button 
-                          onClick={() => {
-                            setPaymentStatus('success');
-                            setTimeout(() => setPaymentStatus('share'), 1000);
-                          }}
-                          style={{ width: '100%', background: '#22C55E', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' }}
-                        >
-                          PROCEED
-                        </button>
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                          <label style={{
-                            background: '#5f259f', color: 'white', padding: '0.8rem', borderRadius: '8px',
-                            cursor: isScanning ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                            transition: 'all 0.3s', opacity: isScanning ? 0.7 : 1, width: '100%', justifyContent: 'center', fontSize: '0.9rem'
-                          }}>
-                            {isScanning ? 'Scanning...' : <><Upload size={16} /> Verify Screenshot</>}
-                            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileUpload} disabled={isScanning} />
-                          </label>
-                          {scanError && (
-                            <p style={{ color: '#EF4444', fontSize: '0.8rem', textAlign: 'center', marginTop: '0.5rem' }}>{scanError}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
                   </div>
                 </div>
               ) : (
