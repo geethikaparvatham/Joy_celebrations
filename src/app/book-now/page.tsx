@@ -246,8 +246,8 @@ export default function BookNowPage() {
                         height: '100%',
                         justifyContent: 'space-between',
                         transition: 'all 0.3s ease',
-                        background: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'transparent',
-                        border: `1px solid ${isSelected ? '#d4af37' : 'rgba(255, 255, 255, 0.1)'}`,
+                        background: 'transparent',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '0', // Square edges like reference
                         cursor: 'pointer',
                         overflow: 'hidden'
