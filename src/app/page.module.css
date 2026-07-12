@@ -78,11 +78,13 @@
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
+  font-size: 1.25rem;
+  color: var(--text-primary);
   max-width: 600px;
   margin: 0 auto 3rem;
   line-height: 1.6;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+  font-weight: 500;
 }
 
 .ctaContainer {
