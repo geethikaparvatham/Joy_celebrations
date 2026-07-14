@@ -136,16 +136,15 @@ export default function BookNowPage() {
   };
 
   const handleFinalSubmit = async () => {
-    const store = useBookingStore.getState();
     const whatsappNumber = "919618681267";
     const name = customerName || "Customer";
     
     let msg = `*New Booking Request!*%0A%0A`;
     msg += `*Name:* ${name}%0A`;
     if (customerPhone) msg += `*Phone:* ${customerPhone}%0A`;
-    msg += `*Package:* ${store.selectedPackage}%0A`;
-    msg += `*Occasion:* ${store.selectedOccasion}%0A`;
-    msg += `*Date/Time:* ${store.date || 'TBD'} | ${store.timeSlot || 'TBD'}%0A`;
+    msg += `*Package:* ${selectedPackage}%0A`;
+    msg += `*Occasion:* ${selectedOccasion}%0A`;
+    msg += `*Date/Time:* ${date || 'TBD'} | ${timeSlot || 'TBD'}%0A`;
     
     if (selectedAddons.length > 0) {
       msg += `*Addons:* ${selectedAddons.join(', ')}%0A`;
@@ -155,7 +154,7 @@ export default function BookNowPage() {
     
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${msg}`;
     
-    // Save booking + notification to Firestore so admin gets notified
+    // Save booking + notification so admin gets notified
     await saveBookingToFirestore();
     
     window.open(whatsappUrl, '_blank');
@@ -174,21 +173,23 @@ export default function BookNowPage() {
   };
 
   const saveBookingToFirestore = async () => {
-    const store = useBookingStore.getState();
+    // Use the hook-bound reactive variables (already subscribed at top of component)
+    // These are guaranteed to have the current values at time of click
     const bookingData = {
       customerName: customerName || "Customer",
       customerPhone: customerPhone || "",
-      packageName: store.selectedPackage || "TBD",
-      occasion: store.selectedOccasion || "TBD",
-      date: store.date || "TBD",
-      timeSlot: store.timeSlot || "TBD",
+      packageName: selectedPackage || "TBD",
+      occasion: selectedOccasion || "TBD",
+      date: date || "TBD",
+      timeSlot: timeSlot || "TBD",
       addons: selectedAddons,
       totalAmount: currentTotal,
       paymentMethod: paymentMethod || "WhatsApp",
     };
+
+    console.log("📦 Saving booking data:", JSON.stringify(bookingData));
+
     try {
-      // Use server-side API route to save booking + notification
-      // This bypasses Firestore client security rules
       const res = await fetch('/api/booking/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -729,9 +730,9 @@ export default function BookNowPage() {
                   <h3 className="heading-luxury text-xl mb-4 text-[var(--accent-gold)]" style={{ color: '#d4af37', fontSize: '1.5rem', marginBottom: '1rem' }}>Booking Summary</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', textAlign: 'left', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px' }}>
                     <p><strong>Name:</strong> {customerName || "Customer"}</p>
-                    <p><strong>Date & Time:</strong> {useBookingStore.getState().date || "TBD"} | {useBookingStore.getState().timeSlot || "TBD"}</p>
-                    <p><strong>Package:</strong> {useBookingStore.getState().selectedPackage}</p>
-                    <p><strong>Occasion:</strong> {useBookingStore.getState().selectedOccasion}</p>
+                    <p><strong>Date & Time:</strong> {date || "TBD"} | {timeSlot || "TBD"}</p>
+                    <p><strong>Package:</strong> {selectedPackage || "TBD"}</p>
+                    <p><strong>Occasion:</strong> {selectedOccasion || "TBD"}</p>
                     {selectedAddons.length > 0 && (
                       <p><strong>Addons:</strong> {selectedAddons.join(', ')}</p>
                     )}
