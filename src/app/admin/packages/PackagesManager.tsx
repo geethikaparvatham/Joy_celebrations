@@ -285,7 +285,7 @@ export default function PackagesManager() {
                 ))}
               </ul>
               
-              {plan.timings && plan.timings.length > 0 && (
+              {((plan.timings && plan.timings.length > 0) || (plan.bookedSlots && plan.bookedSlots.length > 0)) && (
                 <div style={{ 
                   marginBottom: '1.5rem', 
                   padding: '1rem', 
@@ -294,28 +294,51 @@ export default function PackagesManager() {
                   maxHeight: '220px',
                   overflowY: 'auto'
                 }}>
-                  <p className="text-sm font-bold mb-3" style={{ color: 'var(--accent-gold)' }}>Choose Your Slot -</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
-                    {plan.timings.map((time, idx) => {
-                      const isBooked = plan.bookedSlots?.includes(time);
-                      return (
-                        <span key={idx} style={{ 
-                          background: isBooked ? 'rgba(255,255,255,0.05)' : 'rgba(212,175,55,0.1)', 
-                          border: isBooked ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(212,175,55,0.3)', 
-                          padding: '0.6rem 0.8rem', 
-                          borderRadius: '6px', 
-                          fontSize: '0.8rem', 
-                          color: isBooked ? '#666' : 'var(--text-primary)', 
-                          textAlign: 'center',
-                          textDecoration: isBooked ? 'line-through' : 'none',
-                          opacity: isBooked ? 0.6 : 1,
-                          whiteSpace: 'nowrap'
-                        }}>
-                          {time}
-                        </span>
-                      );
-                    })}
-                  </div>
+                  {plan.timings && plan.timings.filter(t => !plan.bookedSlots?.includes(t)).length > 0 && (
+                    <>
+                      <p className="text-sm font-bold mb-3" style={{ color: 'var(--accent-gold)' }}>Choose Your Slot -</p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginBottom: plan.bookedSlots && plan.bookedSlots.length > 0 ? '1rem' : '0' }}>
+                        {plan.timings.filter(t => !plan.bookedSlots?.includes(t)).map((time, idx) => (
+                          <span key={`avail-${idx}`} style={{ 
+                            background: 'rgba(212,175,55,0.1)', 
+                            border: '1px solid rgba(212,175,55,0.3)', 
+                            padding: '0.6rem 0.8rem', 
+                            borderRadius: '6px', 
+                            fontSize: '0.8rem', 
+                            color: 'var(--text-primary)', 
+                            textAlign: 'center',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {time}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  
+                  {plan.bookedSlots && plan.bookedSlots.length > 0 && (
+                    <>
+                      <p className="text-sm font-bold mb-3 mt-2" style={{ color: '#EF4444' }}>Booked Slots -</p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
+                        {plan.bookedSlots.map((time, idx) => (
+                          <span key={`booked-${idx}`} style={{ 
+                            background: 'rgba(255,255,255,0.05)', 
+                            border: '1px solid rgba(255,255,255,0.1)', 
+                            padding: '0.6rem 0.8rem', 
+                            borderRadius: '6px', 
+                            fontSize: '0.8rem', 
+                            color: '#666', 
+                            textAlign: 'center',
+                            textDecoration: 'line-through',
+                            opacity: 0.6,
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {time}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
