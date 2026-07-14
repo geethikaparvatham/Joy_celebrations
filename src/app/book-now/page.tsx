@@ -728,6 +728,8 @@ export default function BookNowPage() {
                 <div style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '2rem', borderRadius: 'var(--radius-md)', marginBottom: '2rem' }}>
                   <h3 className="heading-luxury text-xl mb-4 text-[var(--accent-gold)]" style={{ color: '#d4af37', fontSize: '1.5rem', marginBottom: '1rem' }}>Booking Summary</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', textAlign: 'left', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px' }}>
+                    <p><strong>Name:</strong> {customerName || "Customer"}</p>
+                    <p><strong>Date & Time:</strong> {useBookingStore.getState().date || "TBD"} | {useBookingStore.getState().timeSlot || "TBD"}</p>
                     <p><strong>Package:</strong> {useBookingStore.getState().selectedPackage}</p>
                     <p><strong>Occasion:</strong> {useBookingStore.getState().selectedOccasion}</p>
                     {selectedAddons.length > 0 && (
