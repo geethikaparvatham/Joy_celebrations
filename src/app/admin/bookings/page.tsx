@@ -6,6 +6,7 @@ import { db } from "../../../lib/firebase";
 import { Settings, Users, Calendar as CalendarIcon, Ticket, Trash2, Search, Filter, ShieldAlert, MessageCircle } from "lucide-react";
 import styles from "../page.module.css";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
+import AdminNotifications from "../../../components/admin/AdminNotifications";
 import LogoutButton from "../LogoutButton";
 
 type Booking = {
@@ -133,6 +134,7 @@ export default function BookingsManager() {
             <p className="text-sm text-[var(--text-secondary)] mt-1">Review, track, and update customer booking slots.</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <AdminNotifications />
             <div className={styles.userProfile}>Admin User</div>
             <LogoutButton />
           </div>

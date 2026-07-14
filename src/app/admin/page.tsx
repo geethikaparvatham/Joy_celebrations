@@ -7,6 +7,7 @@ import { LayoutDashboard, Ticket, Clock, Users, IndianRupee } from "lucide-react
 import styles from "./page.module.css";
 import LogoutButton from "./LogoutButton";
 import AdminSidebar from "../../components/admin/AdminSidebar";
+import AdminNotifications from "../../components/admin/AdminNotifications";
 import Link from "next/link";
 
 type Booking = {
@@ -73,6 +74,7 @@ export default function AdminDashboard() {
         <header className={styles.header}>
           <h1 className="heading-luxury text-2xl">Overview</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <AdminNotifications />
             <div className={styles.userProfile}>Admin User</div>
             <LogoutButton />
           </div>

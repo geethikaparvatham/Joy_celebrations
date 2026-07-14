@@ -6,6 +6,7 @@ import { db } from "../../../lib/firebase";
 import { Users, Search, ChevronDown, ChevronUp, Calendar, Ticket, ShoppingBag, ArrowUpDown } from "lucide-react";
 import styles from "../page.module.css";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
+import AdminNotifications from "../../../components/admin/AdminNotifications";
 import LogoutButton from "../LogoutButton";
 
 type Booking = {
@@ -128,6 +129,7 @@ export default function CustomersManager() {
             <p className="text-sm text-[var(--text-secondary)] mt-1">View customer order histories and purchase metrics.</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <AdminNotifications />
             <div className={styles.userProfile}>Admin User</div>
             <LogoutButton />
           </div>

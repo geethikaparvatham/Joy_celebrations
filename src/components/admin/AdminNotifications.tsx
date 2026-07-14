@@ -1,0 +1,272 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { collection, onSnapshot, updateDoc, doc, query, orderBy } from "firebase/firestore";
+import { db } from "../../lib/firebase";
+import { Bell, X, Check, CheckCheck, Ticket } from "lucide-react";
+
+type Notification = {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  customerName: string;
+  customerPhone: string;
+  packageName: string;
+  occasion: string;
+  date: string;
+  timeSlot: string;
+  totalAmount: number;
+  bookingId: string;
+  read: boolean;
+  createdAt: string;
+};
+
+export default function AdminNotifications() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetched = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      })) as Notification[];
+      setNotifications(fetched);
+    }, (err) => {
+      console.error("Error loading notifications:", err);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const markAsRead = async (id: string) => {
+    try {
+      await updateDoc(doc(db, "notifications", id), { read: true });
+    } catch (err) {
+      console.error("Error marking as read:", err);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    const unread = notifications.filter(n => !n.read);
+    await Promise.all(unread.map(n => updateDoc(doc(db, "notifications", n.id), { read: true })));
+  };
+
+  const formatTime = (isoString: string) => {
+    try {
+      const date = new Date(isoString);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      if (diffMins < 1) return "Just now";
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      return `${diffDays}d ago`;
+    } catch {
+      return "";
+    }
+  };
+
+  return (
+    <div ref={panelRef} style={{ position: "relative" }}>
+      {/* Bell Button */}
+      <button
+        onClick={() => setIsOpen(prev => !prev)}
+        style={{
+          position: "relative",
+          background: isOpen ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.05)",
+          border: `1px solid ${isOpen ? "var(--accent-gold)" : "rgba(255,255,255,0.1)"}`,
+          borderRadius: "8px",
+          color: isOpen ? "var(--accent-gold)" : "rgba(255,255,255,0.7)",
+          padding: "0.5rem 0.7rem",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.4rem",
+          fontSize: "0.85rem",
+          transition: "all 0.2s",
+        }}
+        title="Notifications"
+      >
+        <Bell size={18} />
+        {unreadCount > 0 && (
+          <span style={{
+            position: "absolute",
+            top: "-6px",
+            right: "-6px",
+            background: "#EF4444",
+            color: "white",
+            borderRadius: "50%",
+            width: "18px",
+            height: "18px",
+            fontSize: "0.65rem",
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "2px solid var(--bg-primary)",
+            animation: "pulse 2s infinite"
+          }}>
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* Dropdown Panel */}
+      {isOpen && (
+        <div style={{
+          position: "absolute",
+          top: "calc(100% + 10px)",
+          right: 0,
+          width: "380px",
+          maxHeight: "500px",
+          background: "#1a1a1a",
+          border: "1px solid rgba(212,175,55,0.3)",
+          borderRadius: "12px",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+          zIndex: 1000,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+        }}>
+          {/* Header */}
+          <div style={{
+            padding: "1rem 1.2rem",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "rgba(212,175,55,0.05)",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Bell size={16} color="var(--accent-gold)" />
+              <span style={{ fontWeight: "bold", color: "white", fontSize: "0.95rem" }}>
+                Notifications
+              </span>
+              {unreadCount > 0 && (
+                <span style={{
+                  background: "#EF4444",
+                  color: "white",
+                  borderRadius: "10px",
+                  padding: "0.1rem 0.45rem",
+                  fontSize: "0.7rem",
+                  fontWeight: "bold"
+                }}>
+                  {unreadCount} new
+                </span>
+              )}
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--accent-gold)",
+                    fontSize: "0.75rem",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.25rem"
+                  }}
+                  title="Mark all as read"
+                >
+                  <CheckCheck size={14} /> All read
+                </button>
+              )}
+              <button onClick={() => setIsOpen(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: "0.2rem" }}>
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Notifications List */}
+          <div style={{ overflowY: "auto", flex: 1 }}>
+            {notifications.length === 0 ? (
+              <div style={{ padding: "3rem 1rem", textAlign: "center" }}>
+                <Bell size={36} style={{ color: "rgba(255,255,255,0.15)", margin: "0 auto 1rem" }} />
+                <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.9rem" }}>No notifications yet</p>
+                <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.8rem", marginTop: "0.25rem" }}>New bookings will appear here</p>
+              </div>
+            ) : (
+              notifications.map(n => (
+                <div
+                  key={n.id}
+                  onClick={() => !n.read && markAsRead(n.id)}
+                  style={{
+                    padding: "1rem 1.2rem",
+                    borderBottom: "1px solid rgba(255,255,255,0.05)",
+                    background: n.read ? "transparent" : "rgba(212,175,55,0.04)",
+                    cursor: n.read ? "default" : "pointer",
+                    transition: "background 0.2s",
+                    borderLeft: n.read ? "3px solid transparent" : "3px solid var(--accent-gold)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.4rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <div style={{
+                        width: "28px", height: "28px",
+                        background: n.read ? "rgba(255,255,255,0.05)" : "rgba(212,175,55,0.15)",
+                        borderRadius: "50%",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0
+                      }}>
+                        <Ticket size={13} color={n.read ? "rgba(255,255,255,0.4)" : "var(--accent-gold)"} />
+                      </div>
+                      <span style={{
+                        fontSize: "0.85rem",
+                        fontWeight: "bold",
+                        color: n.read ? "rgba(255,255,255,0.6)" : "white"
+                      }}>
+                        {n.title}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.3)", flexShrink: 0, marginLeft: "0.5rem" }}>
+                      {formatTime(n.createdAt)}
+                    </span>
+                  </div>
+
+                  <p style={{
+                    fontSize: "0.8rem",
+                    color: n.read ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.7)",
+                    lineHeight: "1.4",
+                    marginLeft: "2rem"
+                  }}>
+                    {n.message}
+                  </p>
+
+                  {!n.read && (
+                    <div style={{ marginLeft: "2rem", marginTop: "0.4rem" }}>
+                      <span style={{ fontSize: "0.7rem", color: "var(--accent-gold)" }}>
+                        Tap to mark as read
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

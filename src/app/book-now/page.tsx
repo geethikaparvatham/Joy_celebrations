@@ -186,8 +186,26 @@ export default function BookNowPage() {
       status: "Confirmed"
     };
     try {
-      await addDoc(collection(db, "bookings"), bookingData);
+      const docRef = await addDoc(collection(db, "bookings"), bookingData);
       console.log("Booking saved to database!");
+
+      // Also save a notification for the admin
+      await addDoc(collection(db, "notifications"), {
+        type: "new_booking",
+        title: "New Booking Received! 🎉",
+        message: `${bookingData.customerName} booked ${bookingData.packageName} for ${bookingData.occasion} on ${bookingData.date} at ${bookingData.timeSlot}. Total: ₹${bookingData.totalAmount.toLocaleString('en-IN')}`,
+        customerName: bookingData.customerName,
+        customerPhone: bookingData.customerPhone,
+        packageName: bookingData.packageName,
+        occasion: bookingData.occasion,
+        date: bookingData.date,
+        timeSlot: bookingData.timeSlot,
+        totalAmount: bookingData.totalAmount,
+        bookingId: docRef.id,
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+      console.log("Notification saved!");
     } catch (err) {
       console.error("Error saving booking:", err);
     }

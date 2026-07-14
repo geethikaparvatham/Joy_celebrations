@@ -6,6 +6,7 @@ import { db } from "../../../lib/firebase";
 import { Settings, Lock, User, Clock, ShieldAlert, KeyRound, AlertCircle, RefreshCw } from "lucide-react";
 import styles from "../page.module.css";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
+import AdminNotifications from "../../../components/admin/AdminNotifications";
 import LogoutButton from "../LogoutButton";
 
 type LoginLog = {
@@ -168,6 +169,7 @@ export default function SettingsPage() {
             <p className="text-sm text-[var(--text-secondary)] mt-1">Configure admin credentials and monitor session login logs.</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <AdminNotifications />
             <div className={styles.userProfile}>Admin User</div>
             <LogoutButton />
           </div>
