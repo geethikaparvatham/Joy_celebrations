@@ -149,9 +149,7 @@ export default function BookNowPage() {
       msg += `*Addons:* ${selectedAddons.join(', ')}%0A`;
     }
     
-    msg += `*Total Amount:* ₹ ${currentTotal.toLocaleString('en-IN')}%0A`;
-    msg += `*Payment Method:* ${paymentMethod}%0A%0A`;
-    msg += `*Receipt Link:* ${generateReceiptUrl()}`;
+    msg += `*Total Amount:* ₹ ${currentTotal.toLocaleString('en-IN')}`;
     
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${msg}`;
     
