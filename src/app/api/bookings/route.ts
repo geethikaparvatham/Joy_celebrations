@@ -1,29 +1,20 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 
-const DATA_DIR = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
-const BOOKINGS_FILE = path.join(DATA_DIR, 'bookings.json');
-const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
-
-async function readJson(filePath: string): Promise<any[]> {
-  try {
-    const content = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return [];
-  }
-}
-
-async function writeJson(filePath: string, data: any[]) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
-}
+const RTDB_URL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 
+                 process.env.FIREBASE_DATABASE_URL || 
+                 'https://joy-celebrations-default-rtdb.firebaseio.com';
 
 // GET: return all bookings
 export async function GET() {
   try {
-    const bookings = await readJson(BOOKINGS_FILE);
+    const res = await fetch(`${RTDB_URL}/bookings.json`);
+    const data = await res.json();
+
+    if (!data || typeof data !== 'object') {
+      return NextResponse.json({ bookings: [] });
+    }
+
+    const bookings = Object.values(data).filter(Boolean) as any[];
     bookings.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return NextResponse.json({ bookings });
   } catch (error) {
@@ -31,27 +22,32 @@ export async function GET() {
   }
 }
 
-// PATCH: update booking status (Confirmed / Cancelled)
+// PATCH: update booking status (Confirmed / Cancelled) and mark notification read
 export async function PATCH(request: Request) {
   try {
     const { bookingId, status, notificationId } = await request.json();
 
-    // Update booking status
     if (bookingId && status) {
-      const bookings = await readJson(BOOKINGS_FILE);
-      const updated = bookings.map((b: any) =>
-        b.id === bookingId ? { ...b, status } : b
-      );
-      await writeJson(BOOKINGS_FILE, updated);
+      await fetch(`${RTDB_URL}/bookings/${bookingId}/status.json`, {
+        method: 'PUT',
+        body: JSON.stringify(status),
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // Also mark the notification as read
     if (notificationId) {
-      const notifications = await readJson(NOTIFICATIONS_FILE);
-      const updatedNotifs = notifications.map((n: any) =>
-        n.id === notificationId ? { ...n, read: true, action: status } : n
-      );
-      await writeJson(NOTIFICATIONS_FILE, updatedNotifs);
+      await Promise.all([
+        fetch(`${RTDB_URL}/notifications/${notificationId}/read.json`, {
+          method: 'PUT',
+          body: 'true',
+          headers: { 'Content-Type': 'application/json' },
+        }),
+        fetch(`${RTDB_URL}/notifications/${notificationId}/action.json`, {
+          method: 'PUT',
+          body: JSON.stringify(status),
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ]);
     }
 
     return NextResponse.json({ success: true });

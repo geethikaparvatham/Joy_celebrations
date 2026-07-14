@@ -1,48 +1,58 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 
-const DATA_DIR = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
-const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
+const RTDB_URL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 
+                 process.env.FIREBASE_DATABASE_URL || 
+                 'https://joy-celebrations-default-rtdb.firebaseio.com';
 
-async function readJson(filePath: string): Promise<any[]> {
-  try {
-    const content = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return [];
-  }
-}
-
-async function writeJson(filePath: string, data: any[]) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-// GET: fetch all notifications
+// GET: fetch all notifications from Realtime DB
 export async function GET() {
   try {
-    const notifications = await readJson(NOTIFICATIONS_FILE);
+    const res = await fetch(`${RTDB_URL}/notifications.json`);
+    const data = await res.json();
+
+    if (!data || typeof data !== 'object') {
+      return NextResponse.json({ notifications: [] });
+    }
+
+    // Firebase RTDB returns an object, convert to array
+    const notifications = Object.values(data).filter(Boolean) as any[];
+
     // Sort newest first
-    notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    notifications.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return NextResponse.json({ notifications });
   } catch (error) {
+    console.error("GET notifications error:", error);
     return NextResponse.json({ notifications: [], error: String(error) });
   }
 }
 
-// PATCH: mark a notification as read
+// PATCH: mark notification as read or set action
 export async function PATCH(request: Request) {
   try {
-    const { id, markAll } = await request.json();
-    const notifications = await readJson(NOTIFICATIONS_FILE);
+    const body = await request.json();
+    const { id, markAll } = body;
 
     if (markAll) {
-      const updated = notifications.map(n => ({ ...n, read: true }));
-      await writeJson(NOTIFICATIONS_FILE, updated);
+      // Fetch all and mark all as read
+      const res = await fetch(`${RTDB_URL}/notifications.json`);
+      const data = await res.json();
+      if (data && typeof data === 'object') {
+        await Promise.all(
+          Object.keys(data).map(key =>
+            fetch(`${RTDB_URL}/notifications/${key}/read.json`, {
+              method: 'PUT',
+              body: 'true',
+              headers: { 'Content-Type': 'application/json' },
+            })
+          )
+        );
+      }
     } else if (id) {
-      const updated = notifications.map(n => n.id === id ? { ...n, read: true } : n);
-      await writeJson(NOTIFICATIONS_FILE, updated);
+      await fetch(`${RTDB_URL}/notifications/${id}/read.json`, {
+        method: 'PUT',
+        body: 'true',
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     return NextResponse.json({ success: true });
