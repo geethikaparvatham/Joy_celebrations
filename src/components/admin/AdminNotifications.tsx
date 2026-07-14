@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { collection, onSnapshot, updateDoc, doc, query, orderBy } from "firebase/firestore";
-import { db } from "../../lib/firebase";
-import { Bell, X, Check, CheckCheck, Ticket } from "lucide-react";
+import { Bell, X, CheckCheck, Ticket } from "lucide-react";
 
 type Notification = {
   id: string;
@@ -27,18 +25,23 @@ export default function AdminNotifications() {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch('/api/notifications');
+      const data = await res.json();
+      if (data.notifications) {
+        setNotifications(data.notifications);
+      }
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    }
+  };
+
+  // Poll every 10 seconds for new notifications
   useEffect(() => {
-    const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetched = snapshot.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      })) as Notification[];
-      setNotifications(fetched);
-    }, (err) => {
-      console.error("Error loading notifications:", err);
-    });
-    return () => unsubscribe();
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   // Close when clicking outside
@@ -56,7 +59,12 @@ export default function AdminNotifications() {
 
   const markAsRead = async (id: string) => {
     try {
-      await updateDoc(doc(db, "notifications", id), { read: true });
+      await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     } catch (err) {
       console.error("Error marking as read:", err);
     }
@@ -64,7 +72,7 @@ export default function AdminNotifications() {
 
   const markAllAsRead = async () => {
     const unread = notifications.filter(n => !n.read);
-    await Promise.all(unread.map(n => updateDoc(doc(db, "notifications", n.id), { read: true })));
+    await Promise.all(unread.map(n => markAsRead(n.id)));
   };
 
   const formatTime = (isoString: string) => {
@@ -75,7 +83,6 @@ export default function AdminNotifications() {
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMins / 60);
       const diffDays = Math.floor(diffHours / 24);
-
       if (diffMins < 1) return "Just now";
       if (diffMins < 60) return `${diffMins}m ago`;
       if (diffHours < 24) return `${diffHours}h ago`;
@@ -89,7 +96,7 @@ export default function AdminNotifications() {
     <div ref={panelRef} style={{ position: "relative" }}>
       {/* Bell Button */}
       <button
-        onClick={() => setIsOpen(prev => !prev)}
+        onClick={() => { setIsOpen(prev => !prev); if (!isOpen) fetchNotifications(); }}
         style={{
           position: "relative",
           background: isOpen ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.05)",
@@ -136,12 +143,12 @@ export default function AdminNotifications() {
           position: "absolute",
           top: "calc(100% + 10px)",
           right: 0,
-          width: "380px",
-          maxHeight: "500px",
+          width: "390px",
+          maxHeight: "520px",
           background: "#1a1a1a",
           border: "1px solid rgba(212,175,55,0.3)",
           borderRadius: "12px",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.7)",
           zIndex: 1000,
           overflow: "hidden",
           display: "flex",
@@ -188,12 +195,14 @@ export default function AdminNotifications() {
                     alignItems: "center",
                     gap: "0.25rem"
                   }}
-                  title="Mark all as read"
                 >
                   <CheckCheck size={14} /> All read
                 </button>
               )}
-              <button onClick={() => setIsOpen(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: "0.2rem" }}>
+              <button
+                onClick={() => setIsOpen(false)}
+                style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: "0.2rem" }}
+              >
                 <X size={16} />
               </button>
             </div>
@@ -215,7 +224,7 @@ export default function AdminNotifications() {
                   style={{
                     padding: "1rem 1.2rem",
                     borderBottom: "1px solid rgba(255,255,255,0.05)",
-                    background: n.read ? "transparent" : "rgba(212,175,55,0.04)",
+                    background: n.read ? "transparent" : "rgba(212,175,55,0.06)",
                     cursor: n.read ? "default" : "pointer",
                     transition: "background 0.2s",
                     borderLeft: n.read ? "3px solid transparent" : "3px solid var(--accent-gold)",
@@ -227,16 +236,11 @@ export default function AdminNotifications() {
                         width: "28px", height: "28px",
                         background: n.read ? "rgba(255,255,255,0.05)" : "rgba(212,175,55,0.15)",
                         borderRadius: "50%",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0
+                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
                       }}>
                         <Ticket size={13} color={n.read ? "rgba(255,255,255,0.4)" : "var(--accent-gold)"} />
                       </div>
-                      <span style={{
-                        fontSize: "0.85rem",
-                        fontWeight: "bold",
-                        color: n.read ? "rgba(255,255,255,0.6)" : "white"
-                      }}>
+                      <span style={{ fontSize: "0.85rem", fontWeight: "bold", color: n.read ? "rgba(255,255,255,0.6)" : "white" }}>
                         {n.title}
                       </span>
                     </div>
@@ -247,16 +251,30 @@ export default function AdminNotifications() {
 
                   <p style={{
                     fontSize: "0.8rem",
-                    color: n.read ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.7)",
-                    lineHeight: "1.4",
+                    color: n.read ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.75)",
+                    lineHeight: "1.5",
                     marginLeft: "2rem"
                   }}>
                     {n.message}
                   </p>
 
+                  {/* Extra details for unread */}
+                  {!n.read && n.customerPhone && (
+                    <div style={{ marginLeft: "2rem", marginTop: "0.4rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "0.72rem", color: "var(--accent-gold)", background: "rgba(212,175,55,0.1)", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>
+                        📞 {n.customerPhone}
+                      </span>
+                      {n.date && (
+                        <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.05)", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>
+                          📅 {n.date}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   {!n.read && (
-                    <div style={{ marginLeft: "2rem", marginTop: "0.4rem" }}>
-                      <span style={{ fontSize: "0.7rem", color: "var(--accent-gold)" }}>
+                    <div style={{ marginLeft: "2rem", marginTop: "0.3rem" }}>
+                      <span style={{ fontSize: "0.7rem", color: "rgba(212,175,55,0.6)" }}>
                         Tap to mark as read
                       </span>
                     </div>

@@ -184,33 +184,24 @@ export default function BookNowPage() {
       timeSlot: store.timeSlot || "TBD",
       addons: selectedAddons,
       totalAmount: currentTotal,
-      paymentMethod: paymentMethod,
-      createdAt: new Date().toISOString(),
-      status: "Confirmed"
+      paymentMethod: paymentMethod || "WhatsApp",
     };
     try {
-      const docRef = await addDoc(collection(db, "bookings"), bookingData);
-      console.log("Booking saved to database!");
-
-      // Also save a notification for the admin
-      await addDoc(collection(db, "notifications"), {
-        type: "new_booking",
-        title: "New Booking Received! 🎉",
-        message: `${bookingData.customerName} booked ${bookingData.packageName} for ${bookingData.occasion} on ${bookingData.date} at ${bookingData.timeSlot}. Total: ₹${bookingData.totalAmount.toLocaleString('en-IN')}`,
-        customerName: bookingData.customerName,
-        customerPhone: bookingData.customerPhone,
-        packageName: bookingData.packageName,
-        occasion: bookingData.occasion,
-        date: bookingData.date,
-        timeSlot: bookingData.timeSlot,
-        totalAmount: bookingData.totalAmount,
-        bookingId: docRef.id,
-        read: false,
-        createdAt: new Date().toISOString()
+      // Use server-side API route to save booking + notification
+      // This bypasses Firestore client security rules
+      const res = await fetch('/api/booking/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData),
       });
-      console.log("Notification saved!");
+      const result = await res.json();
+      if (result.success) {
+        console.log("✅ Booking + notification saved! Booking ID:", result.bookingId);
+      } else {
+        console.error("❌ Server save failed:", result.error);
+      }
     } catch (err) {
-      console.error("Error saving booking:", err);
+      console.error("Error calling save API:", err);
     }
   };
 
