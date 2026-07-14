@@ -30,27 +30,28 @@ export default function SettingsPage() {
 
   // Load current admin credentials & login history
   useEffect(() => {
-    // 1. Fetch credentials
-    const loadCredentials = async () => {
-      try {
-        const docRef = doc(db, "admin_settings", "credentials");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.username) setUsername(data.username);
-          if (data.password) {
-            setPassword(data.password);
-            setConfirmPassword(data.password);
-          }
+    // Safety timer to force-dismiss spinner after 3 seconds
+    const safetyTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    // 1. Fetch credentials via onSnapshot (fires immediately, handles failure quickly)
+    const credsUnsubscribe = onSnapshot(doc(db, "admin_settings", "credentials"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.username) setUsername(data.username);
+        if (data.password) {
+          setPassword(data.password);
+          setConfirmPassword(data.password);
         }
-      } catch (err) {
-        console.error("Error loading credentials:", err);
-      } finally {
-        setIsLoading(false);
       }
-    };
-    
-    loadCredentials();
+      setIsLoading(false);
+      clearTimeout(safetyTimeout);
+    }, (error) => {
+      console.error("Error loading credentials:", error);
+      setIsLoading(false);
+      clearTimeout(safetyTimeout);
+    });
 
     // 2. Listen to login timings log (real-time sync)
     const logsUnsubscribe = onSnapshot(collection(db, "login_logs"), (snapshot) => {
@@ -66,7 +67,11 @@ export default function SettingsPage() {
       console.error("Error loading login logs:", error);
     });
 
-    return () => logsUnsubscribe();
+    return () => {
+      credsUnsubscribe();
+      logsUnsubscribe();
+      clearTimeout(safetyTimeout);
+    };
   }, []);
 
   const handleSaveCredentials = async (e: React.FormEvent) => {
