@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
-import { Plus, Edit2, Trash2, X } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Check, Clock, Users } from "lucide-react";
 import styles from "../page.module.css";
+import frontendStyles from "../../packages/page.module.css";
 
 type Plan = {
   id: string;
@@ -204,47 +205,63 @@ export default function PackagesManager() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '2rem' }}>
+      <div className={frontendStyles.grid} style={{ marginTop: '2rem' }}>
         {plans.length === 0 ? (
-          <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem' }}>
+          <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem', gridColumn: '1 / -1' }}>
             <p className="text-[var(--text-secondary)]">No plans found. Add one to get started.</p>
           </div>
         ) : (
           plans.map(plan => (
-            <div key={plan.id} className="glass-panel" style={{ padding: '1.5rem', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', display: 'flex', gap: '0.5rem' }}>
-                <button onClick={() => openModal(plan)} style={{ background: 'none', border: 'none', color: 'var(--accent-gold)', cursor: 'pointer', padding: '0.5rem' }} aria-label="Edit Plan">
-                  <Edit2 size={18} />
+            <div key={plan.id} className={`${frontendStyles.card} ${plan.isMidnight ? frontendStyles.midnightCard : ''} ${plan.isPopular ? frontendStyles.popularCard : ''}`} style={{ position: 'relative' }}>
+              {plan.isMidnight && <div className={frontendStyles.midnightBadge}>MIDNIGHT</div>}
+              
+              <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', display: 'flex', gap: '0.5rem', zIndex: 10 }}>
+                <button onClick={() => openModal(plan)} style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)', borderRadius: '4px', cursor: 'pointer', padding: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Edit Plan">
+                  <Edit2 size={16} />
                 </button>
-                <button onClick={() => handleDelete(plan.id)} style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', padding: '0.5rem' }} aria-label="Delete Plan">
-                  <Trash2 size={18} />
+                <button onClick={() => handleDelete(plan.id)} style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid #ff4444', color: '#ff4444', borderRadius: '4px', cursor: 'pointer', padding: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Delete Plan">
+                  <Trash2 size={16} />
                 </button>
               </div>
               
-              <h2 className="heading-luxury text-xl text-[var(--accent-gold)] mb-1">{plan.name} {plan.isPopular && <span style={{fontSize:'0.6rem', padding:'0.2rem 0.4rem', background:'var(--accent-gold)', color:'black', borderRadius:'4px', verticalAlign:'middle', marginLeft:'0.5rem'}}>POPULAR</span>} {plan.isMidnight && <span style={{fontSize:'0.6rem', padding:'0.2rem 0.4rem', background:'black', border:'1px solid var(--accent-gold)', color:'var(--accent-gold)', borderRadius:'4px', verticalAlign:'middle', marginLeft:'0.5rem'}}>MIDNIGHT</span>}</h2>
-              <p style={{ fontWeight: '600', marginBottom: '0.5rem' }}>₹{plan.price} &bull; {plan.duration} &bull; {plan.members}</p>
-              
-              <div style={{ marginBottom: '1rem' }}>
-                <h3 className="text-sm text-[var(--accent-gold)] mb-2">Features:</h3>
-                <ul style={{ listStyleType: 'disc', paddingLeft: '1.2rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  {plan.features?.map((f, i) => <li key={i}>{f}</li>)}
-                </ul>
+              <h2 className={frontendStyles.planName} style={{ marginTop: plan.isMidnight ? '1rem' : '0' }}>{plan.name}</h2>
+              <div className={frontendStyles.price}>
+                <span>₹</span>{plan.price}
               </div>
               
-              <div>
-                <h3 className="heading-luxury" style={{ fontSize: '1rem', marginBottom: '0.8rem' }}>Available Timings:</h3>
-                {plan.timings && plan.timings.length > 0 ? (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <ul className={frontendStyles.features}>
+                <li>
+                  <Clock size={18} className={frontendStyles.featureIcon} />
+                  {plan.duration}
+                </li>
+                <li>
+                  <Users size={18} className={frontendStyles.featureIcon} />
+                  {plan.members}
+                </li>
+                {plan.features?.map((feature, i) => (
+                  <li key={i}>
+                    <Check size={16} className={frontendStyles.featureIconCheck} />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              
+              {plan.timings && plan.timings.length > 0 && (
+                <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                  <p className="text-xs text-[var(--accent-gold)] mb-2 uppercase tracking-wider">Timings</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                     {plan.timings.map((time, idx) => (
-                      <span key={idx} style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid var(--accent-gold)', padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.85rem' }}>
+                      <span key={idx} style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         {time}
                       </span>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-[var(--text-secondary)] text-sm">No timings added for this plan.</p>
-                )}
-              </div>
+                </div>
+              )}
+
+              <button className={`btn-primary ${frontendStyles.bookBtn}`} style={{ cursor: 'default' }}>
+                BOOK NOW
+              </button>
             </div>
           ))
         )}
