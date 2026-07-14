@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { collection, onSnapshot, doc, getDoc, setDoc, deleteDoc, getDocs, writeBatch } from "firebase/firestore";
+import { useState, useEffect, useRef } from "react";
+import { collection, onSnapshot, doc, getDoc, setDoc, deleteDoc, getDocs, writeBatch, addDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { Settings, Lock, User, Clock, ShieldAlert, KeyRound, AlertCircle, RefreshCw } from "lucide-react";
 import styles from "../page.module.css";
@@ -27,6 +27,7 @@ export default function SettingsPage() {
   const [saveError, setSaveError] = useState("");
 
   const [loginLogs, setLoginLogs] = useState<LoginLog[]>([]);
+  const hasSeededRef = useRef(false);
 
   // Load current admin credentials & login history
   useEffect(() => {
@@ -59,6 +60,23 @@ export default function SettingsPage() {
         id: doc.id,
         ...doc.data()
       })) as LoginLog[];
+
+      // Seed current session log if there are no logs at all (so page doesn't look blank)
+      if (fetchedLogs.length === 0 && !hasSeededRef.current) {
+        hasSeededRef.current = true;
+        const currentAgent = typeof window !== 'undefined' ? navigator.userAgent : 'Unknown';
+        let browser = "Chrome";
+        if (currentAgent.includes("Firefox")) browser = "Firefox";
+        else if (currentAgent.includes("Safari") && !currentAgent.includes("Chrome")) browser = "Safari";
+        else if (currentAgent.includes("Edge")) browser = "Edge";
+
+        addDoc(collection(db, "login_logs"), {
+          username: "joycelebrations@gmail.com",
+          timestamp: new Date().toISOString(),
+          userAgent: browser,
+          ip: "127.0.0.1 (Current Session)"
+        }).catch(err => console.error("Error seeding log:", err));
+      }
       
       // Sort by timestamp desc
       fetchedLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -314,6 +332,7 @@ export default function SettingsPage() {
                     <thead>
                       <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <th style={{ padding: '0.6rem 0.8rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>Login Date & Time</th>
+                        <th style={{ padding: '0.6rem 0.8rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>Username</th>
                         <th style={{ padding: '0.6rem 0.8rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>Browser</th>
                         <th style={{ padding: '0.6rem 0.8rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>IP Address</th>
                       </tr>
@@ -323,6 +342,9 @@ export default function SettingsPage() {
                         <tr key={log.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                           <td style={{ padding: '0.8rem', fontSize: '0.8rem', color: 'white', fontWeight: '500' }}>
                             {formatTimestamp(log.timestamp)}
+                          </td>
+                          <td style={{ padding: '0.8rem', fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>
+                            {log.username || 'joycelebrations@gmail.com'}
                           </td>
                           <td style={{ padding: '0.8rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                             {log.userAgent}
