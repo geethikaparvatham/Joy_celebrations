@@ -21,9 +21,6 @@ export default function AdminSidebar() {
         <Link href="/admin/bookings" className={`${styles.navItem} ${pathname.includes('/bookings') ? styles.active : ''}`}>
           <Ticket size={20} /> Bookings
         </Link>
-        <Link href="/admin/calendar" className={`${styles.navItem} ${pathname.includes('/calendar') ? styles.active : ''}`}>
-          <Calendar size={20} /> Calendar
-        </Link>
         <Link href="/admin/customers" className={`${styles.navItem} ${pathname.includes('/customers') ? styles.active : ''}`}>
           <Users size={20} /> Customers
         </Link>
