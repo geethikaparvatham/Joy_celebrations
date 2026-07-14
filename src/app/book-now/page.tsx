@@ -67,6 +67,7 @@ export default function BookNowPage() {
   
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [specialRequests, setSpecialRequests] = useState('');
   
   const [showUpiModal, setShowUpiModal] = useState(false);
   const [selectedUpiApp, setSelectedUpiApp] = useState<string | null>(null);
@@ -662,7 +663,14 @@ export default function BookNowPage() {
                     style={inputStyles} 
                   />
                   <input type="email" placeholder="Email Address" className={styles.inputField} style={inputStyles} />
-                  <textarea placeholder="Any Special Requests?" rows={3} className={styles.inputField} style={{...inputStyles, resize: 'vertical'}}></textarea>
+                  <textarea 
+                    placeholder="Any Special Requests?" 
+                    rows={3} 
+                    className={styles.inputField} 
+                    style={{...inputStyles, resize: 'vertical'}}
+                    value={specialRequests}
+                    onChange={(e) => setSpecialRequests(e.target.value.replace(/\d/g, ''))}
+                  />
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
