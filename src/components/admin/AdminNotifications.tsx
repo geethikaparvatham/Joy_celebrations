@@ -24,23 +24,71 @@ export default function AdminNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const prevUnreadCount = useRef<number>(0);
+  const isFirstLoad = useRef<boolean>(true);
+
+  // Play a big, attention-grabbing notification sound using Web Audio API
+  const playNotificationSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+
+      const playTone = (freq: number, startTime: number, duration: number, volume: number) => {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, startTime);
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      };
+
+      const now = ctx.currentTime;
+      // Loud chime sequence: C5 → E5 → G5 → C6 (triumphant chord arpeggio)
+      playTone(523.25, now + 0.0,  0.4, 0.9); // C5
+      playTone(659.25, now + 0.15, 0.4, 0.9); // E5
+      playTone(783.99, now + 0.3,  0.4, 0.9); // G5
+      playTone(1046.5, now + 0.45, 0.7, 1.0); // C6 (loud + long)
+      // Second wave for emphasis
+      playTone(1046.5, now + 0.7,  0.3, 0.7);
+      playTone(783.99, now + 0.9,  0.3, 0.6);
+    } catch (err) {
+      console.warn('Could not play notification sound:', err);
+    }
+  };
 
   const fetchNotifications = async () => {
     try {
       const res = await fetch('/api/notifications');
       const data = await res.json();
       if (data.notifications) {
-        setNotifications(data.notifications);
+        const newNotifications: Notification[] = data.notifications;
+        const newUnreadCount = newNotifications.filter((n: Notification) => !n.read).length;
+
+        // Play sound if unread count INCREASED (new notification arrived)
+        // Skip on first load to avoid sound on page open
+        if (!isFirstLoad.current && newUnreadCount > prevUnreadCount.current) {
+          playNotificationSound();
+        }
+
+        prevUnreadCount.current = newUnreadCount;
+        isFirstLoad.current = false;
+        setNotifications(newNotifications);
       }
     } catch (err) {
       console.error("Error fetching notifications:", err);
     }
   };
 
-  // Poll every 10 seconds for new notifications
+  // Poll every 8 seconds for new notifications
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000);
+    const interval = setInterval(fetchNotifications, 8000);
     return () => clearInterval(interval);
   }, []);
 
