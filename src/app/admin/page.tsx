@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../lib/firebase";
 import { LayoutDashboard, Ticket, Clock, Users, IndianRupee } from "lucide-react";
 import styles from "./page.module.css";
 import LogoutButton from "./LogoutButton";
@@ -28,29 +26,30 @@ type Booking = {
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "bookings"), (snapshot) => {
-      if (!snapshot.empty) {
-        const fetched = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Booking[];
-        
-        // Sort by createdAt desc
-        fetched.sort((a, b) => new Date(b.createdAt || b.date).getTime() - new Date(a.createdAt || a.date).getTime());
-        setBookings(fetched);
+  const fetchBookings = async () => {
+    try {
+      const res = await fetch('/api/bookings');
+      const data = await res.json();
+      if (data.bookings) {
+        setBookings(data.bookings);
       }
-    });
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+    }
+  };
 
-    return () => unsubscribe();
+  useEffect(() => {
+    fetchBookings();
+    const interval = setInterval(fetchBookings, 5000); // poll every 5s
+    return () => clearInterval(interval);
   }, []);
 
   // Calculate statistics
   const todayStr = new Date().toISOString().split('T')[0];
-  const todayBookingsCount = bookings.filter(b => b.date === todayStr).length;
+  const todayBookingsCount = bookings.filter(b => b.date === todayStr && b.status === "Confirmed").length;
   
   const upcomingBookingsCount = bookings.filter(b => {
-    return new Date(b.date).getTime() >= new Date(todayStr).getTime() && b.status !== "Cancelled";
+    return new Date(b.date).getTime() >= new Date(todayStr).getTime() && b.status === "Confirmed";
   }).length;
 
   const currentMonth = new Date().getMonth();

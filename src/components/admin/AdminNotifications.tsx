@@ -18,6 +18,7 @@ type Notification = {
   bookingId: string;
   read: boolean;
   createdAt: string;
+  action?: string;
 };
 
 export default function AdminNotifications() {
@@ -115,6 +116,21 @@ export default function AdminNotifications() {
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     } catch (err) {
       console.error("Error marking as read:", err);
+    }
+  };
+
+  const handleBookingAction = async (notificationId: string, bookingId: string, action: "Confirmed" | "Cancelled") => {
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId, status: action, notificationId })
+      });
+      if (res.ok) {
+        setNotifications(prev => prev.map(n => n.id === notificationId ? { ...n, read: true, action } : n));
+      }
+    } catch (err) {
+      console.error("Error updating booking action:", err);
     }
   };
 
@@ -320,10 +336,47 @@ export default function AdminNotifications() {
                     </div>
                   )}
 
-                  {!n.read && (
-                    <div style={{ marginLeft: "2rem", marginTop: "0.3rem" }}>
+                  {!n.action && (
+                    <div style={{ marginLeft: "2rem", marginTop: "0.8rem", display: "flex", gap: "0.5rem" }}>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleBookingAction(n.id, n.bookingId, "Confirmed"); }} 
+                        style={{ padding: "0.4rem 1rem", background: "#22C55E", color: "white", border: "none", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "bold", cursor: "pointer", transition: "transform 0.1s" }}
+                        onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                        onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      >
+                        Allow
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleBookingAction(n.id, n.bookingId, "Cancelled"); }} 
+                        style={{ padding: "0.4rem 1rem", background: "#EF4444", color: "white", border: "none", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "bold", cursor: "pointer", transition: "transform 0.1s" }}
+                        onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                        onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      >
+                        Deny
+                      </button>
+                    </div>
+                  )}
+                  {n.action && (
+                    <div style={{ marginLeft: "2rem", marginTop: "0.6rem" }}>
+                      <span style={{ 
+                        fontSize: "0.75rem", 
+                        color: n.action === "Confirmed" ? "#22C55E" : "#EF4444", 
+                        fontWeight: "bold",
+                        background: n.action === "Confirmed" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
+                        padding: "0.2rem 0.5rem",
+                        borderRadius: "4px"
+                      }}>
+                        {n.action === "Confirmed" ? "✓ Allowed" : "✗ Denied"}
+                      </span>
+                    </div>
+                  )}
+
+                  {!n.read && !n.action && (
+                    <div style={{ marginLeft: "2rem", marginTop: "0.6rem" }}>
                       <span style={{ fontSize: "0.7rem", color: "rgba(212,175,55,0.6)" }}>
-                        Tap to mark as read
+                        Tap anywhere to dismiss
                       </span>
                     </div>
                   )}
