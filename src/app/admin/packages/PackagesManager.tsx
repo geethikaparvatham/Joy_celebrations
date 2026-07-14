@@ -105,6 +105,7 @@ export default function PackagesManager() {
   const [newTiming, setNewTiming] = useState("");
   
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [newBookedSlot, setNewBookedSlot] = useState("");
   
   const [isPopular, setIsPopular] = useState(false);
   const [isMidnight, setIsMidnight] = useState(false);
@@ -131,6 +132,7 @@ export default function PackagesManager() {
     setTimings([]);
     setNewTiming("");
     setBookedSlots([]);
+    setNewBookedSlot("");
     setIsPopular(false);
     setIsMidnight(false);
     setEditingPlan(null);
@@ -174,6 +176,17 @@ export default function PackagesManager() {
 
   const handleRemoveTiming = (timingToRemove: string) => {
     setTimings(timings.filter(t => t !== timingToRemove));
+  };
+
+  const handleAddBookedSlot = () => {
+    if (newBookedSlot.trim() && !bookedSlots.includes(newBookedSlot.trim())) {
+      setBookedSlots([...bookedSlots, newBookedSlot.trim()]);
+      setNewBookedSlot("");
+    }
+  };
+
+  const handleRemoveBookedSlot = (slotToRemove: string) => {
+    setBookedSlots(bookedSlots.filter(s => s !== slotToRemove));
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -282,20 +295,21 @@ export default function PackagesManager() {
                   overflowY: 'auto'
                 }}>
                   <p className="text-sm font-bold mb-3" style={{ color: 'var(--accent-gold)' }}>Choose Your Slot -</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
                     {plan.timings.map((time, idx) => {
                       const isBooked = plan.bookedSlots?.includes(time);
                       return (
                         <span key={idx} style={{ 
                           background: isBooked ? 'rgba(255,255,255,0.05)' : 'rgba(212,175,55,0.1)', 
                           border: isBooked ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(212,175,55,0.3)', 
-                          padding: '0.6rem 0.4rem', 
+                          padding: '0.6rem 0.8rem', 
                           borderRadius: '6px', 
                           fontSize: '0.8rem', 
                           color: isBooked ? '#666' : 'var(--text-primary)', 
                           textAlign: 'center',
                           textDecoration: isBooked ? 'line-through' : 'none',
-                          opacity: isBooked ? 0.6 : 1
+                          opacity: isBooked ? 0.6 : 1,
+                          whiteSpace: 'nowrap'
                         }}>
                           {time}
                         </span>
@@ -393,34 +407,22 @@ export default function PackagesManager() {
                   {timings.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No timings added yet.</p>}
                 </div>
 
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Mark Booked Slots</label>
-                <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Click on a slot below to mark it as booked (it will show with a strikethrough in the preview).</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                  {timings.map((time, idx) => {
-                    const isBooked = bookedSlots.includes(time);
-                    return (
-                      <button 
-                        key={idx}
-                        type="button"
-                        onClick={() => {
-                          if (isBooked) setBookedSlots(bookedSlots.filter(t => t !== time));
-                          else setBookedSlots([...bookedSlots, time]);
-                        }}
-                        style={{
-                          background: isBooked ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.05)',
-                          border: isBooked ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255,255,255,0.1)',
-                          color: isBooked ? '#EF4444' : 'white',
-                          padding: '0.5rem',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          textDecoration: isBooked ? 'line-through' : 'none'
-                        }}
-                      >
-                        {time}
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Booked Slots</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <input type="text" value={newBookedSlot} onChange={e => setNewBookedSlot(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddBookedSlot(); } }} placeholder="e.g., 10:00 AM - 01:00 PM" style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+                  <button type="button" onClick={handleAddBookedSlot} className="btn-secondary" style={{ padding: '0 1rem' }}>Add</button>
+                </div>
+                
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                  {bookedSlots.map((time, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem', color: '#EF4444' }}>
+                      <span style={{ textDecoration: 'line-through' }}>{time}</span>
+                      <button type="button" onClick={() => handleRemoveBookedSlot(time)} style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                        <X size={14} />
                       </button>
-                    );
-                  })}
+                    </div>
+                  ))}
+                  {bookedSlots.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No booked slots added yet.</p>}
                 </div>
               </div>
 
