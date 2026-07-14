@@ -313,28 +313,25 @@ export default function AdminNotifications() {
                     </span>
                   </div>
 
-                  <p style={{
+                  <div style={{
                     fontSize: "0.8rem",
                     color: n.read ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.75)",
-                    lineHeight: "1.5",
-                    marginLeft: "2rem"
+                    lineHeight: "1.6",
+                    marginLeft: "2rem",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "0.3rem"
                   }}>
-                    {n.message}
-                  </p>
-
-                  {/* Extra details for unread */}
-                  {!n.read && n.customerPhone && (
-                    <div style={{ marginLeft: "2rem", marginTop: "0.4rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                      <span style={{ fontSize: "0.72rem", color: "var(--accent-gold)", background: "rgba(212,175,55,0.1)", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>
-                        📞 {n.customerPhone}
-                      </span>
-                      {n.date && (
-                        <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.05)", padding: "0.2rem 0.5rem", borderRadius: "4px" }}>
-                          📅 {n.date}
-                        </span>
-                      )}
+                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Name:</span> {n.customerName}</div>
+                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Phone:</span> {n.customerPhone}</div>
+                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Package:</span> {n.packageName}</div>
+                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Occasion:</span> {n.occasion}</div>
+                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Date:</span> {n.date}</div>
+                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Time:</span> <span style={{fontSize: "0.75rem"}}>{n.timeSlot}</span></div>
+                    <div style={{gridColumn: "1 / -1", fontWeight: "bold", marginTop: "0.2rem"}}>
+                      <span style={{color:"var(--accent-gold)"}}>Total Estimate:</span> ₹{(n.totalAmount || 0).toLocaleString('en-IN')}
                     </div>
-                  )}
+                  </div>
 
                   {!n.action && (
                     <div style={{ marginLeft: "2rem", marginTop: "0.8rem", display: "flex", gap: "0.5rem" }}>
