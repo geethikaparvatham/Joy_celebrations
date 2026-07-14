@@ -15,6 +15,7 @@ type Plan = {
   members: string;
   features: string[];
   timings: string[];
+  bookedSlots?: string[];
   isPopular?: boolean;
   isMidnight?: boolean;
 };
@@ -35,6 +36,7 @@ export default function PackagesManager() {
         "09:00 PM - 10:00 PM", "10:00 PM - 11:00 PM", "11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", 
         "01:00 AM - 02:00 AM"
       ],
+      bookedSlots: ["12:00 PM - 01:00 PM", "06:00 PM - 07:00 PM"],
       isPopular: false,
       isMidnight: false
     },
@@ -52,6 +54,7 @@ export default function PackagesManager() {
         "09:00 PM - 10:00 PM", "10:00 PM - 11:00 PM", "11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", 
         "01:00 AM - 02:00 AM"
       ],
+      bookedSlots: ["02:00 PM - 03:00 PM", "08:00 PM - 09:00 PM"],
       isPopular: true,
       isMidnight: false
     },
@@ -67,6 +70,7 @@ export default function PackagesManager() {
         "05:00 PM - 07:00 PM", "07:00 PM - 09:00 PM", "09:00 PM - 11:00 PM", "11:00 PM - 01:00 AM", 
         "12:00 AM - 02:00 AM"
       ],
+      bookedSlots: ["07:00 PM - 09:00 PM"],
       isPopular: false,
       isMidnight: false
     },
@@ -78,6 +82,7 @@ export default function PackagesManager() {
       members: "Up to 10 Members",
       features: ["Exclusive Midnight Slot", "Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters", "Special Cake"],
       timings: ["11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", "01:00 AM - 02:00 AM"],
+      bookedSlots: [],
       isPopular: false,
       isMidnight: true
     }
@@ -98,6 +103,8 @@ export default function PackagesManager() {
 
   const [timings, setTimings] = useState<string[]>([]);
   const [newTiming, setNewTiming] = useState("");
+  
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   
   const [isPopular, setIsPopular] = useState(false);
   const [isMidnight, setIsMidnight] = useState(false);
@@ -123,6 +130,7 @@ export default function PackagesManager() {
     setNewFeature("");
     setTimings([]);
     setNewTiming("");
+    setBookedSlots([]);
     setIsPopular(false);
     setIsMidnight(false);
     setEditingPlan(null);
@@ -137,6 +145,7 @@ export default function PackagesManager() {
       setMembers(plan.members || "");
       setFeatures(plan.features || []);
       setTimings(plan.timings || []);
+      setBookedSlots(plan.bookedSlots || []);
       setIsPopular(plan.isPopular || false);
       setIsMidnight(plan.isMidnight || false);
     } else {
@@ -176,6 +185,7 @@ export default function PackagesManager() {
       members,
       features,
       timings,
+      bookedSlots,
       isPopular,
       isMidnight
     };
@@ -268,16 +278,29 @@ export default function PackagesManager() {
                   padding: '1rem', 
                   background: 'rgba(255,255,255,0.03)', 
                   borderRadius: '8px',
-                  maxHeight: '180px',
+                  maxHeight: '220px',
                   overflowY: 'auto'
                 }}>
-                  <p className="text-xs text-[var(--accent-gold)] mb-2 uppercase tracking-wider">Timings</p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {plan.timings.map((time, idx) => (
-                      <span key={idx} style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', padding: '0.4rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                        {time}
-                      </span>
-                    ))}
+                  <p className="text-sm font-bold mb-3" style={{ color: 'var(--accent-gold)' }}>Choose Your Slot -</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                    {plan.timings.map((time, idx) => {
+                      const isBooked = plan.bookedSlots?.includes(time);
+                      return (
+                        <span key={idx} style={{ 
+                          background: isBooked ? 'rgba(255,255,255,0.05)' : 'rgba(212,175,55,0.1)', 
+                          border: isBooked ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(212,175,55,0.3)', 
+                          padding: '0.6rem 0.4rem', 
+                          borderRadius: '6px', 
+                          fontSize: '0.8rem', 
+                          color: isBooked ? '#666' : 'var(--text-primary)', 
+                          textAlign: 'center',
+                          textDecoration: isBooked ? 'line-through' : 'none',
+                          opacity: isBooked ? 0.6 : 1
+                        }}>
+                          {time}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -358,7 +381,7 @@ export default function PackagesManager() {
                   <button type="button" onClick={handleAddTiming} className="btn-secondary" style={{ padding: '0 1rem' }}>Add</button>
                 </div>
                 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
                   {timings.map((time, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(212,175,55,0.1)', border: '1px solid var(--accent-gold)', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem' }}>
                       {time}
@@ -368,6 +391,36 @@ export default function PackagesManager() {
                     </div>
                   ))}
                   {timings.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No timings added yet.</p>}
+                </div>
+
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Mark Booked Slots</label>
+                <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Click on a slot below to mark it as booked (it will show with a strikethrough in the preview).</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  {timings.map((time, idx) => {
+                    const isBooked = bookedSlots.includes(time);
+                    return (
+                      <button 
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          if (isBooked) setBookedSlots(bookedSlots.filter(t => t !== time));
+                          else setBookedSlots([...bookedSlots, time]);
+                        }}
+                        style={{
+                          background: isBooked ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.05)',
+                          border: isBooked ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255,255,255,0.1)',
+                          color: isBooked ? '#EF4444' : 'white',
+                          padding: '0.5rem',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem',
+                          textDecoration: isBooked ? 'line-through' : 'none'
+                        }}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
