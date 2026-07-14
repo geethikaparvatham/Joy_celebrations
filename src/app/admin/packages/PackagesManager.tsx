@@ -263,11 +263,18 @@ export default function PackagesManager() {
               </ul>
               
               {plan.timings && plan.timings.length > 0 && (
-                <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                <div style={{ 
+                  marginBottom: '1.5rem', 
+                  padding: '1rem', 
+                  background: 'rgba(255,255,255,0.03)', 
+                  borderRadius: '8px',
+                  maxHeight: '180px',
+                  overflowY: 'auto'
+                }}>
                   <p className="text-xs text-[var(--accent-gold)] mb-2 uppercase tracking-wider">Timings</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {plan.timings.map((time, idx) => (
-                      <span key={idx} style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      <span key={idx} style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', padding: '0.4rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
                         {time}
                       </span>
                     ))}
