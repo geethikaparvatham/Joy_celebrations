@@ -1,20 +1,12 @@
 import { Settings, Users, Calendar, LayoutDashboard, Ticket } from "lucide-react";
 import styles from "./page.module.css";
 import LogoutButton from "./LogoutButton";
+import AdminSidebar from "../../components/admin/AdminSidebar";
 
 export default function AdminDashboard() {
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarLogo}>Admin Panel</div>
-        <nav className={styles.nav}>
-          <a href="#" className={`${styles.navItem} ${styles.active}`}><LayoutDashboard size={20} /> Dashboard</a>
-          <a href="#" className={styles.navItem}><Ticket size={20} /> Bookings</a>
-          <a href="#" className={styles.navItem}><Calendar size={20} /> Calendar</a>
-          <a href="#" className={styles.navItem}><Users size={20} /> Customers</a>
-          <a href="#" className={styles.navItem}><Settings size={20} /> Settings</a>
-        </nav>
-      </aside>
+      <AdminSidebar />
       
       <main className={styles.main}>
         <header className={styles.header}>
