@@ -1,59 +1,23 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 
-const RTDB_URL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL ||
-                 'https://joy-celebrations-default-rtdb.firebaseio.com';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
-
-async function readJsonFile(filePath: string): Promise<any[]> {
-  try {
-    const content = await fs.readFile(filePath, 'utf-8');
-    const parsed = JSON.parse(content);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch { return []; }
-}
-
-async function writeJsonFile(filePath: string, data: any[]) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-async function rtdbAvailable(): Promise<boolean> {
-  try {
-    const res = await fetch(`${RTDB_URL}/.json`, { method: 'GET' });
-    return res.status !== 404;
-  } catch { return false; }
-}
+const CRUD_ENDPOINT = process.env.CRUD_ENDPOINT || '4cbef23d6ec041fa9094e952172dd331';
+const BASE_URL = `https://crudcrud.com/api/${CRUD_ENDPOINT}`;
 
 export async function GET() {
   try {
-    const useRtdb = await rtdbAvailable();
+    const res = await fetch(`${BASE_URL}/notifications`, { cache: 'no-store' });
+    if (!res.ok) return NextResponse.json({ notifications: [] });
+    const data = await res.json();
+    
+    // crudcrud returns an array directly
+    const notifications = Array.isArray(data) ? data : [];
+    
+    // Map crudcrud's _id to id, sort newest first
+    const mapped = notifications
+      .map((n: any) => ({ ...n, id: n._id || n.notifId }))
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    if (useRtdb) {
-      const res = await fetch(`${RTDB_URL}/notifications.json`);
-      if (!res.ok) return NextResponse.json({ notifications: [] });
-      const data = await res.json();
-
-      // RTDB returns null when collection is empty
-      if (!data || typeof data !== 'object' || Array.isArray(data)) {
-        return NextResponse.json({ notifications: [] });
-      }
-
-      // Convert RTDB object to array and validate each entry has required fields
-      const notifications = Object.values(data)
-        .filter((n: any) => n && typeof n === 'object' && n.id && n.type)
-        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-      return NextResponse.json({ notifications });
-    } else {
-      // Fallback to file
-      const notifications = await readJsonFile(NOTIFICATIONS_FILE);
-      notifications.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      return NextResponse.json({ notifications });
-    }
+    return NextResponse.json({ notifications: mapped });
   } catch (error) {
     console.error('GET notifications error:', error);
     return NextResponse.json({ notifications: [], error: String(error) });
@@ -64,34 +28,33 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json();
     const { id, markAll } = body;
-    const useRtdb = await rtdbAvailable();
 
-    if (useRtdb) {
-      if (markAll) {
-        const res = await fetch(`${RTDB_URL}/notifications.json`);
-        const data = await res.json();
-        if (data && typeof data === 'object' && !Array.isArray(data)) {
-          await Promise.all(
-            Object.keys(data).map(key =>
-              fetch(`${RTDB_URL}/notifications/${key}/read.json`, {
-                method: 'PUT', body: 'true',
-                headers: { 'Content-Type': 'application/json' },
-              })
-            )
-          );
-        }
-      } else if (id) {
-        await fetch(`${RTDB_URL}/notifications/${id}/read.json`, {
-          method: 'PUT', body: 'true',
+    if (markAll) {
+      // Fetch all notifications and mark each as read
+      const res = await fetch(`${BASE_URL}/notifications`, { cache: 'no-store' });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        await Promise.all(
+          data.map((n: any) =>
+            fetch(`${BASE_URL}/notifications/${n._id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...n, read: true }),
+            })
+          )
+        );
+      }
+    } else if (id) {
+      // Fetch the specific notification then update it
+      const res = await fetch(`${BASE_URL}/notifications/${id}`, { cache: 'no-store' });
+      if (res.ok) {
+        const n = await res.json();
+        await fetch(`${BASE_URL}/notifications/${id}`, {
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...n, read: true }),
         });
       }
-    } else {
-      const notifications = await readJsonFile(NOTIFICATIONS_FILE);
-      const updated = markAll
-        ? notifications.map(n => ({ ...n, read: true }))
-        : notifications.map(n => n.id === id ? { ...n, read: true } : n);
-      await writeJsonFile(NOTIFICATIONS_FILE, updated);
     }
 
     return NextResponse.json({ success: true });

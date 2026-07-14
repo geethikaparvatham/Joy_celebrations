@@ -5,6 +5,8 @@ import { Bell, X, CheckCheck, Ticket } from "lucide-react";
 
 type Notification = {
   id: string;
+  _id?: string;
+  notifId?: string;
   type: string;
   title: string;
   message: string;
@@ -14,7 +16,7 @@ type Notification = {
   occasion: string;
   date: string;
   timeSlot: string;
-  addons?: string[];
+  addons?: string[] | string;
   totalAmount: number;
   bookingId: string;
   read: boolean;
@@ -328,8 +330,8 @@ export default function AdminNotifications() {
                     <div><strong>Date & Time:</strong> {n.date} | {n.timeSlot}</div>
                     <div><strong>Package:</strong> {n.packageName}</div>
                     <div><strong>Occasion:</strong> {n.occasion}</div>
-                    {n.addons && n.addons.length > 0 && (
-                      <div><strong>Addons:</strong> {n.addons.join(', ')}</div>
+                    {n.addons && (Array.isArray(n.addons) ? n.addons.length > 0 : n.addons !== '') && (
+                      <div><strong>Addons:</strong> {Array.isArray(n.addons) ? n.addons.join(', ') : n.addons}</div>
                     )}
                     <div style={{
                       borderTop: "1px solid rgba(212,175,55,0.3)", 
