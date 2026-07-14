@@ -712,9 +712,9 @@ export default function BookNowPage() {
                   <button 
                     className="btn-primary"
                     onClick={handleFinalSubmit}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#25D366', color: '#ffffff', borderColor: '#25D366' }}
                   >
-                    <Check size={18} /> Confirm Booking
+                    <MessageCircle size={18} /> Send via WhatsApp
                   </button>
                 </div>
               </div>
