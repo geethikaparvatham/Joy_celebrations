@@ -78,6 +78,7 @@
 .bookBtn {
   font-size: 0.8rem;
   padding: 0.6rem 1.5rem;
+  white-space: nowrap;
 }
 
 .rightActions {
@@ -207,5 +208,9 @@
   }
   .mobileBottomNav {
     display: flex;
+  }
+  .bookBtn {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
   }
 }
