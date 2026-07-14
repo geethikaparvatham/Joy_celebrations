@@ -236,6 +236,65 @@ export default function PackagesManager() {
     // Disabled auto-seeding to database to prevent errors since it's disabled.
   }, []);
 
+  const [inlineNewTiming, setInlineNewTiming] = useState<Record<string, string>>({});
+
+  const handleToggleBookSlot = async (plan: Plan, time: string, shouldBook: boolean) => {
+    const currentBooked = plan.bookedSlots || [];
+    let newBooked: string[];
+    if (shouldBook) {
+      newBooked = [...currentBooked, time];
+    } else {
+      newBooked = currentBooked.filter(t => t !== time);
+    }
+    
+    if (plan.id.startsWith("default-")) {
+      setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, bookedSlots: newBooked } : p));
+    } else {
+      try {
+        await updateDoc(doc(db, "plans", plan.id), { bookedSlots: newBooked });
+      } catch (error) {
+        console.error("Error updating booked slots:", error);
+      }
+    }
+  };
+
+  const handleRemoveInlineTiming = async (plan: Plan, time: string) => {
+    const newTimings = (plan.timings || []).filter(t => t !== time);
+    const newBooked = (plan.bookedSlots || []).filter(t => t !== time);
+
+    if (plan.id.startsWith("default-")) {
+      setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, timings: newTimings, bookedSlots: newBooked } : p));
+    } else {
+      try {
+        await updateDoc(doc(db, "plans", plan.id), { timings: newTimings, bookedSlots: newBooked });
+      } catch (error) {
+        console.error("Error removing timing:", error);
+      }
+    }
+  };
+
+  const handleAddInlineTiming = async (plan: Plan) => {
+    const newTime = inlineNewTiming[plan.id]?.trim();
+    if (!newTime) return;
+
+    const currentTimings = plan.timings || [];
+    if (currentTimings.includes(newTime)) return;
+
+    const newTimings = [...currentTimings, newTime];
+
+    if (plan.id.startsWith("default-")) {
+      setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, timings: newTimings } : p));
+    } else {
+      try {
+        await updateDoc(doc(db, "plans", plan.id), { timings: newTimings });
+      } catch (error) {
+        console.error("Error adding timing:", error);
+      }
+    }
+
+    setInlineNewTiming(prev => ({ ...prev, [plan.id]: "" }));
+  };
+
   return (
     <div style={{ marginTop: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
@@ -268,89 +327,181 @@ export default function PackagesManager() {
                 <span>₹</span>{plan.price}
               </div>
               
-              <ul className={frontendStyles.features}>
-                <li>
-                  <Clock size={18} className={frontendStyles.featureIcon} />
+              <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Clock size={16} style={{ color: 'var(--accent-gold)' }} />
                   {plan.duration}
-                </li>
-                <li>
-                  <Users size={18} className={frontendStyles.featureIcon} />
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Users size={16} style={{ color: 'var(--accent-gold)' }} />
                   {plan.members}
-                </li>
-                {plan.features?.map((feature, i) => (
-                  <li key={i}>
+                </span>
+              </div>
+
+              <ul className={frontendStyles.features}>
+                {plan.features.map((feature, idx) => (
+                  <li key={idx}>
                     <Check size={16} className={frontendStyles.featureIconCheck} />
-                    {feature}
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
               
-              {((plan.timings && plan.timings.length > 0) || (plan.bookedSlots && plan.bookedSlots.length > 0)) && (
-                <div style={{ 
-                  marginBottom: '1.5rem', 
-                  padding: '1.2rem 1rem', 
-                  background: 'rgba(255,255,255,0.02)', 
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  borderRadius: '8px',
-                  maxHeight: '280px',
-                  overflowY: 'auto'
-                }}>
-                  {plan.timings && plan.timings.filter(t => !plan.bookedSlots?.includes(t)).length > 0 && (
-                    <>
-                      <p className="text-sm font-bold mb-3" style={{ color: 'var(--accent-gold)' }}>Choose Your Slot -</p>
-                      <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', 
-                        gap: '0.5rem', 
-                        marginBottom: plan.bookedSlots && plan.bookedSlots.length > 0 ? '1.5rem' : '0' 
-                      }}>
-                        {plan.timings.filter(t => !plan.bookedSlots?.includes(t)).map((time, idx) => (
-                          <span key={`avail-${idx}`} style={{ 
-                            background: 'rgba(212,175,55,0.1)', 
-                            border: '1px solid rgba(212,175,55,0.25)', 
-                            padding: '0.6rem 0.5rem', 
-                            borderRadius: '6px', 
-                            fontSize: '0.8rem', 
-                            color: 'var(--text-primary)', 
-                            textAlign: 'center',
-                            whiteSpace: 'nowrap'
-                          }}>
-                            {time}
-                          </span>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                  
-                  {plan.bookedSlots && plan.bookedSlots.length > 0 && (
-                    <>
-                      <p className="text-sm font-bold mb-3 mt-2" style={{ color: '#EF4444' }}>Booked Slots -</p>
-                      <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', 
-                        gap: '0.5rem' 
-                      }}>
-                        {plan.bookedSlots.map((time, idx) => (
-                          <span key={`booked-${idx}`} style={{ 
+              <div style={{ 
+                marginBottom: '1.5rem', 
+                padding: '1.2rem 1rem', 
+                background: 'rgba(255,255,255,0.02)', 
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: '8px',
+                maxHeight: '280px',
+                overflowY: 'auto'
+              }}>
+                <p className="text-sm font-bold mb-3" style={{ color: 'var(--accent-gold)' }}>Choose Your Slot -</p>
+                {plan.timings && plan.timings.filter(t => !plan.bookedSlots?.includes(t)).length > 0 ? (
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', 
+                    gap: '0.5rem', 
+                    marginBottom: '1rem'
+                  }}>
+                    {plan.timings.filter(t => !plan.bookedSlots?.includes(t)).map((time, idx) => (
+                      <span 
+                        key={`avail-${idx}`} 
+                        onClick={() => handleToggleBookSlot(plan, time, true)}
+                        style={{ 
+                          background: 'rgba(212,175,55,0.1)', 
+                          border: '1px solid rgba(212,175,55,0.25)', 
+                          padding: '0.6rem 0.5rem', 
+                          borderRadius: '6px', 
+                          fontSize: '0.8rem', 
+                          color: 'var(--text-primary)', 
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '0.3rem',
+                          whiteSpace: 'nowrap',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <span style={{ flex: 1, textAlign: 'center' }}>{time}</span>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleRemoveInlineTiming(plan, time); }}
+                          style={{ 
+                            background: 'none', 
+                            border: 'none', 
+                            color: '#ff4444', 
+                            cursor: 'pointer', 
+                            fontSize: '1.2rem',
+                            lineHeight: 1,
+                            padding: '0 2px',
+                            fontWeight: 'bold',
+                            opacity: 0.6
+                          }}
+                          title="Delete slot"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', marginBottom: '1rem' }}>No available slots.</p>
+                )}
+                
+                {plan.bookedSlots && plan.bookedSlots.length > 0 && (
+                  <>
+                    <p className="text-sm font-bold mb-3 mt-4" style={{ color: '#EF4444' }}>Booked Slots -</p>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', 
+                      gap: '0.5rem',
+                      marginBottom: '1rem'
+                    }}>
+                      {plan.bookedSlots.map((time, idx) => (
+                        <span 
+                          key={`booked-${idx}`} 
+                          onClick={() => handleToggleBookSlot(plan, time, false)}
+                          style={{ 
                             background: 'rgba(255,255,255,0.03)', 
                             border: '1px solid rgba(255,255,255,0.08)', 
                             padding: '0.6rem 0.5rem', 
                             borderRadius: '6px', 
                             fontSize: '0.8rem', 
                             color: '#666', 
-                            textAlign: 'center',
-                            textDecoration: 'line-through',
-                            opacity: 0.6,
-                            whiteSpace: 'nowrap'
-                          }}>
-                            {time}
-                          </span>
-                        ))}
-                      </div>
-                    </>
-                  )}
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '0.3rem',
+                            whiteSpace: 'nowrap',
+                            cursor: 'pointer',
+                            opacity: 0.6
+                          }}
+                        >
+                          <span style={{ flex: 1, textAlign: 'center', textDecoration: 'line-through' }}>{time}</span>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleRemoveInlineTiming(plan, time); }}
+                            style={{ 
+                              background: 'none', 
+                              border: 'none', 
+                              color: '#ff4444', 
+                              cursor: 'pointer', 
+                              fontSize: '1.2rem',
+                              lineHeight: 1,
+                              padding: '0 2px',
+                              fontWeight: 'bold',
+                              opacity: 0.6
+                            }}
+                            title="Delete slot"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Inline Add Timing Form */}
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Add timing (e.g. 06:00 PM - 07:00 PM)" 
+                    value={inlineNewTiming[plan.id] || ""}
+                    onChange={(e) => setInlineNewTiming(prev => ({ ...prev, [plan.id]: e.target.value }))}
+                    onKeyDown={async (e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        await handleAddInlineTiming(plan);
+                      }
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '0.4rem 0.6rem',
+                      fontSize: '0.8rem',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '4px',
+                      color: 'white'
+                    }}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => handleAddInlineTiming(plan)}
+                    style={{
+                      background: 'var(--accent-gold)',
+                      color: 'var(--bg-primary)',
+                      border: 'none',
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    +
+                  </button>
                 </div>
-              )}
+              </div>
 
               <button className={`btn-primary ${frontendStyles.bookBtn}`} style={{ cursor: 'default' }}>
                 BOOK NOW
