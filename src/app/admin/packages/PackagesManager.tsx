@@ -10,8 +10,12 @@ type Plan = {
   id: string;
   name: string;
   price: number;
-  description: string;
+  duration: string;
+  members: string;
+  features: string[];
   timings: string[];
+  isPopular?: boolean;
+  isMidnight?: boolean;
 };
 
 export default function PackagesManager() {
@@ -22,9 +26,17 @@ export default function PackagesManager() {
   // Form State
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
+  const [duration, setDuration] = useState("");
+  const [members, setMembers] = useState("");
+  
+  const [features, setFeatures] = useState<string[]>([]);
+  const [newFeature, setNewFeature] = useState("");
+
   const [timings, setTimings] = useState<string[]>([]);
   const [newTiming, setNewTiming] = useState("");
+  
+  const [isPopular, setIsPopular] = useState(false);
+  const [isMidnight, setIsMidnight] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "plans"), (snapshot) => {
@@ -41,9 +53,14 @@ export default function PackagesManager() {
   const resetForm = () => {
     setName("");
     setPrice("");
-    setDescription("");
+    setDuration("");
+    setMembers("");
+    setFeatures([]);
+    setNewFeature("");
     setTimings([]);
     setNewTiming("");
+    setIsPopular(false);
+    setIsMidnight(false);
     setEditingPlan(null);
   };
 
@@ -52,12 +69,27 @@ export default function PackagesManager() {
       setEditingPlan(plan);
       setName(plan.name);
       setPrice(plan.price.toString());
-      setDescription(plan.description);
+      setDuration(plan.duration || "");
+      setMembers(plan.members || "");
+      setFeatures(plan.features || []);
       setTimings(plan.timings || []);
+      setIsPopular(plan.isPopular || false);
+      setIsMidnight(plan.isMidnight || false);
     } else {
       resetForm();
     }
     setIsModalOpen(true);
+  };
+
+  const handleAddFeature = () => {
+    if (newFeature.trim() && !features.includes(newFeature.trim())) {
+      setFeatures([...features, newFeature.trim()]);
+      setNewFeature("");
+    }
+  };
+
+  const handleRemoveFeature = (featureToRemove: string) => {
+    setFeatures(features.filter(f => f !== featureToRemove));
   };
 
   const handleAddTiming = () => {
@@ -76,8 +108,12 @@ export default function PackagesManager() {
     const planData = {
       name,
       price: Number(price),
-      description,
-      timings
+      duration,
+      members,
+      features,
+      timings,
+      isPopular,
+      isMidnight
     };
 
     try {
@@ -105,9 +141,70 @@ export default function PackagesManager() {
     }
   };
 
+  const handleSeed = async () => {
+    if (!confirm("Seed default plans? This will add 4 new plans.")) return;
+    const defaultPlans = [
+      {
+        name: "PLAN 1",
+        price: 599,
+        duration: "1 Hour",
+        members: "Up to 4 Members",
+        features: ["Perfect for Private Movie Experience", "Large Screen Projection", "Premium Sound System"],
+        timings: ["10:00 AM - 11:00 AM", "12:00 PM - 01:00 PM"],
+        isPopular: false,
+        isMidnight: false
+      },
+      {
+        name: "PLAN 2",
+        price: 1300,
+        duration: "1 Hour",
+        members: "Up to 4 Members",
+        features: ["Premium Decoration", "Customized Name Board", "LED Letters", "1 Kg Cake OR Half Kg Cool Cake"],
+        timings: ["02:00 PM - 03:00 PM", "04:00 PM - 05:00 PM"],
+        isPopular: true,
+        isMidnight: false
+      },
+      {
+        name: "PLAN 3",
+        price: 2500,
+        duration: "2 Hours",
+        members: "Up to 10 Members",
+        features: ["Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters & Name Board"],
+        timings: ["06:00 PM - 08:00 PM", "08:30 PM - 10:30 PM"],
+        isPopular: false,
+        isMidnight: false
+      },
+      {
+        name: "Midnight Special",
+        price: 2500,
+        duration: "1 Hour",
+        members: "Up to 10 Members",
+        features: ["Exclusive Midnight Slot", "Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters", "Special Cake"],
+        timings: ["11:30 PM - 12:30 AM"],
+        isPopular: false,
+        isMidnight: true
+      }
+    ];
+
+    try {
+      for (const p of defaultPlans) {
+        await addDoc(collection(db, "plans"), p);
+      }
+      alert("Successfully seeded!");
+    } catch (e) {
+      console.error(e);
+      alert("Error seeding");
+    }
+  };
+
   return (
     <div style={{ marginTop: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
+        {plans.length === 0 && (
+          <button onClick={handleSeed} className="btn-secondary" style={{ padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center' }}>
+            Seed Default Plans
+          </button>
+        )}
         <button onClick={() => openModal()} className="btn-primary" style={{ padding: '0.6rem 1.2rem', gap: '0.5rem', display: 'flex', alignItems: 'center' }}>
           <Plus size={18} /> Add New Plan
         </button>
@@ -130,9 +227,15 @@ export default function PackagesManager() {
                 </button>
               </div>
               
-              <h2 className="heading-luxury text-xl text-[var(--accent-gold)] mb-1">{plan.name}</h2>
-              <p style={{ fontWeight: '600', marginBottom: '0.5rem' }}>₹{plan.price}</p>
-              <p className="text-[var(--text-secondary)] mb-4">{plan.description}</p>
+              <h2 className="heading-luxury text-xl text-[var(--accent-gold)] mb-1">{plan.name} {plan.isPopular && <span style={{fontSize:'0.6rem', padding:'0.2rem 0.4rem', background:'var(--accent-gold)', color:'black', borderRadius:'4px', verticalAlign:'middle', marginLeft:'0.5rem'}}>POPULAR</span>} {plan.isMidnight && <span style={{fontSize:'0.6rem', padding:'0.2rem 0.4rem', background:'black', border:'1px solid var(--accent-gold)', color:'var(--accent-gold)', borderRadius:'4px', verticalAlign:'middle', marginLeft:'0.5rem'}}>MIDNIGHT</span>}</h2>
+              <p style={{ fontWeight: '600', marginBottom: '0.5rem' }}>₹{plan.price} &bull; {plan.duration} &bull; {plan.members}</p>
+              
+              <div style={{ marginBottom: '1rem' }}>
+                <h3 className="text-sm text-[var(--accent-gold)] mb-2">Features:</h3>
+                <ul style={{ listStyleType: 'disc', paddingLeft: '1.2rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                  {plan.features?.map((f, i) => <li key={i}>{f}</li>)}
+                </ul>
+              </div>
               
               <div>
                 <h3 className="heading-luxury" style={{ fontSize: '1rem', marginBottom: '0.8rem' }}>Available Timings:</h3>
@@ -162,19 +265,56 @@ export default function PackagesManager() {
             <h2 className="heading-luxury text-2xl text-[var(--accent-gold)] mb-6">{editingPlan ? 'Edit Plan' : 'Add New Plan'}</h2>
             
             <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Plan Name</label>
-                <input required type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Couple Plan" style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Plan Name</label>
+                  <input required type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Couple Plan" style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Price (₹)</label>
+                  <input required type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="e.g., 599" min="0" style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+                </div>
               </div>
-              
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Price (₹)</label>
-                <input required type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="e.g., 599" min="0" style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Duration</label>
+                  <input required type="text" value={duration} onChange={e => setDuration(e.target.value)} placeholder="e.g., 1 Hour" style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Members</label>
+                  <input required type="text" value={members} onChange={e => setMembers(e.target.value)} placeholder="e.g., Up to 4 Members" style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+                </div>
               </div>
-              
+
+              <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                  <input type="checkbox" checked={isPopular} onChange={e => setIsPopular(e.target.checked)} />
+                  Mark as Popular
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                  <input type="checkbox" checked={isMidnight} onChange={e => setIsMidnight(e.target.checked)} />
+                  Mark as Midnight Special
+                </label>
+              </div>
+
+              <hr style={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Description</label>
-                <textarea required value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the plan..." rows={3} style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px', resize: 'vertical' }} />
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Features</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <input type="text" value={newFeature} onChange={e => setNewFeature(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddFeature(); } }} placeholder="e.g., Premium Decoration" style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '4px' }} />
+                  <button type="button" onClick={handleAddFeature} className="btn-secondary" style={{ padding: '0 1rem' }}>Add</button>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {features.map((feature, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem' }}>
+                      {feature}
+                      <button type="button" onClick={() => handleRemoveFeature(feature)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}><X size={14} /></button>
+                    </div>
+                  ))}
+                </div>
               </div>
               
               <div>
