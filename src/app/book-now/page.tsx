@@ -135,7 +135,7 @@ export default function BookNowPage() {
     return `${baseUrl}/receipt?d=${btoa(JSON.stringify(receiptData))}`;
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     const store = useBookingStore.getState();
     const whatsappNumber = "919618681267";
     const name = customerName || "Customer";
@@ -154,6 +154,9 @@ export default function BookNowPage() {
     msg += `*Total Amount:* ₹ ${currentTotal.toLocaleString('en-IN')}`;
     
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${msg}`;
+    
+    // Save booking + notification to Firestore so admin gets notified
+    await saveBookingToFirestore();
     
     window.open(whatsappUrl, '_blank');
   };
