@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
 import Tesseract from "tesseract.js";
 
-const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details", "Summary"];
+const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details"];
 
 const ADDONS_LIST = [
   { name: 'Professional Photography (1 Hour)', price: 1500, image: '/addon_photography.jpg', note: '• Unlimited Photos' },
@@ -294,7 +294,7 @@ export default function BookNowPage() {
         </div>
 
         <div className={styles.formContent}>
-          <h2 className="heading-luxury" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>{steps[currentStep - 1]}</h2>
+          <h2 className="heading-luxury" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>{currentStep === 6 ? "Summary" : steps[currentStep - 1]}</h2>
           
           <div style={{ marginTop: '2rem' }}>
             {currentStep === 1 && (
