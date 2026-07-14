@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { collection, onSnapshot, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
-import { Settings, Users, Calendar as CalendarIcon, Ticket, Trash2, Search, Filter, ShieldAlert } from "lucide-react";
+import { Settings, Users, Calendar as CalendarIcon, Ticket, Trash2, Search, Filter, ShieldAlert, MessageCircle } from "lucide-react";
 import styles from "../page.module.css";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import LogoutButton from "../LogoutButton";
@@ -105,6 +105,31 @@ export default function BookingsManager() {
       } catch (error) {
         console.error("Error updating status:", error);
         alert("Failed to update status.");
+        return;
+      }
+    }
+
+    if (newStatus === "Confirmed") {
+      const b = bookings.find(item => item.id === id);
+      if (b && confirm(`Booking status set to Confirmed. Would you like to send a WhatsApp confirmation message to ${b.customerName}?`)) {
+        const countryCode = "91";
+        const customerPhoneClean = b.customerPhone.replace(/\D/g, "");
+        const formattedPhone = customerPhoneClean.startsWith("91") && customerPhoneClean.length > 10 
+          ? customerPhoneClean 
+          : countryCode + customerPhoneClean;
+        
+        let msg = `Hello *${b.customerName}*,%0A%0A`;
+        msg += `Your booking for *${b.packageName}* at *JOY Celebrations Private Theatre* is *Confirmed*! 🎉%0A%0A`;
+        msg += `*Booking Details:*%0A`;
+        msg += `📅 *Date:* ${b.date}%0A`;
+        msg += `🕒 *Time Slot:* ${b.timeSlot}%0A`;
+        msg += `🎈 *Occasion:* ${b.occasion}%0A`;
+        msg += `💰 *Amount:* ₹${(b.totalAmount || 0).toLocaleString('en-IN')}%0A%0A`;
+        msg += `We look forward to hosting your celebration! If you have any questions, feel free to reply here.%0A%0A`;
+        msg += `Thank you,%0A*JOY Celebrations Team*`;
+
+        const whatsappUrl = `https://wa.me/${formattedPhone}?text=${msg}`;
+        window.open(whatsappUrl, '_blank');
       }
     }
   };
@@ -334,34 +359,84 @@ export default function BookingsManager() {
                       </select>
                     </td>
                     
-                    {/* Delete Action */}
+                    {/* Actions */}
                     <td style={{ padding: '1.2rem 1rem', textAlign: 'center' }}>
-                      <button
-                        onClick={() => handleDeleteBooking(b.id)}
-                        style={{
-                          background: 'rgba(239,68,68,0.1)',
-                          border: '1px solid rgba(239,68,68,0.2)',
-                          color: '#EF4444',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          padding: '0.4rem',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(239,68,68,0.25)';
-                          e.currentTarget.style.borderColor = '#EF4444';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
-                          e.currentTarget.style.borderColor = 'rgba(239,68,68,0.2)';
-                        }}
-                        title="Delete Booking"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                        {/* WhatsApp Message */}
+                        <button
+                          onClick={() => {
+                            const countryCode = "91";
+                            const customerPhoneClean = b.customerPhone.replace(/\D/g, "");
+                            const formattedPhone = customerPhoneClean.startsWith("91") && customerPhoneClean.length > 10 
+                              ? customerPhoneClean 
+                              : countryCode + customerPhoneClean;
+                            
+                            let msg = `Hello *${b.customerName}*,%0A%0A`;
+                            msg += `Your booking for *${b.packageName}* at *JOY Celebrations Private Theatre* is *Confirmed*! 🎉%0A%0A`;
+                            msg += `*Booking Details:*%0A`;
+                            msg += `📅 *Date:* ${b.date}%0A`;
+                            msg += `🕒 *Time Slot:* ${b.timeSlot}%0A`;
+                            msg += `🎈 *Occasion:* ${b.occasion}%0A`;
+                            msg += `💰 *Amount:* ₹${(b.totalAmount || 0).toLocaleString('en-IN')}%0A%0A`;
+                            msg += `We look forward to hosting your celebration! If you have any questions, feel free to reply here.%0A%0A`;
+                            msg += `Thank you,%0A*JOY Celebrations Team*`;
+
+                            const whatsappUrl = `https://wa.me/${formattedPhone}?text=${msg}`;
+                            window.open(whatsappUrl, '_blank');
+                          }}
+                          style={{
+                            background: 'rgba(37,211,102,0.1)',
+                            border: '1px solid rgba(37,211,102,0.2)',
+                            color: '#25D366',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            padding: '0.4rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(37,211,102,0.25)';
+                            e.currentTarget.style.borderColor = '#25D366';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(37,211,102,0.1)';
+                            e.currentTarget.style.borderColor = 'rgba(37,211,102,0.2)';
+                          }}
+                          title="Send Confirmation via WhatsApp"
+                        >
+                          <MessageCircle size={16} />
+                        </button>
+
+                        {/* Delete Action */}
+                        <button
+                          onClick={() => handleDeleteBooking(b.id)}
+                          style={{
+                            background: 'rgba(239,68,68,0.1)',
+                            border: '1px solid rgba(239,68,68,0.2)',
+                            color: '#EF4444',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            padding: '0.4rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(239,68,68,0.25)';
+                            e.currentTarget.style.borderColor = '#EF4444';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
+                            e.currentTarget.style.borderColor = 'rgba(239,68,68,0.2)';
+                          }}
+                          title="Delete Booking"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
