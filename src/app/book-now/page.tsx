@@ -703,48 +703,18 @@ export default function BookNowPage() {
                   </div>
                 </div>
 
-                <h4 style={{ marginBottom: '1rem', fontSize: '1.2rem' }}>Select Payment Method</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                  {['UPI / GPay / PhonePe', 'Net Banking'].map(method => {
-                    const isSelected = paymentMethod === method;
-                    return (
-                      <label 
-                        key={method} 
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '0.5rem', 
-                          background: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255,255,255,0.05)', 
-                          padding: '1rem', 
-                          borderRadius: '8px', 
-                          cursor: 'pointer', 
-                          border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.1)',
-                          transition: 'all 0.3s ease',
-                          color: isSelected ? '#d4af37' : 'white'
-                        }}
-                      >
-                        <input 
-                          type="radio" 
-                          name="payment" 
-                          value={method} 
-                          checked={isSelected}
-                          onChange={() => setPaymentMethod(method)}
-                          style={{ accentColor: '#d4af37', width: '16px', height: '16px' }}
-                        />
-                        <span style={{ fontSize: '0.9rem', fontWeight: isSelected ? 'bold' : 'normal' }}>{method}</span>
-                      </label>
-                    );
-                  })}
-                </div>
+                <h4 style={{ marginBottom: '1.5rem', fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                  Confirm your booking... you'll get a call back from the Joy team to finalize your experience!
+                </h4>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
                   <button className="btn-secondary" onClick={() => setCurrentStep(5)}>Previous</button>
                   <button 
                     className="btn-primary"
-                    onClick={handleConfirmPay}
+                    onClick={handleFinalSubmit}
                     style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                   >
-                    <CreditCard size={18} /> Confirm & Pay (₹ {currentTotal.toLocaleString('en-IN')})
+                    <Check size={18} /> Confirm Booking
                   </button>
                 </div>
               </div>
