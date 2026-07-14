@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Phone, Home, Gift, PartyPopper, Image as ImageIcon, PhoneCall } from "lucide-react";
+import { Menu, X, Phone, Home, Gift, PartyPopper, Image as ImageIcon, PhoneCall, Lock } from "lucide-react";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
@@ -43,6 +43,9 @@ export default function Navbar() {
         <a href="tel:09618681267" className={styles.phoneLink} aria-label="Call Joy Celebrations">
           <Phone size={16} aria-hidden="true" /> 096186 81267
         </a>
+        <Link href="/admin/login" aria-label="Admin Portal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', padding: '0.5rem', cursor: 'pointer', transition: 'color 0.3s' }}>
+          <Lock size={16} />
+        </Link>
         <Link href="/book-now" className={`btn-primary ${styles.bookBtn}`}>
           Book Now
         </Link>
