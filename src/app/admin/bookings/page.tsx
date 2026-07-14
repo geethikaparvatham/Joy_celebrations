@@ -24,52 +24,7 @@ type Booking = {
 };
 
 export default function BookingsManager() {
-  const mockBookings: Booking[] = [
-    {
-      id: "mock-1",
-      customerName: "Ramesh Kumar",
-      customerPhone: "9876543210",
-      packageName: "Plan 2",
-      occasion: "Birthday Party",
-      date: "2026-07-15",
-      timeSlot: "06:00 PM - 07:00 PM",
-      addons: ["Professional Photography (1 Hour)", "Fog Effect"],
-      totalAmount: 3599,
-      paymentMethod: "UPI / GPay / PhonePe",
-      status: "Confirmed",
-      createdAt: "2026-07-14T05:00:00.000Z"
-    },
-    {
-      id: "mock-2",
-      customerName: "Sravani Reddy",
-      customerPhone: "8987654321",
-      packageName: "Plan 1",
-      occasion: "Movie Date",
-      date: "2026-07-16",
-      timeSlot: "11:00 AM - 12:00 PM",
-      addons: ["Rose Petals Entry"],
-      totalAmount: 1298,
-      paymentMethod: "Direct (Cash/Card)",
-      status: "Pending",
-      createdAt: "2026-07-14T06:30:00.000Z"
-    },
-    {
-      id: "mock-3",
-      customerName: "Venkatesh Rao",
-      customerPhone: "7676767676",
-      packageName: "Midnight Special",
-      occasion: "Anniversary Celebration",
-      date: "2026-07-14",
-      timeSlot: "11:00 PM - 12:00 AM",
-      addons: ["Cinematic Reel", "Fog Effect", "Bubble Entry"],
-      totalAmount: 5098,
-      paymentMethod: "UPI / GPay / PhonePe",
-      status: "Confirmed",
-      createdAt: "2026-07-13T10:15:00.000Z"
-    }
-  ];
-
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [packageFilter, setPackageFilter] = useState("All");
@@ -86,11 +41,11 @@ export default function BookingsManager() {
         fetchedBookings.sort((a, b) => new Date(b.createdAt || b.date).getTime() - new Date(a.createdAt || a.date).getTime());
         setBookings(fetchedBookings);
       } else {
-        setBookings(mockBookings);
+        setBookings([]);
       }
     }, (error) => {
       console.error("Firestore loading error:", error);
-      setBookings(mockBookings);
+      setBookings([]);
     });
 
     return () => unsubscribe();
