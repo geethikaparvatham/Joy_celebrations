@@ -5,8 +5,8 @@ export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
 
-    let expectedUsername = process.env.ADMIN_USERNAME || "admin";
-    let expectedPassword = process.env.ADMIN_PASSWORD || "joycelebrations!123";
+    let expectedUsername = process.env.ADMIN_USERNAME || "joycelebrations@gmail.com";
+    let expectedPassword = process.env.ADMIN_PASSWORD || "joyteam@123";
 
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "joy-celebrations";
 
