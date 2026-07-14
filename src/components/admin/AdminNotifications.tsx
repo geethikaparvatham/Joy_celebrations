@@ -86,10 +86,10 @@ export default function AdminNotifications() {
     }
   };
 
-  // Poll every 8 seconds for new notifications
+  // Poll every 3 seconds for near-instant new notifications
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 8000);
+    const interval = setInterval(fetchNotifications, 3000);
     return () => clearInterval(interval);
   }, []);
 
