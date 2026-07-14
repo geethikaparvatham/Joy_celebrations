@@ -5,6 +5,8 @@ import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircl
 import styles from "./page.module.css";
 import { useBookingStore } from "@/lib/store";
 import Tesseract from "tesseract.js";
+import { db } from "@/lib/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details"];
 
@@ -168,6 +170,29 @@ export default function BookNowPage() {
     }
   };
 
+  const saveBookingToFirestore = async () => {
+    const store = useBookingStore.getState();
+    const bookingData = {
+      customerName: customerName || "Customer",
+      customerPhone: customerPhone || "",
+      packageName: store.selectedPackage || "TBD",
+      occasion: store.selectedOccasion || "TBD",
+      date: store.date || "TBD",
+      timeSlot: store.timeSlot || "TBD",
+      addons: selectedAddons,
+      totalAmount: currentTotal,
+      paymentMethod: paymentMethod,
+      createdAt: new Date().toISOString(),
+      status: "Confirmed"
+    };
+    try {
+      await addDoc(collection(db, "bookings"), bookingData);
+      console.log("Booking saved to database!");
+    } catch (err) {
+      console.error("Error saving booking:", err);
+    }
+  };
+
   const handleConfirmPay = () => {
     setShowUpiModal(true);
     if (paymentMethod === 'UPI / GPay / PhonePe') {
@@ -179,6 +204,7 @@ export default function BookNowPage() {
       // Skip QR code for other methods and show success directly
       setSelectedUpiApp('Direct');
       setPaymentStatus('success');
+      saveBookingToFirestore();
       setTimeout(() => {
         setPaymentStatus('share');
       }, 1000);
@@ -915,6 +941,7 @@ export default function BookNowPage() {
                           <button 
                             onClick={() => {
                               setPaymentStatus('success');
+                              saveBookingToFirestore();
                               setTimeout(() => setPaymentStatus('share'), 1000);
                             }}
                             style={{ width: '100%', background: '#22C55E', color: 'white', border: 'none', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' }}
