@@ -80,6 +80,7 @@ export async function POST(request: Request) {
       occasion: occasion || "TBD",
       date: date || "TBD",
       timeSlot: timeSlot || "TBD",
+      addons: addons || [],
       totalAmount: totalAmount || 0,
       bookingId,
       read: false,

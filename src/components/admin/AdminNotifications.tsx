@@ -14,6 +14,7 @@ type Notification = {
   occasion: string;
   date: string;
   timeSlot: string;
+  addons?: string[];
   totalAmount: number;
   bookingId: string;
   read: boolean;
@@ -314,22 +315,31 @@ export default function AdminNotifications() {
                   </div>
 
                   <div style={{
-                    fontSize: "0.8rem",
-                    color: n.read ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.75)",
+                    fontSize: "0.85rem",
+                    color: "rgba(255,255,255,0.9)",
                     lineHeight: "1.6",
                     marginLeft: "2rem",
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    display: "flex",
+                    flexDirection: "column",
                     gap: "0.3rem"
                   }}>
-                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Name:</span> {n.customerName}</div>
-                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Phone:</span> {n.customerPhone}</div>
-                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Package:</span> {n.packageName}</div>
-                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Occasion:</span> {n.occasion}</div>
-                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Date:</span> {n.date}</div>
-                    <div><span style={{color:"var(--accent-gold)", opacity: 0.8}}>Time:</span> <span style={{fontSize: "0.75rem"}}>{n.timeSlot}</span></div>
-                    <div style={{gridColumn: "1 / -1", fontWeight: "bold", marginTop: "0.2rem"}}>
-                      <span style={{color:"var(--accent-gold)"}}>Total Estimate:</span> ₹{(n.totalAmount || 0).toLocaleString('en-IN')}
+                    <div><strong>Name:</strong> {n.customerName}</div>
+                    <div><strong>Phone:</strong> {n.customerPhone}</div>
+                    <div><strong>Date & Time:</strong> {n.date} | {n.timeSlot}</div>
+                    <div><strong>Package:</strong> {n.packageName}</div>
+                    <div><strong>Occasion:</strong> {n.occasion}</div>
+                    {n.addons && n.addons.length > 0 && (
+                      <div><strong>Addons:</strong> {n.addons.join(', ')}</div>
+                    )}
+                    <div style={{
+                      borderTop: "1px solid rgba(212,175,55,0.3)", 
+                      paddingTop: "0.5rem", 
+                      marginTop: "0.2rem", 
+                      fontWeight: "bold", 
+                      color: "var(--accent-gold)",
+                      fontSize: "1rem"
+                    }}>
+                      Total Estimate: ₹{(n.totalAmount || 0).toLocaleString('en-IN')}
                     </div>
                   </div>
 
