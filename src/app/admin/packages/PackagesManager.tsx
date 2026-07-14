@@ -142,7 +142,6 @@ export default function PackagesManager() {
   };
 
   const handleSeed = async () => {
-    if (!confirm("Seed default plans? This will add 4 new plans.")) return;
     const defaultPlans = [
       {
         name: "PLAN 1",
@@ -197,14 +196,19 @@ export default function PackagesManager() {
     }
   };
 
+  useEffect(() => {
+    // Auto-seed if empty after 2 seconds to ensure we've loaded
+    const timer = setTimeout(() => {
+      if (plans.length === 0) {
+        handleSeed();
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [plans.length]);
+
   return (
     <div style={{ marginTop: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
-        {plans.length === 0 && (
-          <button onClick={handleSeed} className="btn-secondary" style={{ padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center' }}>
-            Seed Default Plans
-          </button>
-        )}
         <button onClick={() => openModal()} className="btn-primary" style={{ padding: '0.6rem 1.2rem', gap: '0.5rem', display: 'flex', alignItems: 'center' }}>
           <Plus size={18} /> Add New Plan
         </button>
