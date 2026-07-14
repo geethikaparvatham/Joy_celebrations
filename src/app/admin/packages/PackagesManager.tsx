@@ -244,7 +244,7 @@ export default function PackagesManager() {
         </button>
       </div>
 
-      <div className={frontendStyles.grid} style={{ marginTop: '2rem' }}>
+      <div className={frontendStyles.grid} style={{ marginTop: '2rem', gridTemplateColumns: 'repeat(2, 1fr)' }}>
         {plans.length === 0 ? (
           <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem', gridColumn: '1 / -1' }}>
             <p className="text-[var(--text-secondary)]">No plans found. Add one to get started.</p>
