@@ -62,8 +62,8 @@ export default function AdminDashboard() {
     })
     .reduce((sum, b) => sum + (b.totalAmount || 0), 0);
 
-  // Get recent 5 bookings
-  const recentBookings = bookings.slice(0, 5);
+  // Get recent 5 confirmed bookings
+  const recentBookings = bookings.filter(b => b.status === "Confirmed").slice(0, 5);
 
   return (
     <div className={styles.container}>
