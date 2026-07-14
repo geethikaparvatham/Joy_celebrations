@@ -210,7 +210,9 @@
     display: flex;
   }
   .bookBtn {
-    font-size: 0.7rem;
-    padding: 0.4rem 0.8rem;
+    font-size: 0.65rem;
+    padding: 0.4rem 0.7rem;
+    white-space: nowrap !important;
+    min-width: max-content;
   }
 }
