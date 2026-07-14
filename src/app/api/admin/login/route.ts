@@ -1,24 +1,32 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { db } from '../../../../lib/firebase';
-import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 
 export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
 
-    let expectedUsername = process.env.ADMIN_USERNAME || "joycelebrations@gmail.com";
-    let expectedPassword = process.env.ADMIN_PASSWORD || "joyteam@123";
+    let expectedUsername = process.env.ADMIN_USERNAME || "admin";
+    let expectedPassword = process.env.ADMIN_PASSWORD || "joycelebrations!123";
 
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "joy-celebrations";
+
+    // Use lightweight HTTP REST Fetch to retrieve stored credentials
+    // This avoids using client Firestore SDK in Node.js server routes which hangs on serverless runtimes
     try {
-      const credentialsDoc = await getDoc(doc(db, "admin_settings", "credentials"));
-      if (credentialsDoc.exists()) {
-        const data = credentialsDoc.data();
-        if (data.username) expectedUsername = data.username;
-        if (data.password) expectedPassword = data.password;
+      const res = await fetch(
+        `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/admin_settings/credentials`,
+        { signal: AbortSignal.timeout(4000) }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const fields = data.fields;
+        const firestoreUsername = fields?.username?.stringValue;
+        const firestorePassword = fields?.password?.stringValue;
+        if (firestoreUsername) expectedUsername = firestoreUsername;
+        if (firestorePassword) expectedPassword = firestorePassword;
       }
     } catch (e) {
-      console.warn("Could not load credentials from Firestore, using defaults:", e);
+      console.warn("Could not load credentials from Firestore REST API, using defaults:", e);
     }
 
     if (username === expectedUsername && password === expectedPassword) {
@@ -35,24 +43,35 @@ export async function POST(request: Request) {
         maxAge: 60 * 60 * 24 * 7 // 1 week
       });
 
-      // Log the login timing
+      // Log the login timing using Firestore REST API
       try {
         const userAgent = request.headers.get('user-agent') || 'Unknown';
-        // Simple extraction of browser info from user agent
         let browser = "Unknown Browser";
         if (userAgent.includes("Firefox")) browser = "Firefox";
         else if (userAgent.includes("Chrome")) browser = "Chrome";
         else if (userAgent.includes("Safari")) browser = "Safari";
         else if (userAgent.includes("Edge")) browser = "Edge";
 
-        await addDoc(collection(db, "login_logs"), {
-          username,
-          timestamp: new Date().toISOString(),
-          userAgent: browser,
-          ip: request.headers.get('x-forwarded-for') || '127.0.0.1'
-        });
+        const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+
+        await fetch(
+          `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/login_logs`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fields: {
+                username: { stringValue: username },
+                timestamp: { stringValue: new Date().toISOString() },
+                userAgent: { stringValue: browser },
+                ip: { stringValue: ip }
+              }
+            }),
+            signal: AbortSignal.timeout(4000)
+          }
+        );
       } catch (logError) {
-        console.error("Error logging login timing:", logError);
+        console.error("Error logging login timing via REST API:", logError);
       }
 
       return NextResponse.json({ success: true });
