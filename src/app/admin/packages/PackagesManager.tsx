@@ -19,7 +19,54 @@ type Plan = {
 };
 
 export default function PackagesManager() {
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const defaultPlans = [
+    {
+      id: "default-1",
+      name: "PLAN 1",
+      price: 599,
+      duration: "1 Hour",
+      members: "Up to 4 Members",
+      features: ["Perfect for Private Movie Experience", "Large Screen Projection", "Premium Sound System"],
+      timings: ["10:00 AM - 11:00 AM", "12:00 PM - 01:00 PM"],
+      isPopular: false,
+      isMidnight: false
+    },
+    {
+      id: "default-2",
+      name: "PLAN 2",
+      price: 1300,
+      duration: "1 Hour",
+      members: "Up to 4 Members",
+      features: ["Premium Decoration", "Customized Name Board", "LED Letters", "1 Kg Cake OR Half Kg Cool Cake"],
+      timings: ["02:00 PM - 03:00 PM", "04:00 PM - 05:00 PM"],
+      isPopular: true,
+      isMidnight: false
+    },
+    {
+      id: "default-3",
+      name: "PLAN 3",
+      price: 2500,
+      duration: "2 Hours",
+      members: "Up to 10 Members",
+      features: ["Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters & Name Board"],
+      timings: ["06:00 PM - 08:00 PM", "08:30 PM - 10:30 PM"],
+      isPopular: false,
+      isMidnight: false
+    },
+    {
+      id: "default-4",
+      name: "Midnight Special",
+      price: 2500,
+      duration: "1 Hour",
+      members: "Up to 10 Members",
+      features: ["Exclusive Midnight Slot", "Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters", "Special Cake"],
+      timings: ["11:30 PM - 12:30 AM"],
+      isPopular: false,
+      isMidnight: true
+    }
+  ];
+
+  const [plans, setPlans] = useState<Plan[]>(defaultPlans);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   
@@ -142,69 +189,12 @@ export default function PackagesManager() {
   };
 
   const handleSeed = async () => {
-    const defaultPlans = [
-      {
-        name: "PLAN 1",
-        price: 599,
-        duration: "1 Hour",
-        members: "Up to 4 Members",
-        features: ["Perfect for Private Movie Experience", "Large Screen Projection", "Premium Sound System"],
-        timings: ["10:00 AM - 11:00 AM", "12:00 PM - 01:00 PM"],
-        isPopular: false,
-        isMidnight: false
-      },
-      {
-        name: "PLAN 2",
-        price: 1300,
-        duration: "1 Hour",
-        members: "Up to 4 Members",
-        features: ["Premium Decoration", "Customized Name Board", "LED Letters", "1 Kg Cake OR Half Kg Cool Cake"],
-        timings: ["02:00 PM - 03:00 PM", "04:00 PM - 05:00 PM"],
-        isPopular: true,
-        isMidnight: false
-      },
-      {
-        name: "PLAN 3",
-        price: 2500,
-        duration: "2 Hours",
-        members: "Up to 10 Members",
-        features: ["Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters & Name Board"],
-        timings: ["06:00 PM - 08:00 PM", "08:30 PM - 10:30 PM"],
-        isPopular: false,
-        isMidnight: false
-      },
-      {
-        name: "Midnight Special",
-        price: 2500,
-        duration: "1 Hour",
-        members: "Up to 10 Members",
-        features: ["Exclusive Midnight Slot", "Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters", "Special Cake"],
-        timings: ["11:30 PM - 12:30 AM"],
-        isPopular: false,
-        isMidnight: true
-      }
-    ];
-
-    try {
-      for (const p of defaultPlans) {
-        await addDoc(collection(db, "plans"), p);
-      }
-      alert("Successfully seeded!");
-    } catch (e) {
-      console.error(e);
-      alert("Error seeding");
-    }
+    // Disabled since we hardcoded defaultPlans into state
   };
 
   useEffect(() => {
-    // Auto-seed if empty after 2 seconds to ensure we've loaded
-    const timer = setTimeout(() => {
-      if (plans.length === 0) {
-        handleSeed();
-      }
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [plans.length]);
+    // Disabled auto-seeding to database to prevent errors since it's disabled.
+  }, []);
 
   return (
     <div style={{ marginTop: '2rem' }}>
