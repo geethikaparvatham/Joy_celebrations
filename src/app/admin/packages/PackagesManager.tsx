@@ -288,21 +288,27 @@ export default function PackagesManager() {
               {((plan.timings && plan.timings.length > 0) || (plan.bookedSlots && plan.bookedSlots.length > 0)) && (
                 <div style={{ 
                   marginBottom: '1.5rem', 
-                  padding: '1rem', 
-                  background: 'rgba(255,255,255,0.03)', 
+                  padding: '1.2rem 1rem', 
+                  background: 'rgba(255,255,255,0.02)', 
+                  border: '1px solid rgba(255,255,255,0.05)',
                   borderRadius: '8px',
-                  maxHeight: '220px',
+                  maxHeight: '280px',
                   overflowY: 'auto'
                 }}>
                   {plan.timings && plan.timings.filter(t => !plan.bookedSlots?.includes(t)).length > 0 && (
                     <>
                       <p className="text-sm font-bold mb-3" style={{ color: 'var(--accent-gold)' }}>Choose Your Slot -</p>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginBottom: plan.bookedSlots && plan.bookedSlots.length > 0 ? '1rem' : '0' }}>
+                      <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', 
+                        gap: '0.5rem', 
+                        marginBottom: plan.bookedSlots && plan.bookedSlots.length > 0 ? '1.5rem' : '0' 
+                      }}>
                         {plan.timings.filter(t => !plan.bookedSlots?.includes(t)).map((time, idx) => (
                           <span key={`avail-${idx}`} style={{ 
                             background: 'rgba(212,175,55,0.1)', 
-                            border: '1px solid rgba(212,175,55,0.3)', 
-                            padding: '0.6rem 0.8rem', 
+                            border: '1px solid rgba(212,175,55,0.25)', 
+                            padding: '0.6rem 0.5rem', 
                             borderRadius: '6px', 
                             fontSize: '0.8rem', 
                             color: 'var(--text-primary)', 
@@ -319,12 +325,16 @@ export default function PackagesManager() {
                   {plan.bookedSlots && plan.bookedSlots.length > 0 && (
                     <>
                       <p className="text-sm font-bold mb-3 mt-2" style={{ color: '#EF4444' }}>Booked Slots -</p>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
+                      <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', 
+                        gap: '0.5rem' 
+                      }}>
                         {plan.bookedSlots.map((time, idx) => (
                           <span key={`booked-${idx}`} style={{ 
-                            background: 'rgba(255,255,255,0.05)', 
-                            border: '1px solid rgba(255,255,255,0.1)', 
-                            padding: '0.6rem 0.8rem', 
+                            background: 'rgba(255,255,255,0.03)', 
+                            border: '1px solid rgba(255,255,255,0.08)', 
+                            padding: '0.6rem 0.5rem', 
                             borderRadius: '6px', 
                             fontSize: '0.8rem', 
                             color: '#666', 
