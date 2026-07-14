@@ -703,9 +703,21 @@ export default function BookNowPage() {
                   </div>
                 </div>
 
-                <h4 style={{ marginBottom: '1.5rem', fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-                  Confirm your booking... you'll get a call back from the Joy team to finalize your experience!
-                </h4>
+                <div style={{
+                  background: 'rgba(212, 175, 55, 0.1)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  borderRadius: '12px',
+                  padding: '1.5rem',
+                  marginBottom: '2rem',
+                  textAlign: 'center'
+                }}>
+                  <h4 style={{ margin: 0, fontSize: '1.2rem', color: '#ffffff', lineHeight: '1.5' }}>
+                    Confirm your booking!
+                  </h4>
+                  <p style={{ margin: '0.5rem 0 0 0', color: '#d4af37', fontSize: '1rem' }}>
+                    You'll get a call back from the Joy team to finalize your experience.
+                  </p>
+                </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
                   <button className="btn-secondary" onClick={() => setCurrentStep(5)}>Previous</button>
