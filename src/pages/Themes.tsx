@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from "lucide-react";
+import SEO from "@/components/SEO";
 import styles from "./Themes.module.css";
 
 const themes = [
@@ -18,7 +19,13 @@ const themes = [
 ];
 export default function OccasionsPage() {
   return (
-    <div className={styles.container}>
+    <main className={styles.container}>
+      <SEO 
+        title="Decoration Themes | JOY Celebrations Private Theatre"
+        description="Explore our exquisite decoration themes for birthdays, anniversaries, and surprise proposals in Vijayawada."
+        keywords="Private theatre themes, Birthday decoration Vijayawada, Proposal setups"
+        canonicalUrl="/themes"
+      />
       <div className={styles.header}>
         <h1 className={`${styles.title} heading-luxury`}>Explore Our <span className="gold-text">Themes</span></h1>
         <p className={styles.subtitle}>
@@ -28,20 +35,20 @@ export default function OccasionsPage() {
 
       <div className={styles.grid}>
         {themes.map((theme, i) => (
-          <Link to={`/book-now?occasion=${encodeURIComponent(theme.name)}`} key={i} className={styles.card}>
+          <Link to={`/book-now?occasion=${encodeURIComponent(theme.name)}`} key={i} className={styles.card} aria-label={`Book a ${theme.name} celebration`}>
             <div className={styles.imagePlaceholder}>
-              <img src={theme.image} alt={theme.name} className={styles.cardImage} />
+              <img src={theme.image} alt={`${theme.name} Decoration Theme at JOY Celebrations`} className={styles.cardImage} loading={i > 3 ? "lazy" : "eager"} />
             </div>
             
             <div className={styles.overlay}>
               <h2 className={styles.cardTitle}>{theme.name}</h2>
               <span className={styles.cardLink}>
-                Book Experience <ArrowRight size={16} />
+                Book Experience <ArrowRight size={16} aria-hidden="true" />
               </span>
             </div>
           </Link>
         ))}
       </div>
-    </div>
+    </main>
   );
 }

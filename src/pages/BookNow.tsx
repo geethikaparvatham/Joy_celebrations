@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle, Upload, ShoppingBag, ChevronDown } from "lucide-react";
 import styles from "./BookNow.module.css";
 import { useBookingStore } from "@/lib/store";
+import SEO from "@/components/SEO";
 import Tesseract from "tesseract.js";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
@@ -363,6 +364,12 @@ export default function BookNowPage() {
 
   return (
     <div className={styles.container}>
+      <SEO 
+        title="Book Your Celebration | JOY Celebrations"
+        description="Book your private theatre experience at JOY Celebrations in Vijayawada."
+        noindex={true}
+        canonicalUrl="/book-now"
+      />
       <div className={styles.header}>
         <h1 className={`${styles.title} heading-luxury`}>
           Reserve Your <span className="gold-text">Experience</span>
@@ -739,39 +746,68 @@ export default function BookNowPage() {
 
             {currentStep === 5 && (
               <div style={{ textAlign: 'center', maxWidth: '500px', margin: '0 auto' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                  <input type="text" placeholder="Full Name" value={customerName} onChange={e => setCustomerName(e.target.value.replace(/[^a-zA-Z\s]/g, ''))} className={styles.inputField} style={inputStyles} />
-                  <input 
-                    type="tel" 
-                    placeholder="Phone Number (10 Digits)" 
-                    value={customerPhone} 
-                    onChange={e => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      if (val === '') {
-                        setCustomerPhone('');
-                      } else if (/^[6-9]/.test(val)) {
-                        setCustomerPhone(val.slice(0, 10));
-                      }
-                    }} 
-                    className={styles.inputField} 
-                    style={inputStyles} 
-                  />
-                  <input 
-                    type="email" 
-                    placeholder="Email Address" 
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                    className={styles.inputField} 
-                    style={inputStyles} 
-                  />
-                  <textarea 
-                    placeholder="Any Special Requests?" 
-                    rows={3} 
-                    className={styles.inputField} 
-                    style={{...inputStyles, resize: 'vertical'}}
-                    value={specialRequests}
-                    onChange={(e) => setSpecialRequests(e.target.value.replace(/\d/g, ''))}
-                  />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
+                    <div style={{ textAlign: 'left' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', color: '#d4af37' }} htmlFor="customerName">Full Name</label>
+                      <input 
+                        id="customerName"
+                        type="text"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
+                        className={styles.inputField}
+                        style={inputStyles}
+                        placeholder="Enter your full name"
+                        aria-label="Full Name"
+                        required
+                      />
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', color: '#d4af37' }} htmlFor="customerPhone">WhatsApp Number</label>
+                      <input 
+                        id="customerPhone"
+                        type="tel"
+                        value={customerPhone}
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          if (val === '') {
+                            setCustomerPhone('');
+                          } else if (/^[6-9]/.test(val)) {
+                            setCustomerPhone(val.slice(0, 10));
+                          }
+                        }}
+                        className={styles.inputField}
+                        style={inputStyles}
+                        placeholder="10-digit WhatsApp number"
+                        aria-label="WhatsApp Number"
+                        required
+                      />
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', color: '#d4af37' }} htmlFor="customerEmail">Email (Optional)</label>
+                      <input 
+                        id="customerEmail"
+                        type="email"
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        className={styles.inputField}
+                        style={inputStyles}
+                        placeholder="Enter your email"
+                        aria-label="Email Address"
+                      />
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', color: '#d4af37' }} htmlFor="specialRequests">Special Requests (Optional)</label>
+                      <textarea 
+                        id="specialRequests"
+                        rows={3} 
+                        className={styles.inputField} 
+                        style={{...inputStyles, resize: 'vertical'}}
+                        value={specialRequests}
+                        onChange={(e) => setSpecialRequests(e.target.value.replace(/\d/g, ''))}
+                        placeholder="Any special arrangements?"
+                        aria-label="Special Requests"
+                      />
+                    </div>
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>

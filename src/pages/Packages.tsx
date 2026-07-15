@@ -4,6 +4,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Link } from 'react-router-dom';
 import { Check, Clock, Users } from "lucide-react";
+import SEO from "@/components/SEO";
 import styles from "./Packages.module.css";
 
 type Plan = {
@@ -106,8 +107,30 @@ export default function PackagesPage() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  const packagesSchema = defaultPlans.map(pkg => ({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${pkg.name} - Private Theatre Package in Vijayawada`,
+    "description": `Private theatre package including ${pkg.duration} access for ${pkg.members}. Features include: ${pkg.features.join(', ')}`,
+    "offers": {
+      "@type": "Offer",
+      "price": pkg.price,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "url": `https://joy-celebrations.vercel.app/book-now?package=${pkg.id}`
+    }
+  }));
+
   return (
-    <div className={styles.container}>
+    <main className={styles.container}>
+      <SEO 
+        title="Private Theatre Packages & Prices | JOY Celebrations Vijayawada"
+        description="Explore our affordable luxury private theatre packages starting at ₹599. Perfect for birthdays, proposals, and romantic dates in Vijayawada."
+        keywords="Private theatre price Vijayawada, Birthday celebration packages, Proposal decoration cost, Couple theatre booking"
+        canonicalUrl="/packages"
+        schema={packagesSchema}
+      />
+      
       <div className={styles.header}>
         <h1 className={`${styles.title} heading-luxury`}>Our <span className="gold-text">Packages</span></h1>
         <p className={styles.subtitle}>
@@ -119,7 +142,7 @@ export default function PackagesPage() {
         {plans.map((pkg) => {
           const selectedSlot = selectedSlots[pkg.id];
           return (
-            <div key={pkg.id} className={`${styles.card} ${pkg.isMidnight ? styles.midnightCard : ''} ${pkg.isPopular ? styles.popularCard : ''}`}>
+            <article key={pkg.id} className={`${styles.card} ${pkg.isMidnight ? styles.midnightCard : ''} ${pkg.isPopular ? styles.popularCard : ''}`}>
               {pkg.isMidnight && <div className={styles.midnightBadge}>MIDNIGHT</div>}
               
               <h2 className={styles.planName}>{pkg.name}</h2>
@@ -148,13 +171,14 @@ export default function PackagesPage() {
               <Link 
                 to={`/book-now?package=${pkg.id}${selectedSlot ? `&slot=${encodeURIComponent(selectedSlot)}` : ''}`} 
                 className={`btn-primary ${styles.bookBtn}`}
+                aria-label={`Book ${pkg.name} for ₹${pkg.price}`}
               >
                 BOOK NOW
               </Link>
-            </div>
+            </article>
           );
         })}
       </div>
-    </div>
+    </main>
   );
 }

@@ -1,7 +1,15 @@
+import SEO from "@/components/SEO";
 import styles from "./About.module.css";
+
 export default function AboutPage() {
   return (
-    <div className={styles.container}>
+    <main className={styles.container}>
+      <SEO 
+        title="About Us | JOY Celebrations Private Theatre"
+        description="Learn about JOY Celebrations, Vijayawada's premier private theatre. Discover our mission to provide the ultimate luxury cinematic celebration experience."
+        keywords="About JOY Celebrations, Private theatre founders, Vijayawada luxury theatre"
+        canonicalUrl="/about"
+      />
       <div className={styles.header}>
         <h1 className={`${styles.title} heading-luxury`}>Our <span className="gold-text">Story</span></h1>
         <p className={styles.subtitle}>
@@ -13,12 +21,13 @@ export default function AboutPage() {
         <div className={styles.imageWrapper}>
           <img 
             src="/gallery5.jpg" 
-            alt="JOY Celebrations Theatre" 
+            alt="JOY Celebrations Theatre luxurious seating and decoration" 
             className={styles.aboutImage} 
+            loading="lazy"
           />
         </div>
         
-        <div className={styles.textContent}>
+        <article className={styles.textContent}>
           <h2 className="heading-luxury">Why We Started</h2>
           <p>
             At <strong>JOY Celebrations</strong>, we believe that every special moment deserves an extraordinary setting. 
@@ -30,8 +39,8 @@ export default function AboutPage() {
             moment you step in, our premium interiors, personalized decorations, and dedicated service 
             ensure your celebration is nothing short of magical. Whether you are hosting a <strong>birthday celebration in Vijayawada</strong>, planning a beautiful <strong>anniversary celebration</strong>, or looking for a memorable <strong>romantic date night</strong>, our theatre is equipped to make it perfect.
           </p>
-        </div>
+        </article>
       </div>
-    </div>
+    </main>
   );
 }

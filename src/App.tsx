@@ -66,11 +66,15 @@ function AppLayout() {
   );
 }
 
+import { HelmetProvider } from 'react-helmet-async';
+
 function App() {
   return (
-    <Router>
-      <AppLayout />
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <AppLayout />
+      </Router>
+    </HelmetProvider>
   );
 }
 

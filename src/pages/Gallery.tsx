@@ -1,5 +1,6 @@
 import { Expand } from "lucide-react";
 import InstagramIcon from "@/components/ui/InstagramIcon";
+import SEO from "@/components/SEO";
 import styles from "./Gallery.module.css";
 
 const galleryItems = [
@@ -16,7 +17,13 @@ const galleryItems = [
 
 export default function GalleryPage() {
   return (
-    <div className={styles.container}>
+    <main className={styles.container}>
+      <SEO 
+        title="Gallery & Decorations | JOY Celebrations Private Theatre"
+        description="View our stunning private theatre decorations, birthday setups, and romantic proposal arrangements in Vijayawada."
+        keywords="Private theatre decoration photos, Birthday celebration gallery, Surprise proposal Vijayawada"
+        canonicalUrl="/gallery"
+      />
       <div className={styles.header}>
         <h1 className={`${styles.title} heading-luxury`}>Our <span className="gold-text">Gallery</span></h1>
         <p className={styles.subtitle}>
@@ -31,27 +38,29 @@ export default function GalleryPage() {
           rel="noopener noreferrer"
           className="btn-secondary"
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+          aria-label="Follow JOY Celebrations on Instagram"
         >
           <InstagramIcon size={20} /> Follow us on Instagram @joy.celebrations
         </a>
       </div>
 
       <div className={styles.masonry}>
-        {galleryItems.map((item) => (
+        {galleryItems.map((item, index) => (
           <div key={item.id} className={styles.item}>
             <img 
               src={item.url} 
-              alt={`Gallery Image ${item.id}`} 
+              alt={`JOY Celebrations Private Theatre Decoration in Vijayawada - Gallery Image ${item.id}`} 
               className={styles.galleryImage}
+              loading={index > 3 ? "lazy" : "eager"}
             />
             <div className={styles.overlay}>
-              <div className={styles.icon}>
+              <div className={styles.icon} aria-hidden="true">
                 <Expand size={24} />
               </div>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </main>
   );
 }

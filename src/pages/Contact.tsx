@@ -1,10 +1,34 @@
 
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import SEO from "@/components/SEO";
 import styles from "./Contact.module.css";
 
 export default function ContactPage() {
+  const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "mainEntity": {
+      "@type": "LocalBusiness",
+      "name": "JOY Celebrations Private Theatre",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-8328101267",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Telugu", "Hindi"]
+      }
+    }
+  };
+
   return (
-    <div className={styles.container}>
+    <main className={styles.container}>
+      <SEO 
+        title="Contact Us | JOY Celebrations Private Theatre"
+        description="Get in touch with JOY Celebrations in Vijayawada. Call us at 83281 01267 or 96186 81267 for private theatre bookings, decorations, and surprise events."
+        keywords="Contact JOY Celebrations, Private theatre Vijayawada phone number, Booking inquiry Vijayawada"
+        canonicalUrl="/contact"
+        schema={contactSchema}
+      />
+      
       <div className={styles.header}>
         <h1 className={`${styles.title} heading-luxury`}>Get in <span className="gold-text">Touch</span></h1>
         <p className={styles.subtitle}>
@@ -54,8 +78,8 @@ export default function ContactPage() {
             const phone = formData.get("phone");
             const message = formData.get("message");
             
-            const whatsappMessage = `Hi JOY Celebrations!%0A%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Message:* ${message}`;
-            const whatsappUrl = `https://wa.me/919618681267?text=${whatsappMessage}`;
+            const whatsappMessage = `Hi JOY Celebrations!\n\n*Name:* ${name}\n*Phone:* ${phone}\n*Message:* ${message}`;
+            const whatsappUrl = `https://wa.me/919618681267?text=${encodeURIComponent(whatsappMessage)}`;
             
             window.open(whatsappUrl, '_blank');
           }}
@@ -95,6 +119,6 @@ export default function ContactPage() {
           ></iframe>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

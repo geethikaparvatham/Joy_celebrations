@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Exclude private/admin areas
+Disallow: /admin
+Disallow: /admin/
+Disallow: /receipt
+Disallow: /receipt/
+
+Sitemap: https://joy-celebrations.vercel.app/sitemap.xml

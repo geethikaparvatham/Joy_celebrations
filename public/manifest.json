@@ -1,0 +1,16 @@
+{
+  "name": "JOY Celebrations Private Theatre",
+  "short_name": "JOY Theatre",
+  "description": "Experience luxury private theatre celebrations in Vijayawada with JOY Celebrations. Perfect for birthdays, anniversaries, proposals, and private movie screenings.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
