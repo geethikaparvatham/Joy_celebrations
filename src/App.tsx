@@ -12,7 +12,7 @@ import Gallery from './pages/Gallery';
 import AddOns from './pages/AddOns';
 import Blog from './pages/Blog';
 import BlogBlogPost from './pages/BlogBlogPost';
-import FAQ from './pages/FAQ';
+import FAQ from './pages/Faq';
 import Reviews from './pages/Reviews';
 import Contact from './pages/Contact';
 import BookNow from './pages/BookNow';
