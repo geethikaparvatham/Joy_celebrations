@@ -60,8 +60,7 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
                 <img 
                   src={post.image} 
                   alt={post.title} 
-                   
-                  style={{ objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </div>
               <div style={{ padding: '0 0.5rem' }}>
