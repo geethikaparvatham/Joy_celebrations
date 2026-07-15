@@ -54,47 +54,54 @@ export default function AdminNotifications() {
   };
 
   useEffect(() => {
-
-    const loadNotifications = () => {
-      const existing = localStorage.getItem('joy_bookings');
-      if (existing) {
-        const bookings = JSON.parse(existing);
-        bookings.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        
-        const newNotifications = bookings.map((b: any) => ({
-          ...b,
-          title: "New Booking Request"
-        })) as Notification[];
-        
-        const newUnreadCount = newNotifications.filter((n) => !n.read).length;
-
-        if (!isFirstLoad.current && newUnreadCount > prevUnreadCount.current) {
-          playNotificationSound();
-          // Find the newest booking for the toast
-          const newest = newNotifications.find(n => !n.read && (!latestToast || n.id !== latestToast.id));
-          if (newest) {
-            setLatestToast(newest);
-          }
+    const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const newNotifications: Notification[] = [];
+      let newUnreadCount = 0;
+      
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const notification: Notification = {
+          id: doc.id,
+          title: "New Booking Request",
+          customerName: data.customerName,
+          customerPhone: data.customerPhone,
+          packageName: data.packageName,
+          packageId: data.packageId,
+          occasion: data.occasion,
+          date: data.date,
+          timeSlot: data.timeSlot,
+          addons: data.addons,
+          totalAmount: data.totalAmount,
+          read: data.read || false,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
+          status: data.status,
+          ...data
+        };
+        newNotifications.push(notification);
+        if (!notification.read) {
+          newUnreadCount++;
         }
-
-        prevUnreadCount.current = newUnreadCount;
-        isFirstLoad.current = false;
-        setNotifications(newNotifications);
-      } else {
-        isFirstLoad.current = false;
+      });
+      
+      if (!isFirstLoad.current && newUnreadCount > prevUnreadCount.current) {
+        playNotificationSound();
+        const newest = newNotifications.find(n => !n.read && (!latestToast || n.id !== latestToast.id));
+        if (newest) {
+          setLatestToast(newest);
+        }
       }
-    };
 
-    loadNotifications();
+      prevUnreadCount.current = newUnreadCount;
+      isFirstLoad.current = false;
+      setNotifications(newNotifications);
+    }, (error) => {
+      console.error("Error fetching notifications:", error);
+      isFirstLoad.current = false;
+    });
 
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'joy_bookings' || e.type === 'storage') {
-        loadNotifications();
-      }
-    };
-
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    return () => unsubscribe();
   }, []);
 
   // Close when clicking outside
@@ -112,13 +119,8 @@ export default function AdminNotifications() {
 
   const markAsRead = async (id: string) => {
     try {
-      const existing = localStorage.getItem('joy_bookings');
-      if (existing) {
-        const bookings = JSON.parse(existing);
-        const updated = bookings.map((b: any) => b.id === id ? { ...b, read: true } : b);
-        localStorage.setItem('joy_bookings', JSON.stringify(updated));
-        window.dispatchEvent(new Event('storage'));
-      }
+      const docRef = doc(db, "bookings", id);
+      await updateDoc(docRef, { read: true });
     } catch (err) {
       console.error("Error marking as read:", err);
     }
@@ -126,42 +128,33 @@ export default function AdminNotifications() {
 
   const handleBookingAction = async (notificationId: string, action: "Confirmed" | "Cancelled") => {
     try {
-      const existing = localStorage.getItem('joy_bookings');
-      if (existing) {
-        const bookings = JSON.parse(existing);
-        const notif = bookings.find((b: any) => b.id === notificationId);
-        
-        const updated = bookings.map((b: any) => b.id === notificationId ? { ...b, status: action, read: true } : b);
-        localStorage.setItem('joy_bookings', JSON.stringify(updated));
+      const docRef = doc(db, "bookings", notificationId);
+      await updateDoc(docRef, { 
+        status: action, 
+        read: true 
+      });
       
-      if (action === "Confirmed" && notif) {
+      // Update local joy_plans if Confirmed (Legacy compatibility)
+      if (action === "Confirmed") {
+        const notif = notifications.find(n => n.id === notificationId);
         const plansData = localStorage.getItem('joy_plans');
-        if (plansData) {
+        if (plansData && notif) {
           const plans = JSON.parse(plansData);
           const planToUpdate = plans.find((p: any) => p.id === notif.packageId || p.name === notif.packageName);
-          
           if (planToUpdate) {
             const bookedByDate = planToUpdate.bookedSlotsByDate || {};
             const currentForDate = bookedByDate[notif.date] || [];
-            
-            if (planToUpdate) {
-              const bookedByDate = planToUpdate.bookedSlotsByDate || {};
-              const currentForDate = bookedByDate[notif.date] || [];
-              
-              if (!currentForDate.includes(notif.timeSlot)) {
-                planToUpdate.bookedSlotsByDate = {
-                  ...bookedByDate,
-                  [notif.date]: [...currentForDate, notif.timeSlot]
-                };
-                
-                const updatedPlans = plans.map((p: any) => p.id === planToUpdate.id ? planToUpdate : p);
-                localStorage.setItem('joy_plans', JSON.stringify(updatedPlans));
-              }
+            if (!currentForDate.includes(notif.timeSlot)) {
+              planToUpdate.bookedSlotsByDate = {
+                ...bookedByDate,
+                [notif.date]: [...currentForDate, notif.timeSlot]
+              };
+              const updatedPlans = plans.map((p: any) => p.id === planToUpdate.id ? planToUpdate : p);
+              localStorage.setItem('joy_plans', JSON.stringify(updatedPlans));
+              window.dispatchEvent(new Event('storage'));
             }
           }
         }
-      }
-      window.dispatchEvent(new Event('storage'));
       }
     } catch (err) {
       console.error("Error updating booking action:", err);
@@ -170,12 +163,11 @@ export default function AdminNotifications() {
 
   const markAllAsRead = async () => {
     try {
-      const existing = localStorage.getItem('joy_bookings');
-      if (existing) {
-        const bookings = JSON.parse(existing);
-        const updated = bookings.map((b: any) => ({ ...b, read: true }));
-        localStorage.setItem('joy_bookings', JSON.stringify(updated));
-        window.dispatchEvent(new Event('storage'));
+      const unreadNotifs = notifications.filter(n => !n.read);
+      // We process them in a loop or batch. A simple loop is fine for admin portal.
+      for (const n of unreadNotifs) {
+        const docRef = doc(db, "bookings", n.id);
+        await updateDoc(docRef, { read: true });
       }
     } catch (err) {
       console.error("Error marking all as read:", err);

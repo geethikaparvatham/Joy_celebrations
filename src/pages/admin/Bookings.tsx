@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { collection, onSnapshot, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, onSnapshot, updateDoc, deleteDoc, doc, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Settings, Users, Calendar as CalendarIcon, Ticket, Trash2, Search, Filter, ShieldAlert, MessageCircle } from "lucide-react";
 import styles from "../Admin.module.css";
@@ -29,40 +29,41 @@ export default function BookingsManager() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [packageFilter, setPackageFilter] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
+  const [highlightedBookings, setHighlightedBookings] = useState<string[]>([]);
 
   useEffect(() => {
-    const loadBookings = () => {
-      const existing = localStorage.getItem('joy_bookings');
-      if (existing) {
-        const parsedBookings = JSON.parse(existing);
-        parsedBookings.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setBookings(parsedBookings);
-      } else {
-        setBookings([]);
-      }
+    const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const parsedBookings = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Booking[];
+      setBookings(parsedBookings);
       setIsLoading(false);
-    };
-    
-    loadBookings();
-    
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'joy_bookings' || e.type === 'storage') {
-        loadBookings();
+      
+      // Look for newly added docs for the glow animation (skip initial load)
+      const isInitialLoad = snapshot.metadata.fromCache || snapshot.docChanges().length === snapshot.docs.length;
+      if (!isInitialLoad) {
+        const newIds = snapshot.docChanges()
+          .filter(change => change.type === 'added')
+          .map(change => change.doc.id);
+        
+        if (newIds.length > 0) {
+          setHighlightedBookings(prev => [...prev, ...newIds]);
+          setTimeout(() => {
+            setHighlightedBookings(prev => prev.filter(id => !newIds.includes(id)));
+          }, 5000);
+        }
       }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleStatusChange = async (id: string, newStatus: "Pending" | "Confirmed" | "Cancelled") => {
     try {
-      const existing = localStorage.getItem('joy_bookings');
-      if (existing) {
-        const parsedBookings = JSON.parse(existing);
-        const updated = parsedBookings.map((b: any) => b.id === id ? { ...b, status: newStatus } : b);
-        localStorage.setItem('joy_bookings', JSON.stringify(updated));
-        window.dispatchEvent(new Event('storage'));
-      }
+      const docRef = doc(db, "bookings", id);
+      await updateDoc(docRef, { status: newStatus });
     } catch (err) {
       console.error("Error updating status:", err);
     }
@@ -95,13 +96,8 @@ export default function BookingsManager() {
   const handleDeleteBooking = async (id: string) => {
     if (confirm("Are you sure you want to delete this booking record?")) {
       try {
-        const existing = localStorage.getItem('joy_bookings');
-        if (existing) {
-          const parsedBookings = JSON.parse(existing);
-          const updated = parsedBookings.filter((b: any) => b.id !== id);
-          localStorage.setItem('joy_bookings', JSON.stringify(updated));
-          window.dispatchEvent(new Event('storage'));
-        }
+        const docRef = doc(db, "bookings", id);
+        await deleteDoc(docRef);
       } catch (err) {
         console.error("Error deleting booking:", err);
       }
@@ -256,7 +252,25 @@ export default function BookingsManager() {
               </thead>
               <tbody>
                 {filteredBookings.map((b) => (
-                  <tr key={b.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.01)'} onMouseLeave={(e) => e.currentTarget.style.background = 'none'}>
+                  <tr 
+                    key={b.id} 
+                    style={{ 
+                      borderBottom: '1px solid rgba(255,255,255,0.05)', 
+                      transition: 'all 0.5s ease',
+                      background: highlightedBookings.includes(b.id) ? 'rgba(212,175,55,0.2)' : 'transparent',
+                      boxShadow: highlightedBookings.includes(b.id) ? 'inset 0 0 15px rgba(212,175,55,0.4)' : 'none'
+                    }} 
+                    onMouseEnter={(e) => {
+                      if (!highlightedBookings.includes(b.id)) {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.01)';
+                      }
+                    }} 
+                    onMouseLeave={(e) => {
+                      if (!highlightedBookings.includes(b.id)) {
+                        e.currentTarget.style.background = 'transparent';
+                      }
+                    }}
+                  >
                     {/* Customer */}
                     <td style={{ padding: '1.2rem 1rem' }}>
                       <div style={{ fontWeight: 'bold', color: 'white' }}>{b.customerName}</div>

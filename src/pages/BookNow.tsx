@@ -5,7 +5,9 @@ import styles from "./BookNow.module.css";
 import { useBookingStore } from "@/lib/store";
 import Tesseract from "tesseract.js";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Plan {
   id: string;
@@ -52,6 +54,7 @@ export default function BookNowPage() {
   
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   
   const [showUpiModal, setShowUpiModal] = useState(false);
@@ -242,40 +245,42 @@ export default function BookNowPage() {
   };
 
   const saveBookingToFirestore = async () => {
-    // Use the hook-bound reactive variables (already subscribed at top of component)
-    // These are guaranteed to have the current values at time of click
+    // Generate a robust booking ID locally
+    const bookingId = `bk-${Date.now()}`;
+    
     const bookingData = {
+      bookingId: bookingId,
       customerName: customerName || "Customer",
       customerPhone: customerPhone || "",
+      whatsappNumber: customerPhone || "",
+      email: customerEmail || "N/A",
       packageName: selectedPackage || "TBD",
       packageId: selectedPackageData?.id || "",
       occasion: selectedOccasion || "TBD",
+      decoration: "Standard",
+      cakeDetails: "None",
+      guests: selectedPackageData?.members || "TBD",
       date: date || "TBD",
       timeSlot: timeSlot || "TBD",
       addons: selectedAddons,
+      specialRequests: specialRequests || "None",
       totalAmount: currentTotal,
       paymentMethod: paymentMethod || "WhatsApp",
+      paymentStatus: paymentMethod === 'UPI / GPay / PhonePe' ? 'success' : 'pending',
       status: "pending",
       read: false,
-      createdAt: new Date().toISOString()
+      createdBy: "customer",
+      createdAt: serverTimestamp()
     };
 
     console.log("📦 Saving booking data:", JSON.stringify(bookingData));
 
     try {
       const docRef = await addDoc(collection(db, "bookings"), bookingData);
-      console.log("✅ Booking + notification saved to Firebase! Booking ID:", docRef.id);
+      console.log("✅ Booking + notification saved to Firebase! Document ID:", docRef.id);
     } catch (err) {
       console.error("Error saving booking to Firestore:", err);
     }
-
-    // ALWAYS save to localStorage for the local Admin Panel to instantly see it
-    const existing = localStorage.getItem('joy_bookings');
-    const bookings = existing ? JSON.parse(existing) : [];
-    const newBooking = { id: `bk-${Date.now()}`, ...bookingData };
-    bookings.push(newBooking);
-    localStorage.setItem('joy_bookings', JSON.stringify(bookings));
-    window.dispatchEvent(new Event('storage'));
   };
 
   const handleConfirmPay = () => {
@@ -751,7 +756,14 @@ export default function BookNowPage() {
                     className={styles.inputField} 
                     style={inputStyles} 
                   />
-                  <input type="email" placeholder="Email Address" className={styles.inputField} style={inputStyles} />
+                  <input 
+                    type="email" 
+                    placeholder="Email Address" 
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    className={styles.inputField} 
+                    style={inputStyles} 
+                  />
                   <textarea 
                     placeholder="Any Special Requests?" 
                     rows={3} 

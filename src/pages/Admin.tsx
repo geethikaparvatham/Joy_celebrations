@@ -27,25 +27,17 @@ type Booking = {
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
 
-  // Use the localStorage bookings for stats calculation
   useEffect(() => {
-    const loadAllBookings = () => {
-      const existing = localStorage.getItem('joy_bookings');
-      if (existing) {
-        const parsedBookings = JSON.parse(existing);
-        setBookings(parsedBookings);
-      }
-    };
-    
-    loadAllBookings();
-    
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'joy_bookings' || e.type === 'storage') {
-        loadAllBookings();
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    const q = query(collection(db, "bookings"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const parsedBookings = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as any[];
+      setBookings(parsedBookings);
+    });
+
+    return () => unsubscribe();
   }, []);
 
 
