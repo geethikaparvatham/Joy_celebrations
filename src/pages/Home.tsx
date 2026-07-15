@@ -5,6 +5,7 @@ import styles from "@/page.module.css";
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
 import TypingAnimation from "@/components/ui/TypingAnimation";
+import SEO from "@/components/SEO";
 
 const heroBackgrounds = [
   "/bg2.jpg",
