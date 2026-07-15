@@ -225,9 +225,8 @@ export default function BookNowPage() {
     // Save booking + notification so admin gets notified
     await saveBookingToFirestore();
     
-    alert("✅ Booking Successful\n\nYour booking has been submitted successfully.");
-    window.open(whatsappUrl, '_blank');
-    navigate('/');
+    // Redirect the current window to WhatsApp (avoids popup blockers)
+    window.location.href = whatsappUrl;
   };
 
   const handleCustomerShare = (platform: string) => {
