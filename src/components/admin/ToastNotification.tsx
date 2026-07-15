@@ -14,15 +14,7 @@ export default function ToastNotification({ booking, onClose, onAccept, onReject
   useEffect(() => {
     // Animate in
     setTimeout(() => setIsVisible(true), 50);
-
-    // Auto close after 6 seconds
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(onClose, 300); // Wait for animation
-    }, 6000);
-
-    return () => clearTimeout(timer);
-  }, [onClose]);
+  }, []);
 
   if (!booking) return null;
 

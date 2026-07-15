@@ -85,12 +85,15 @@ export default function AdminNotifications() {
         }
       });
       
-      if (!isFirstLoad.current && newUnreadCount > prevUnreadCount.current) {
+      if (isFirstLoad.current) {
+        if (newUnreadCount > 0) {
+          const newest = newNotifications.find(n => !n.read);
+          if (newest) setLatestToast(newest);
+        }
+      } else if (newUnreadCount > prevUnreadCount.current) {
         playNotificationSound();
         const newest = newNotifications.find(n => !n.read && (!latestToast || n.id !== latestToast.id));
-        if (newest) {
-          setLatestToast(newest);
-        }
+        if (newest) setLatestToast(newest);
       }
 
       prevUnreadCount.current = newUnreadCount;
