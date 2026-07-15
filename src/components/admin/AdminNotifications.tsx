@@ -1,4 +1,3 @@
-"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { Bell, X, CheckCheck, Ticket } from "lucide-react";

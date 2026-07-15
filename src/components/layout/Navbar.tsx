@@ -1,7 +1,6 @@
-"use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { Menu, X, Phone, Home, Gift, PartyPopper, Image as ImageIcon, PhoneCall, Lock } from "lucide-react";
 import styles from "./Navbar.module.css";
 
@@ -22,31 +21,31 @@ export default function Navbar() {
   return (
     <>
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
-      <Link href="/" className={styles.logo}>
+      <Link to="/" className={styles.logo}>
         <span className="gold-text">JOY</span> <span className={styles.logoLight}>CELEBRATIONS</span>
       </Link>
 
       <div className={styles.navLinks}>
-        <Link href="/" className={styles.link}>Home</Link>
-        <Link href="/about" className={styles.link}>About</Link>
-        <Link href="/packages" className={styles.link}>Packages</Link>
-        <Link href="/themes" className={styles.link}>Themes</Link>
-        <Link href="/gallery" className={styles.link}>Gallery</Link>
-        <Link href="/add-ons" className={styles.link}>Add-ons</Link>
-        <Link href="/blog" className={styles.link}>Blog</Link>
-        <Link href="/faq" className={styles.link}>FAQ</Link>
-        <Link href="/reviews" className={styles.link}>Feedback & Reviews</Link>
-        <Link href="/contact" className={styles.link}>Contact</Link>
+        <Link to="/" className={styles.link}>Home</Link>
+        <Link to="/about" className={styles.link}>About</Link>
+        <Link to="/packages" className={styles.link}>Packages</Link>
+        <Link to="/themes" className={styles.link}>Themes</Link>
+        <Link to="/gallery" className={styles.link}>Gallery</Link>
+        <Link to="/add-ons" className={styles.link}>Add-ons</Link>
+        <Link to="/blog" className={styles.link}>Blog</Link>
+        <Link to="/faq" className={styles.link}>FAQ</Link>
+        <Link to="/reviews" className={styles.link}>Feedback & Reviews</Link>
+        <Link to="/contact" className={styles.link}>Contact</Link>
       </div>
 
       <div className={styles.rightActions}>
         <a href="tel:09618681267" className={styles.phoneLink} aria-label="Call Joy Celebrations">
           <Phone size={16} aria-hidden="true" /> 096186 81267
         </a>
-        <Link href="/admin/login" aria-label="Admin Portal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', padding: '0.5rem', cursor: 'pointer', transition: 'color 0.3s' }}>
+        <Link to="/admin/login" aria-label="Admin Portal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', padding: '0.5rem', cursor: 'pointer', transition: 'color 0.3s' }}>
           <Lock size={16} />
         </Link>
-        <Link href="/book-now" className={`btn-primary ${styles.bookBtn}`}>
+        <Link to="/book-now" className={`btn-primary ${styles.bookBtn}`}>
           Book Now
         </Link>
       </div>
@@ -62,37 +61,37 @@ export default function Navbar() {
     
     {/* Mobile Dropdown Menu */}
     <div className={`${styles.mobileDropdown} ${isMobileMenuOpen ? styles.open : ""}`}>
-      <Link href="/" className={styles.mobileDropdownLink} onClick={closeMenu}>Home</Link>
-      <Link href="/about" className={styles.mobileDropdownLink} onClick={closeMenu}>About</Link>
-      <Link href="/packages" className={styles.mobileDropdownLink} onClick={closeMenu}>Packages</Link>
-      <Link href="/themes" className={styles.mobileDropdownLink} onClick={closeMenu}>Themes</Link>
-      <Link href="/gallery" className={styles.mobileDropdownLink} onClick={closeMenu}>Gallery</Link>
-      <Link href="/add-ons" className={styles.mobileDropdownLink} onClick={closeMenu}>Add-ons</Link>
-      <Link href="/blog" className={styles.mobileDropdownLink} onClick={closeMenu}>Blog</Link>
-      <Link href="/faq" className={styles.mobileDropdownLink} onClick={closeMenu}>FAQ</Link>
-      <Link href="/reviews" className={styles.mobileDropdownLink} onClick={closeMenu}>Feedback & Reviews</Link>
-      <Link href="/contact" className={styles.mobileDropdownLink} onClick={closeMenu}>Contact</Link>
+      <Link to="/" className={styles.mobileDropdownLink} onClick={closeMenu}>Home</Link>
+      <Link to="/about" className={styles.mobileDropdownLink} onClick={closeMenu}>About</Link>
+      <Link to="/packages" className={styles.mobileDropdownLink} onClick={closeMenu}>Packages</Link>
+      <Link to="/themes" className={styles.mobileDropdownLink} onClick={closeMenu}>Themes</Link>
+      <Link to="/gallery" className={styles.mobileDropdownLink} onClick={closeMenu}>Gallery</Link>
+      <Link to="/add-ons" className={styles.mobileDropdownLink} onClick={closeMenu}>Add-ons</Link>
+      <Link to="/blog" className={styles.mobileDropdownLink} onClick={closeMenu}>Blog</Link>
+      <Link to="/faq" className={styles.mobileDropdownLink} onClick={closeMenu}>FAQ</Link>
+      <Link to="/reviews" className={styles.mobileDropdownLink} onClick={closeMenu}>Feedback & Reviews</Link>
+      <Link to="/contact" className={styles.mobileDropdownLink} onClick={closeMenu}>Contact</Link>
     </div>
     
     {/* Mobile Bottom Navigation */}
     <div className={styles.mobileBottomNav}>
-      <Link href="/" className={styles.mobileNavLink}>
+      <Link to="/" className={styles.mobileNavLink}>
         <Home size={20} />
         <span>Home</span>
       </Link>
-      <Link href="/packages" className={styles.mobileNavLink}>
+      <Link to="/packages" className={styles.mobileNavLink}>
         <Gift size={20} />
         <span>Packages</span>
       </Link>
-      <Link href="/themes" className={styles.mobileNavLink}>
+      <Link to="/themes" className={styles.mobileNavLink}>
         <PartyPopper size={20} />
         <span>Themes</span>
       </Link>
-      <Link href="/gallery" className={styles.mobileNavLink}>
+      <Link to="/gallery" className={styles.mobileNavLink}>
         <ImageIcon size={20} />
         <span>Gallery</span>
       </Link>
-      <Link href="/contact" className={styles.mobileNavLink}>
+      <Link to="/contact" className={styles.mobileNavLink}>
         <PhoneCall size={20} />
         <span>Contact</span>
       </Link>

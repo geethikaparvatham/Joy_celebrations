@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, MessageCircle, Star } from "lucide-react";
 import InstagramIcon from "@/components/ui/InstagramIcon";
 import styles from "./Footer.module.css";
@@ -34,13 +34,13 @@ export default function Footer() {
         <div className={styles.links}>
           <h3>Quick Links</h3>
           <ul>
-            <li><Link href="/">Home</Link></li>
-            <li><Link href="/about">About Us</Link></li>
-            <li><Link href="/packages">Packages</Link></li>
-            <li><Link href="/themes">Themes</Link></li>
-            <li><Link href="/gallery">Gallery</Link></li>
-            <li><Link href="/contact">Contact</Link></li>
-            <li><Link href="/book-now">Book Now</Link></li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/packages">Packages</Link></li>
+            <li><Link to="/themes">Themes</Link></li>
+            <li><Link to="/gallery">Gallery</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/book-now">Book Now</Link></li>
           </ul>
         </div>
 
@@ -48,13 +48,13 @@ export default function Footer() {
         <div className={styles.links}>
           <h3>Celebration Services</h3>
           <ul>
-            <li><Link href="/themes">Birthday Celebrations</Link></li>
-            <li><Link href="/themes">Anniversary Celebrations</Link></li>
-            <li><Link href="/themes">Proposal Setup</Link></li>
-            <li><Link href="/themes">Surprise Decorations</Link></li>
-            <li><Link href="/themes">Baby Shower</Link></li>
-            <li><Link href="/themes">Friends Party</Link></li>
-            <li><Link href="/themes">Movie Screening</Link></li>
+            <li><Link to="/themes">Birthday Celebrations</Link></li>
+            <li><Link to="/themes">Anniversary Celebrations</Link></li>
+            <li><Link to="/themes">Proposal Setup</Link></li>
+            <li><Link to="/themes">Surprise Decorations</Link></li>
+            <li><Link to="/themes">Baby Shower</Link></li>
+            <li><Link to="/themes">Friends Party</Link></li>
+            <li><Link to="/themes">Movie Screening</Link></li>
           </ul>
         </div>
 
@@ -87,12 +87,12 @@ export default function Footer() {
         <div className={styles.links}>
           <h3>Support</h3>
           <ul>
-            <li><Link href="#">FAQ</Link></li>
-            <li><Link href="#">Privacy Policy</Link></li>
-            <li><Link href="#">Terms & Conditions</Link></li>
-            <li><Link href="#">Refund Policy</Link></li>
-            <li><Link href="#">Cancellation Policy</Link></li>
-            <li><Link href="#">Booking Guidelines</Link></li>
+            <li><Link to="#">FAQ</Link></li>
+            <li><Link to="#">Privacy Policy</Link></li>
+            <li><Link to="#">Terms & Conditions</Link></li>
+            <li><Link to="#">Refund Policy</Link></li>
+            <li><Link to="#">Cancellation Policy</Link></li>
+            <li><Link to="#">Booking Guidelines</Link></li>
           </ul>
         </div>
       </div>

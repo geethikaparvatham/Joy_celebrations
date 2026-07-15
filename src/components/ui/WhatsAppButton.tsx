@@ -1,4 +1,3 @@
-"use client";
 
 import { MessageCircle, Phone } from "lucide-react";
 import styles from "./WhatsAppButton.module.css";

@@ -1,10 +1,10 @@
-"use client";
 
-import { usePathname } from 'next/navigation';
+import { useLocation } from 'react-router-dom';
 import Footer from './Footer';
 
 export default function ConditionalFooter() {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   
   // Hide footer on the gallery page
   if (pathname === '/gallery') {
