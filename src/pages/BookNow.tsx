@@ -222,11 +222,14 @@ export default function BookNowPage() {
     
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
     
+    // Open whatsapp immediately BEFORE the async save to bypass popup blockers
+    window.open(whatsappUrl, '_blank');
+    
     // Save booking + notification so admin gets notified
     await saveBookingToFirestore();
     
-    // Redirect the current window to WhatsApp (avoids popup blockers)
-    window.location.href = whatsappUrl;
+    // Redirect to home or receipt after saving
+    navigate('/');
   };
 
   const handleCustomerShare = (platform: string) => {
