@@ -1,6 +1,6 @@
 
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "./Contact.module.css";
 
 export default function ContactPage() {
   return (

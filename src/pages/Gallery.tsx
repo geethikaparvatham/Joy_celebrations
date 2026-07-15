@@ -1,6 +1,6 @@
 import { Expand } from "lucide-react";
 import InstagramIcon from "@/components/ui/InstagramIcon";
-import styles from "@/page.module.css";
+import styles from "./Gallery.module.css";
 
 const galleryItems = [
   { id: 1, url: "/bg1.jpg" },

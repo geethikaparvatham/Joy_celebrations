@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { Cake } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "./AddOns.module.css";
 
 const addons = [
   { id: "photography", title: "Professional Photography (1 Hour)", price: 1500, image: "/addon_photography.jpg", details: "• Unlimited Photos" },

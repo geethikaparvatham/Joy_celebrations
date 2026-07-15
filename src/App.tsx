@@ -26,33 +26,38 @@ import AdminCustomers from './pages/admin/Customers';
 import AdminPackages from './pages/admin/Packages';
 import AdminSettings from './pages/admin/Settings';
 
+import WhatsAppButton from './components/ui/WhatsAppButton';
+
 function App() {
   return (
     <Router>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/packages" element={<Packages />} />
-        <Route path="/themes" element={<Themes />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/add-ons" element={<AddOns />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<BlogBlogPost />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/reviews" element={<Reviews />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/book-now" element={<BookNow />} />
-        <Route path="/receipt" element={<Receipt />} />
-        
-        {/* Admin Routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/bookings" element={<AdminBookings />} />
-        <Route path="/admin/customers" element={<AdminCustomers />} />
-        <Route path="/admin/packages" element={<AdminPackages />} />
-        <Route path="/admin/settings" element={<AdminSettings />} />
-      </Routes>
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/packages" element={<Packages />} />
+          <Route path="/themes" element={<Themes />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/add-ons" element={<AddOns />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogBlogPost />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/book-now" element={<BookNow />} />
+          <Route path="/receipt" element={<Receipt />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/customers" element={<AdminCustomers />} />
+          <Route path="/admin/packages" element={<AdminPackages />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+        </Routes>
+      </main>
+      <WhatsAppButton />
       <ConditionalFooter />
     </Router>
   );

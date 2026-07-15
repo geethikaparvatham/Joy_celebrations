@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Check, CreditCard, Calendar, Clock, Users, Share2, Camera, MessageCircle, Upload, ShoppingBag, ChevronDown } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "./BookNow.module.css";
 import { useBookingStore } from "@/lib/store";
 import Tesseract from "tesseract.js";
 import { db } from "@/lib/firebase";

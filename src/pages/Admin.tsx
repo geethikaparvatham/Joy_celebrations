@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { LayoutDashboard, Ticket, Clock, Users, IndianRupee } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "./Admin.module.css";
 import LogoutButton from "./admin/LogoutButton";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminNotifications from "@/components/admin/AdminNotifications";

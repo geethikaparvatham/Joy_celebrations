@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "./Login.module.css";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");

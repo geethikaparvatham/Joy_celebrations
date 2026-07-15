@@ -4,7 +4,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Link } from 'react-router-dom';
 import { Check, Clock, Users } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "./Packages.module.css";
 
 type Plan = {
   id: string;

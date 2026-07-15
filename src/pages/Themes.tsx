@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "./Themes.module.css";
 
 const themes = [
   { name: "Birthday", image: "/images/theme_birthday.jpg" },

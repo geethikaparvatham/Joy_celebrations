@@ -4,7 +4,7 @@ import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "fireb
 import { db } from "@/lib/firebase";
 import { Plus, Edit2, Trash2, X, Check, Clock, Users } from "lucide-react";
 import styles from "@/page.module.css";
-import frontendStyles from "@/page.module.css";
+import frontendStyles from "../../Packages.module.css";
 
 type Plan = {
   id: string;

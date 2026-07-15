@@ -1,4 +1,6 @@
 :root {
+  --font-outfit: 'Outfit', sans-serif;
+  --font-playfair: 'Playfair Display', serif;
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
   --bg-surface: #111111;
