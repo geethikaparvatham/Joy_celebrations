@@ -1,12 +1,20 @@
 
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Settings, Users, Calendar, LayoutDashboard, Ticket, Package } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "../../pages/Admin.module.css";
+
+import { useEffect } from 'react';
 
 export default function AdminSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const pathname = location.pathname;
+
+  useEffect(() => {
+    if (!localStorage.getItem("admin_token")) {
+      navigate('/admin/login');
+    }
+  }, [navigate]);
 
   return (
     <aside className={styles.sidebar}>

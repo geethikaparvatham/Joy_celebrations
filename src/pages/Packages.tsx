@@ -87,29 +87,24 @@ export default function PackagesPage() {
     }
   ];
 
-  const [plans, setPlans] = useState<Plan[]>(defaultPlans);
+  const initialPlans = () => {
+    const local = localStorage.getItem('joy_plans');
+    return local ? JSON.parse(local) : defaultPlans;
+  };
+  const [plans, setPlans] = useState<Plan[]>(initialPlans());
   const [selectedSlots, setSelectedSlots] = useState<Record<string, string>>({});
 
+  // Firebase syncing is disconnected. We rely entirely on localStorage.
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "plans"), (snapshot) => {
-      if (!snapshot.empty) {
-        const fetchedPlans = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Plan[];
-        setPlans(fetchedPlans);
+    // Just listen for cross-tab local storage changes if they happen
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'joy_plans' && e.newValue) {
+        setPlans(JSON.parse(e.newValue));
       }
-    });
-
-    return () => unsubscribe();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
-
-  const handleSelectSlot = (planId: string, slot: string) => {
-    setSelectedSlots(prev => ({
-      ...prev,
-      [planId]: prev[planId] === slot ? "" : slot
-    }));
-  };
 
   return (
     <div className={styles.container}>

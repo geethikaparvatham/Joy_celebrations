@@ -5,14 +5,9 @@ import { useNavigate } from 'react-router-dom';
 export default function LogoutButton() {
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/admin/logout', { method: 'POST' });
-      navigate('/admin/login');
-      window.location.reload(); // force a full refresh to re-evaluate middleware
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    navigate('/admin/login');
   };
 
   return (

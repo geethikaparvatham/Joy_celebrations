@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { collection, onSnapshot, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Settings, Users, Calendar as CalendarIcon, Ticket, Trash2, Search, Filter, ShieldAlert, MessageCircle } from "lucide-react";
-import styles from "@/page.module.css";
+import styles from "../Admin.module.css";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 import LogoutButton from "./LogoutButton";
@@ -28,40 +28,43 @@ export default function BookingsManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [packageFilter, setPackageFilter] = useState("All");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "bookings"), (snapshot) => {
-      if (!snapshot.empty) {
-        const fetchedBookings = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Booking[];
-        
-        // Sort by createdAt desc or date desc
-        fetchedBookings.sort((a, b) => new Date(b.createdAt || b.date).getTime() - new Date(a.createdAt || a.date).getTime());
-        setBookings(fetchedBookings);
+    const loadBookings = () => {
+      const existing = localStorage.getItem('joy_bookings');
+      if (existing) {
+        const parsedBookings = JSON.parse(existing);
+        parsedBookings.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setBookings(parsedBookings);
       } else {
         setBookings([]);
       }
-    }, (error) => {
-      console.error("Firestore loading error:", error);
-      setBookings([]);
-    });
-
-    return () => unsubscribe();
+      setIsLoading(false);
+    };
+    
+    loadBookings();
+    
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'joy_bookings' || e.type === 'storage') {
+        loadBookings();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const handleStatusChange = async (id: string, newStatus: "Pending" | "Confirmed" | "Cancelled") => {
-    if (id.startsWith("mock-")) {
-      setBookings(prev => prev.map(b => b.id === id ? { ...b, status: newStatus } : b));
-    } else {
-      try {
-        await updateDoc(doc(db, "bookings", id), { status: newStatus });
-      } catch (error) {
-        console.error("Error updating status:", error);
-        alert("Failed to update status.");
-        return;
+    try {
+      const existing = localStorage.getItem('joy_bookings');
+      if (existing) {
+        const parsedBookings = JSON.parse(existing);
+        const updated = parsedBookings.map((b: any) => b.id === id ? { ...b, status: newStatus } : b);
+        localStorage.setItem('joy_bookings', JSON.stringify(updated));
+        window.dispatchEvent(new Event('storage'));
       }
+    } catch (err) {
+      console.error("Error updating status:", err);
     }
 
     if (newStatus === "Confirmed") {
@@ -91,15 +94,16 @@ export default function BookingsManager() {
 
   const handleDeleteBooking = async (id: string) => {
     if (confirm("Are you sure you want to delete this booking record?")) {
-      if (id.startsWith("mock-")) {
-        setBookings(prev => prev.filter(b => b.id !== id));
-      } else {
-        try {
-          await deleteDoc(doc(db, "bookings", id));
-        } catch (error) {
-          console.error("Error deleting booking:", error);
-          alert("Failed to delete booking.");
+      try {
+        const existing = localStorage.getItem('joy_bookings');
+        if (existing) {
+          const parsedBookings = JSON.parse(existing);
+          const updated = parsedBookings.filter((b: any) => b.id !== id);
+          localStorage.setItem('joy_bookings', JSON.stringify(updated));
+          window.dispatchEvent(new Event('storage'));
         }
+      } catch (err) {
+        console.error("Error deleting booking:", err);
       }
     }
   };

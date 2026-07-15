@@ -3,15 +3,15 @@ import { ArrowRight } from "lucide-react";
 import styles from "./Themes.module.css";
 
 const themes = [
-  { name: "Birthday", image: "/images/theme_birthday.jpg" },
-  { name: "Anniversary", image: "/images/theme_anniversary.jpg" },
-  { name: "Proposal", image: "/images/theme_proposal.jpg" },
+  { name: "Birthday", image: "/images/theme_birthday.jpg?v=2" },
+  { name: "Anniversary", image: "/images/theme_anniversary.jpg?v=2" },
+  { name: "Proposal", image: "/images/theme_proposal.jpg?v=2" },
   { name: "Bride To Be", image: "/images/theme_bride.jpg" },
   { name: "Baby Shower", image: "/images/theme_baby.jpg" },
-  { name: "Couple Celebration", image: "/images/theme_couple.jpg" },
+  { name: "Couple Celebration", image: "/images/theme_couple.jpg?v=2" },
   { name: "Surprise Party", image: "/images/theme_surprise.jpg" },
-  { name: "Friendship Celebration", image: "/images/theme_friendship.jpg" },
-  { name: "Movie Night", image: "/images/theme_movie.jpg" },
+  { name: "Friendship Celebration", image: "/images/theme_friendship.jpg?v=2" },
+  { name: "Movie Night", image: "/images/theme_movie.jpg?v=2" },
   { name: "Bachelor Party", image: "/images/theme_bachelor.jpg" },
   { name: "Farewell", image: "/images/theme_farewell.jpg" },
   { name: "Family Celebration", image: "/images/theme_family.jpg" }

@@ -19,23 +19,15 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      // In SPA architecture, validate directly against env or hardcoded admin credentials
+      const validUser = "joycelebrations@gmail.com";
+      const validPass = "joy@123";
 
-      const data = await res.json();
-
-      if (res.ok) {
-        // Successful login, redirect to admin dashboard
+      if (username === validUser && password === validPass) {
+        localStorage.setItem("admin_token", "authenticated");
         navigate("/admin");
-        window.location.reload(); // Force refresh to apply middleware bypass
       } else {
-        // Show error message from server
-        setError(data.error || "Login failed");
+        setError("Invalid username or password");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -110,8 +102,30 @@ export default function AdminLogin() {
             type="submit" 
             className={`btn-primary ${styles.submitBtn}`}
             disabled={isLoading}
+            style={{ marginBottom: '1rem' }}
           >
             {isLoading ? "Authenticating..." : "Access Dashboard"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            style={{ 
+              width: '100%', 
+              padding: '1rem', 
+              borderRadius: '8px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontFamily: 'inherit',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'white'; }}
+            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+          >
+            Access Website
           </button>
         </form>
       </div>

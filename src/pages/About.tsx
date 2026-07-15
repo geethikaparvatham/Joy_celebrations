@@ -1,6 +1,4 @@
 import styles from "./About.module.css";
-
-
 export default function AboutPage() {
   return (
     <div className={styles.container}>
@@ -32,21 +30,6 @@ export default function AboutPage() {
             moment you step in, our premium interiors, personalized decorations, and dedicated service 
             ensure your celebration is nothing short of magical. Whether you are hosting a <strong>birthday celebration in Vijayawada</strong>, planning a beautiful <strong>anniversary celebration</strong>, or looking for a memorable <strong>romantic date night</strong>, our theatre is equipped to make it perfect.
           </p>
-          
-          <div className={styles.statsGrid}>
-            <div className={styles.statItem}>
-              <div className={styles.statNumber}>5.0</div>
-              <div className={styles.statLabel}>Google Rating</div>
-            </div>
-            <div className={styles.statItem}>
-              <div className={styles.statNumber}>204+</div>
-              <div className={styles.statLabel}>Happy Reviews</div>
-            </div>
-            <div className={styles.statItem}>
-              <div className={styles.statNumber}>1000+</div>
-              <div className={styles.statLabel}>Events Hosted</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

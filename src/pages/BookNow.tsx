@@ -5,7 +5,20 @@ import styles from "./BookNow.module.css";
 import { useBookingStore } from "@/lib/store";
 import Tesseract from "tesseract.js";
 import { db } from "@/lib/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+
+interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  duration: string;
+  members: string;
+  features: string[];
+  timings: string[];
+  bookedSlotsByDate?: Record<string, string[]>;
+  isPopular?: boolean;
+  isMidnight?: boolean;
+}
 
 const steps = ["Package", "Occasion", "Date & Time", "Addons", "Details"];
 
@@ -17,36 +30,7 @@ const ADDONS_LIST = [
   { name: 'Rose Petals Entry', price: 699, image: '/addon_rose_petals.jpg' }
 ];
 
-const PACKAGES_LIST = [
-  { 
-    name: 'Plan 1', 
-    price: 599, 
-    people: 'Up to 4 Members', 
-    duration: '1 Hour',
-    features: ['Perfect for Private Movie Experience', 'Large Screen Projection', 'Premium Sound System']
-  },
-  { 
-    name: 'Plan 2', 
-    price: 1300, 
-    people: 'Up to 4 Members', 
-    duration: '1 Hour',
-    features: ['Premium Decoration', 'Customized Name Board', 'LED Letters', '1 Kg Cake OR Half Kg Cool Cake']
-  },
-  { 
-    name: 'Plan 3', 
-    price: 2500, 
-    people: 'Up to 10 Members', 
-    duration: '2 Hours',
-    features: ['Premium Decoration', 'Birthday Video', 'Fog Effect', 'LED Letters & Name Board']
-  },
-  { 
-    name: 'Midnight Special', 
-    price: 2500, 
-    people: 'Up to 10 Members', 
-    duration: '1 Hour',
-    features: ['Exclusive Midnight Slot', 'Premium Decoration', 'Birthday Video', 'Fog Effect']
-  }
-];
+// PACKAGES_LIST removed in favor of live DB plans
 
 const inputStyles = {
   width: '100%', 
@@ -78,6 +62,90 @@ export default function BookNowPage() {
   const [scanSuccess, setScanSuccess] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const defaultPlans: Plan[] = [
+    {
+      id: "default-1",
+      name: "PLAN 1",
+      price: 599,
+      duration: "1 Hour",
+      members: "Up to 4 Members",
+      features: ["Perfect for Private Movie Experience", "Large Screen Projection", "Premium Sound System"],
+      timings: [
+        "09:00 AM - 10:00 AM", "10:00 AM - 11:00 AM", "11:00 AM - 12:00 PM", "12:00 PM - 01:00 PM", 
+        "01:00 PM - 02:00 PM", "02:00 PM - 03:00 PM", "03:00 PM - 04:00 PM", "04:00 PM - 05:00 PM", 
+        "05:00 PM - 06:00 PM", "06:00 PM - 07:00 PM", "07:00 PM - 08:00 PM", "08:00 PM - 09:00 PM", 
+        "09:00 PM - 10:00 PM", "10:00 PM - 11:00 PM", "11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", 
+        "01:00 AM - 02:00 AM"
+      ],
+      bookedSlotsByDate: {},
+      isPopular: false,
+      isMidnight: false
+    },
+    {
+      id: "default-2",
+      name: "PLAN 2",
+      price: 1300,
+      duration: "1 Hour",
+      members: "Up to 4 Members",
+      features: ["Premium Decoration", "Customized Name Board", "LED Letters", "1 Kg Cake OR Half Kg Cool Cake"],
+      timings: [
+        "09:00 AM - 10:00 AM", "10:00 AM - 11:00 AM", "11:00 AM - 12:00 PM", "12:00 PM - 01:00 PM", 
+        "01:00 PM - 02:00 PM", "02:00 PM - 03:00 PM", "03:00 PM - 04:00 PM", "04:00 PM - 05:00 PM", 
+        "05:00 PM - 06:00 PM", "06:00 PM - 07:00 PM", "07:00 PM - 08:00 PM", "08:00 PM - 09:00 PM", 
+        "09:00 PM - 10:00 PM", "10:00 PM - 11:00 PM", "11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", 
+        "01:00 AM - 02:00 AM"
+      ],
+      bookedSlotsByDate: {},
+      isPopular: true,
+      isMidnight: false
+    },
+    {
+      id: "default-3",
+      name: "PLAN 3",
+      price: 2500,
+      duration: "2 Hours",
+      members: "Up to 10 Members",
+      features: ["Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters & Name Board"],
+      timings: [
+        "09:00 AM - 11:00 AM", "11:00 AM - 01:00 PM", "01:00 PM - 03:00 PM", "03:00 PM - 05:00 PM", 
+        "05:00 PM - 07:00 PM", "07:00 PM - 09:00 PM", "09:00 PM - 11:00 PM", "11:00 PM - 01:00 AM", 
+        "12:00 AM - 02:00 AM"
+      ],
+      bookedSlotsByDate: {},
+      isPopular: false,
+      isMidnight: false
+    },
+    {
+      id: "default-4",
+      name: "Midnight Special",
+      price: 2500,
+      duration: "1 Hour",
+      members: "Up to 10 Members",
+      features: ["Exclusive Midnight Slot", "Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters", "Special Cake"],
+      timings: ["11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", "01:00 AM - 02:00 AM"],
+      bookedSlotsByDate: {},
+      isPopular: false,
+      isMidnight: true
+    }
+  ];
+
+  const initialPlans = () => {
+    const local = localStorage.getItem('joy_plans');
+    return local ? JSON.parse(local) : defaultPlans;
+  };
+  const [plans, setPlans] = useState<Plan[]>(initialPlans());
+  
+  // Firebase syncing is disconnected. We rely entirely on localStorage.
+  useEffect(() => {
+    // Just listen for cross-tab local storage changes if they happen
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'joy_plans' && e.newValue) {
+        setPlans(JSON.parse(e.newValue));
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   useEffect(() => {
     if (showUpiModal && paymentStatus === 'pending') {
@@ -101,7 +169,7 @@ export default function BookNowPage() {
   const selectedOccasion = useBookingStore(state => state.selectedOccasion);
   const date = useBookingStore(state => state.date);
   const timeSlot = useBookingStore(state => state.timeSlot);
-  const selectedPackageData = PACKAGES_LIST.find(p => p.name === selectedPackage);
+  const selectedPackageData = plans.find(p => p.name === selectedPackage);
   const basePrice = selectedPackageData?.price || 599;
   const addonTotal = selectedAddons.reduce((sum, addonName) => {
     const addonInfo = ADDONS_LIST.find(a => a.name === addonName);
@@ -156,7 +224,9 @@ export default function BookNowPage() {
     // Save booking + notification so admin gets notified
     await saveBookingToFirestore();
     
+    alert("✅ Booking Successful\n\nYour booking has been submitted successfully.");
     window.open(whatsappUrl, '_blank');
+    navigate('/');
   };
 
   const handleCustomerShare = (platform: string) => {
@@ -178,31 +248,34 @@ export default function BookNowPage() {
       customerName: customerName || "Customer",
       customerPhone: customerPhone || "",
       packageName: selectedPackage || "TBD",
+      packageId: selectedPackageData?.id || "",
       occasion: selectedOccasion || "TBD",
       date: date || "TBD",
       timeSlot: timeSlot || "TBD",
       addons: selectedAddons,
       totalAmount: currentTotal,
       paymentMethod: paymentMethod || "WhatsApp",
+      status: "pending",
+      read: false,
+      createdAt: new Date().toISOString()
     };
 
     console.log("📦 Saving booking data:", JSON.stringify(bookingData));
 
     try {
-      const res = await fetch('/api/booking/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData),
-      });
-      const result = await res.json();
-      if (result.success) {
-        console.log("✅ Booking + notification saved! Booking ID:", result.bookingId);
-      } else {
-        console.error("❌ Server save failed:", result.error);
-      }
+      const docRef = await addDoc(collection(db, "bookings"), bookingData);
+      console.log("✅ Booking + notification saved to Firebase! Booking ID:", docRef.id);
     } catch (err) {
-      console.error("Error calling save API:", err);
+      console.error("Error saving booking to Firestore:", err);
     }
+
+    // ALWAYS save to localStorage for the local Admin Panel to instantly see it
+    const existing = localStorage.getItem('joy_bookings');
+    const bookings = existing ? JSON.parse(existing) : [];
+    const newBooking = { id: `bk-${Date.now()}`, ...bookingData };
+    bookings.push(newBooking);
+    localStorage.setItem('joy_bookings', JSON.stringify(bookings));
+    window.dispatchEvent(new Event('storage'));
   };
 
   const handleConfirmPay = () => {
@@ -272,33 +345,14 @@ export default function BookNowPage() {
       slots.push(`${startTime} - ${endTime}`);
     }
     
-    if (selectedPackage === 'Midnight Special') {
-      return ["11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", "01:00 AM - 02:00 AM"];
+    if (selectedPackageData?.timings && selectedPackageData.timings.length > 0) {
+      return selectedPackageData.timings;
     }
     return slots;
   };
 
-  const getBookedSlots = (slots: string[], dateStr: string) => {
-    if (!dateStr || slots.length === 0) return [];
-    let hash = 0;
-    for (let i = 0; i < dateStr.length; i++) {
-      hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
-      hash |= 0; 
-    }
-    const seed = Math.abs(hash);
-    const bookedCount = 2 + (seed % 3); // Randomly 2 to 4 booked slots
-    const booked: string[] = [];
-    for(let i = 0; i < bookedCount; i++) {
-      const index = (seed + i * 13) % slots.length;
-      if (!booked.includes(slots[index])) {
-         booked.push(slots[index]);
-      }
-    }
-    return booked;
-  };
-
   const allSlots = generateSlots();
-  const bookedSlots = getBookedSlots(allSlots, date || '');
+  const bookedSlots = (date && selectedPackageData?.bookedSlotsByDate) ? (selectedPackageData.bookedSlotsByDate[date] || []) : [];
   const availableSlots = allSlots.filter(s => !bookedSlots.includes(s));
   // -------------------------------
 
@@ -335,7 +389,7 @@ export default function BookNowPage() {
           <div style={{ marginTop: '2rem' }}>
             {currentStep === 1 && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
-                {PACKAGES_LIST.map((pkg) => {
+                {plans.map((pkg) => {
                   const isSelected = selectedPackage === pkg.name;
                   return (
                     <div 
@@ -386,18 +440,17 @@ export default function BookNowPage() {
                           <span style={{ color: 'white', fontSize: '1rem', marginTop: '0.2rem', marginRight: '0.2rem' }}>₹</span>
                           <span style={{ color: 'white', fontSize: '2rem', fontWeight: 'bold', lineHeight: '1' }}>{pkg.price}</span>
                         </div>
-                        
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
                             <Clock size={18} color="#d4af37" /> {pkg.duration}
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                            <Users size={18} color="#d4af37" /> {pkg.people}
+                            <Users size={18} color="#d4af37" /> {pkg.members}
                           </div>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                          {pkg.features.map((feature, i) => (
+                          {pkg.features?.map((feature, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.8rem' }}>
                               <Check size={16} color="#d4af37" style={{ marginTop: '0.1rem', flexShrink: 0 }} />
                               <span>{feature}</span>
@@ -682,7 +735,7 @@ export default function BookNowPage() {
             {currentStep === 5 && (
               <div style={{ textAlign: 'center', maxWidth: '500px', margin: '0 auto' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                  <input type="text" placeholder="Full Name" value={customerName} onChange={e => setCustomerName(e.target.value)} className={styles.inputField} style={inputStyles} />
+                  <input type="text" placeholder="Full Name" value={customerName} onChange={e => setCustomerName(e.target.value.replace(/[^a-zA-Z\s]/g, ''))} className={styles.inputField} style={inputStyles} />
                   <input 
                     type="tel" 
                     placeholder="Phone Number (10 Digits)" 
@@ -764,7 +817,7 @@ export default function BookNowPage() {
                     onClick={handleFinalSubmit}
                     style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#25D366', color: '#ffffff', borderColor: '#25D366' }}
                   >
-                    <MessageCircle size={18} /> Send via WhatsApp
+                    <MessageCircle size={18} /> CONFIRM BOOKING & SHARE VIA WHATSAPP
                   </button>
                 </div>
               </div>

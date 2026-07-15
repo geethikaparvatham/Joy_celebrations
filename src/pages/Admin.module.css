@@ -29,6 +29,28 @@
   gap: 0.5rem;
 }
 
+.emptyState {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: var(--border-glass);
+  border-radius: var(--radius-lg);
+}
+
+.packagesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .packagesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .navItem {
   display: flex;
   align-items: center;

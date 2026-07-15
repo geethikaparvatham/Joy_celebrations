@@ -1,5 +1,7 @@
 
 import { useState, useEffect } from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { LayoutDashboard, Ticket, Clock, Users, IndianRupee } from "lucide-react";
 import styles from "./Admin.module.css";
 import LogoutButton from "./admin/LogoutButton";
@@ -25,23 +27,27 @@ type Booking = {
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
 
-  const fetchBookings = async () => {
-    try {
-      const res = await fetch('/api/bookings');
-      const data = await res.json();
-      if (data.bookings) {
-        setBookings(data.bookings);
-      }
-    } catch (err) {
-      console.error("Error fetching bookings:", err);
-    }
-  };
-
+  // Use the localStorage bookings for stats calculation
   useEffect(() => {
-    fetchBookings();
-    const interval = setInterval(fetchBookings, 5000); // poll every 5s
-    return () => clearInterval(interval);
+    const loadAllBookings = () => {
+      const existing = localStorage.getItem('joy_bookings');
+      if (existing) {
+        const parsedBookings = JSON.parse(existing);
+        setBookings(parsedBookings);
+      }
+    };
+    
+    loadAllBookings();
+    
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'joy_bookings' || e.type === 'storage') {
+        loadAllBookings();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
+
 
   // Calculate statistics
   const todayStr = new Date().toISOString().split('T')[0];

@@ -1,6 +1,8 @@
-
 import { useState, useEffect, useRef } from "react";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { Bell, X, CheckCheck, Ticket } from "lucide-react";
+import ToastNotification from './ToastNotification';
 
 type Notification = {
   id: string;
@@ -12,87 +14,87 @@ type Notification = {
   customerName: string;
   customerPhone: string;
   packageName: string;
+  packageId?: string;
   occasion: string;
   date: string;
   timeSlot: string;
   addons?: string[] | string;
   totalAmount: number;
-  bookingId: string;
   read: boolean;
   createdAt: string;
-  action?: string;
+  status?: string;
 };
 
 export default function AdminNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [latestToast, setLatestToast] = useState<Notification | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const prevUnreadCount = useRef<number>(0);
   const isFirstLoad = useRef<boolean>(true);
 
-  // Play a big, attention-grabbing notification sound using Web Audio API
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
+  }, []);
+
+  // Play a big, attention-grabbing notification sound using HTML5 Audio
   const playNotificationSound = () => {
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContext) return;
-      const ctx = new AudioContext();
-
-      const playTone = (freq: number, startTime: number, duration: number, volume: number) => {
-        const oscillator = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(freq, startTime);
-        gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-        oscillator.start(startTime);
-        oscillator.stop(startTime + duration);
-      };
-
-      const now = ctx.currentTime;
-      // Loud chime sequence: C5 → E5 → G5 → C6 (triumphant chord arpeggio)
-      playTone(523.25, now + 0.0,  0.4, 0.9); // C5
-      playTone(659.25, now + 0.15, 0.4, 0.9); // E5
-      playTone(783.99, now + 0.3,  0.4, 0.9); // G5
-      playTone(1046.5, now + 0.45, 0.7, 1.0); // C6 (loud + long)
-      // Second wave for emphasis
-      playTone(1046.5, now + 0.7,  0.3, 0.7);
-      playTone(783.99, now + 0.9,  0.3, 0.6);
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(err => {
+          console.warn('Browser blocked audio playback. User must click on the page first:', err);
+        });
+      }
     } catch (err) {
       console.warn('Could not play notification sound:', err);
     }
   };
 
-  const fetchNotifications = async () => {
-    try {
-      const res = await fetch('/api/notifications');
-      const data = await res.json();
-      if (data.notifications) {
-        const newNotifications: Notification[] = data.notifications;
-        const newUnreadCount = newNotifications.filter((n: Notification) => !n.read).length;
+  useEffect(() => {
 
-        // Play sound if unread count INCREASED (new notification arrived)
-        // Skip on first load to avoid sound on page open
+    const loadNotifications = () => {
+      const existing = localStorage.getItem('joy_bookings');
+      if (existing) {
+        const bookings = JSON.parse(existing);
+        bookings.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        
+        const newNotifications = bookings.map((b: any) => ({
+          ...b,
+          title: "New Booking Request"
+        })) as Notification[];
+        
+        const newUnreadCount = newNotifications.filter((n) => !n.read).length;
+
         if (!isFirstLoad.current && newUnreadCount > prevUnreadCount.current) {
           playNotificationSound();
+          // Find the newest booking for the toast
+          const newest = newNotifications.find(n => !n.read && (!latestToast || n.id !== latestToast.id));
+          if (newest) {
+            setLatestToast(newest);
+          }
         }
 
         prevUnreadCount.current = newUnreadCount;
         isFirstLoad.current = false;
         setNotifications(newNotifications);
+      } else {
+        isFirstLoad.current = false;
       }
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-    }
-  };
+    };
 
-  // Poll every 3 seconds for near-instant new notifications
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 3000);
-    return () => clearInterval(interval);
+    loadNotifications();
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'joy_bookings' || e.type === 'storage') {
+        loadNotifications();
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   // Close when clicking outside
@@ -110,26 +112,56 @@ export default function AdminNotifications() {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch('/api/notifications', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+      const existing = localStorage.getItem('joy_bookings');
+      if (existing) {
+        const bookings = JSON.parse(existing);
+        const updated = bookings.map((b: any) => b.id === id ? { ...b, read: true } : b);
+        localStorage.setItem('joy_bookings', JSON.stringify(updated));
+        window.dispatchEvent(new Event('storage'));
+      }
     } catch (err) {
       console.error("Error marking as read:", err);
     }
   };
 
-  const handleBookingAction = async (notificationId: string, bookingId: string, action: "Confirmed" | "Cancelled") => {
+  const handleBookingAction = async (notificationId: string, action: "Confirmed" | "Cancelled") => {
     try {
-      const res = await fetch('/api/bookings', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId, status: action, notificationId })
-      });
-      if (res.ok) {
-        setNotifications(prev => prev.map(n => n.id === notificationId ? { ...n, read: true, action } : n));
+      const existing = localStorage.getItem('joy_bookings');
+      if (existing) {
+        const bookings = JSON.parse(existing);
+        const notif = bookings.find((b: any) => b.id === notificationId);
+        
+        const updated = bookings.map((b: any) => b.id === notificationId ? { ...b, status: action, read: true } : b);
+        localStorage.setItem('joy_bookings', JSON.stringify(updated));
+      
+      if (action === "Confirmed" && notif) {
+        const plansData = localStorage.getItem('joy_plans');
+        if (plansData) {
+          const plans = JSON.parse(plansData);
+          const planToUpdate = plans.find((p: any) => p.id === notif.packageId || p.name === notif.packageName);
+          
+          if (planToUpdate) {
+            const bookedByDate = planToUpdate.bookedSlotsByDate || {};
+            const currentForDate = bookedByDate[notif.date] || [];
+            
+            if (planToUpdate) {
+              const bookedByDate = planToUpdate.bookedSlotsByDate || {};
+              const currentForDate = bookedByDate[notif.date] || [];
+              
+              if (!currentForDate.includes(notif.timeSlot)) {
+                planToUpdate.bookedSlotsByDate = {
+                  ...bookedByDate,
+                  [notif.date]: [...currentForDate, notif.timeSlot]
+                };
+                
+                const updatedPlans = plans.map((p: any) => p.id === planToUpdate.id ? planToUpdate : p);
+                localStorage.setItem('joy_plans', JSON.stringify(updatedPlans));
+              }
+            }
+          }
+        }
+      }
+      window.dispatchEvent(new Event('storage'));
       }
     } catch (err) {
       console.error("Error updating booking action:", err);
@@ -137,8 +169,17 @@ export default function AdminNotifications() {
   };
 
   const markAllAsRead = async () => {
-    const unread = notifications.filter(n => !n.read);
-    await Promise.all(unread.map(n => markAsRead(n.id)));
+    try {
+      const existing = localStorage.getItem('joy_bookings');
+      if (existing) {
+        const bookings = JSON.parse(existing);
+        const updated = bookings.map((b: any) => ({ ...b, read: true }));
+        localStorage.setItem('joy_bookings', JSON.stringify(updated));
+        window.dispatchEvent(new Event('storage'));
+      }
+    } catch (err) {
+      console.error("Error marking all as read:", err);
+    }
   };
 
   const formatTime = (isoString: string) => {
@@ -162,7 +203,7 @@ export default function AdminNotifications() {
     <div ref={panelRef} style={{ position: "relative" }}>
       {/* Bell Button */}
       <button
-        onClick={() => { setIsOpen(prev => !prev); if (!isOpen) fetchNotifications(); }}
+        onClick={() => setIsOpen(prev => !prev)}
         style={{
           position: "relative",
           background: isOpen ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.05)",
@@ -344,44 +385,40 @@ export default function AdminNotifications() {
                     </div>
                   </div>
 
-                  {!n.action && (
-                    <div style={{ marginLeft: "2rem", marginTop: "0.8rem", display: "flex", gap: "0.5rem" }}>
+                  {(!n.status || n.status === "pending") && (
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', marginLeft: "2rem" }}>
                       <button 
-                        onClick={(e) => { e.stopPropagation(); handleBookingAction(n.id, n.bookingId, "Confirmed"); }} 
-                        style={{ padding: "0.4rem 1rem", background: "#22C55E", color: "white", border: "none", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "bold", cursor: "pointer", transition: "transform 0.1s" }}
-                        onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-                        onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        onClick={(e) => { e.stopPropagation(); handleBookingAction(n.id, "Confirmed"); }} 
+                        style={{ background: '#22C55E', color: 'white', border: 'none', padding: '0.6rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'center' }}
                       >
-                        Allow
+                        <Check size={16} /> Accept Booking
                       </button>
                       <button 
-                        onClick={(e) => { e.stopPropagation(); handleBookingAction(n.id, n.bookingId, "Cancelled"); }} 
-                        style={{ padding: "0.4rem 1rem", background: "#EF4444", color: "white", border: "none", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "bold", cursor: "pointer", transition: "transform 0.1s" }}
-                        onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-                        onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        onClick={(e) => { e.stopPropagation(); handleBookingAction(n.id, "Cancelled"); }} 
+                        style={{ background: '#EF4444', color: 'white', border: 'none', padding: '0.6rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'center' }}
                       >
-                        Deny
+                        <X size={16} /> Reject Booking
                       </button>
                     </div>
                   )}
-                  {n.action && (
-                    <div style={{ marginLeft: "2rem", marginTop: "0.6rem" }}>
-                      <span style={{ 
-                        fontSize: "0.75rem", 
-                        color: n.action === "Confirmed" ? "#22C55E" : "#EF4444", 
-                        fontWeight: "bold",
-                        background: n.action === "Confirmed" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
-                        padding: "0.2rem 0.5rem",
-                        borderRadius: "4px"
+                  {n.status && n.status !== "pending" && (
+                    <div style={{ marginLeft: "2rem" }}>
+                      <div style={{ 
+                        marginTop: '1.5rem', 
+                        padding: '0.4rem 0.8rem', 
+                        background: n.status === "Confirmed" ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                        color: n.status === "Confirmed" ? '#22C55E' : '#EF4444',
+                        borderRadius: '4px',
+                        display: 'inline-block',
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem'
                       }}>
-                        {n.action === "Confirmed" ? "✓ Allowed" : "✗ Denied"}
-                      </span>
+                        {n.status === "Confirmed" ? "✓ Accepted" : "✗ Rejected"}
+                      </div>
                     </div>
                   )}
 
-                  {!n.read && !n.action && (
+                  {!n.read && n.status !== "pending" && (
                     <div style={{ marginLeft: "2rem", marginTop: "0.6rem" }}>
                       <span style={{ fontSize: "0.7rem", color: "rgba(212,175,55,0.6)" }}>
                         Tap anywhere to dismiss
@@ -393,6 +430,16 @@ export default function AdminNotifications() {
             )}
           </div>
         </div>
+      )}
+
+      {/* Top Right Animated Toast */}
+      {latestToast && (
+        <ToastNotification 
+          booking={latestToast} 
+          onClose={() => setLatestToast(null)} 
+          onAccept={(id) => { handleBookingAction(id, "Confirmed"); setLatestToast(null); }}
+          onReject={(id) => { handleBookingAction(id, "Cancelled"); setLatestToast(null); }}
+        />
       )}
     </div>
   );

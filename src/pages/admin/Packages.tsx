@@ -2,7 +2,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import LogoutButton from "./LogoutButton";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 import PackagesManager from "./packages/PackagesManager";
-import styles from "@/page.module.css";
+import styles from "../Admin.module.css";
 
 export default function AdminPackagesPage() {
   return (

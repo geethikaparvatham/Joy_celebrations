@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ConditionalFooter from './components/layout/ConditionalFooter';
@@ -28,10 +28,13 @@ import AdminSettings from './pages/admin/Settings';
 
 import WhatsAppButton from './components/ui/WhatsAppButton';
 
-function App() {
+function AppLayout() {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
+
   return (
-    <Router>
-      <Navbar />
+    <>
+      {!isAdmin && <Navbar />}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -57,8 +60,16 @@ function App() {
           <Route path="/admin/settings" element={<AdminSettings />} />
         </Routes>
       </main>
-      <WhatsAppButton />
-      <ConditionalFooter />
+      {!isAdmin && <WhatsAppButton />}
+      {!isAdmin && <ConditionalFooter />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppLayout />
     </Router>
   );
 }

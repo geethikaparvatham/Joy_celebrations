@@ -1,10 +1,11 @@
 
-import { useState, useEffect } from "react";
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { useState, useEffect, useRef } from "react";
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Plus, Edit2, Trash2, X, Check, Clock, Users } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Check, Clock, Users, Calendar } from "lucide-react";
 import styles from "@/page.module.css";
 import frontendStyles from "../../Packages.module.css";
+import adminStyles from "../../Admin.module.css";
 
 type Plan = {
   id: string;
@@ -14,7 +15,7 @@ type Plan = {
   members: string;
   features: string[];
   timings: string[];
-  bookedSlots?: string[];
+  bookedSlotsByDate?: Record<string, string[]>;
   isPopular?: boolean;
   isMidnight?: boolean;
 };
@@ -35,7 +36,7 @@ export default function PackagesManager() {
         "09:00 PM - 10:00 PM", "10:00 PM - 11:00 PM", "11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", 
         "01:00 AM - 02:00 AM"
       ],
-      bookedSlots: ["12:00 PM - 01:00 PM", "06:00 PM - 07:00 PM"],
+      bookedSlotsByDate: {},
       isPopular: false,
       isMidnight: false
     },
@@ -53,7 +54,7 @@ export default function PackagesManager() {
         "09:00 PM - 10:00 PM", "10:00 PM - 11:00 PM", "11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", 
         "01:00 AM - 02:00 AM"
       ],
-      bookedSlots: ["02:00 PM - 03:00 PM", "08:00 PM - 09:00 PM"],
+      bookedSlotsByDate: {},
       isPopular: true,
       isMidnight: false
     },
@@ -69,7 +70,7 @@ export default function PackagesManager() {
         "05:00 PM - 07:00 PM", "07:00 PM - 09:00 PM", "09:00 PM - 11:00 PM", "11:00 PM - 01:00 AM", 
         "12:00 AM - 02:00 AM"
       ],
-      bookedSlots: ["07:00 PM - 09:00 PM"],
+      bookedSlotsByDate: {},
       isPopular: false,
       isMidnight: false
     },
@@ -81,13 +82,17 @@ export default function PackagesManager() {
       members: "Up to 10 Members",
       features: ["Exclusive Midnight Slot", "Premium Decoration", "Birthday Video", "Fog Effect", "LED Letters", "Special Cake"],
       timings: ["11:00 PM - 12:00 AM", "12:00 AM - 01:00 AM", "01:00 AM - 02:00 AM"],
-      bookedSlots: [],
+      bookedSlotsByDate: {},
       isPopular: false,
       isMidnight: true
     }
   ];
 
-  const [plans, setPlans] = useState<Plan[]>(defaultPlans);
+  const initialPlans = () => {
+    const local = localStorage.getItem('joy_plans');
+    return local ? JSON.parse(local) : defaultPlans;
+  };
+  const [plans, setPlans] = useState<Plan[]>(initialPlans());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   
@@ -103,22 +108,30 @@ export default function PackagesManager() {
   const [timings, setTimings] = useState<string[]>([]);
   const [newTiming, setNewTiming] = useState("");
   
-  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
-  const [newBookedSlot, setNewBookedSlot] = useState("");
-  
   const [isPopular, setIsPopular] = useState(false);
   const [isMidnight, setIsMidnight] = useState(false);
+  
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  
+  const [firebaseError, setFirebaseError] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "plans"), (snapshot) => {
-      const fetchedPlans = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Plan[];
-      setPlans(fetchedPlans);
-    });
+    if (plans.length > 0) {
+      localStorage.setItem('joy_plans', JSON.stringify(plans));
+    }
+  }, [plans]);
 
-    return () => unsubscribe();
+  // Firebase syncing is disconnected. We rely entirely on localStorage.
+  useEffect(() => {
+    // Just listen for cross-tab local storage changes if they happen
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'joy_plans' && e.newValue) {
+        setPlans(JSON.parse(e.newValue));
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const resetForm = () => {
@@ -130,8 +143,6 @@ export default function PackagesManager() {
     setNewFeature("");
     setTimings([]);
     setNewTiming("");
-    setBookedSlots([]);
-    setNewBookedSlot("");
     setIsPopular(false);
     setIsMidnight(false);
     setEditingPlan(null);
@@ -146,7 +157,6 @@ export default function PackagesManager() {
       setMembers(plan.members || "");
       setFeatures(plan.features || []);
       setTimings(plan.timings || []);
-      setBookedSlots(plan.bookedSlots || []);
       setIsPopular(plan.isPopular || false);
       setIsMidnight(plan.isMidnight || false);
     } else {
@@ -197,33 +207,25 @@ export default function PackagesManager() {
       members,
       features,
       timings,
-      bookedSlots,
       isPopular,
       isMidnight
-    };
-
-    try {
+    };    try {
       if (editingPlan) {
-        await updateDoc(doc(db, "plans", editingPlan.id), planData);
+        setPlans(prev => prev.map(p => p.id === editingPlan.id ? { ...p, ...planData } : p));
       } else {
-        await addDoc(collection(db, "plans"), planData);
+        const newPlan = { id: `local-${Date.now()}`, ...planData, bookedSlotsByDate: {} };
+        setPlans(prev => [...prev, newPlan]);
       }
       setIsModalOpen(false);
       resetForm();
     } catch (error) {
       console.error("Error saving plan:", error);
-      alert("Failed to save plan. Please check your permissions and try again.");
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeletePlan = async (id: string) => {
     if (confirm("Are you sure you want to delete this plan?")) {
-      try {
-        await deleteDoc(doc(db, "plans", id));
-      } catch (error) {
-        console.error("Error deleting plan:", error);
-        alert("Failed to delete plan.");
-      }
+      setPlans(prev => prev.filter(p => p.id !== id));
     }
   };
 
@@ -238,71 +240,85 @@ export default function PackagesManager() {
   const [inlineNewTiming, setInlineNewTiming] = useState<Record<string, string>>({});
 
   const handleToggleBookSlot = async (plan: Plan, time: string, shouldBook: boolean) => {
-    const currentBooked = plan.bookedSlots || [];
-    let newBooked: string[];
+    const bookedByDate = plan.bookedSlotsByDate || {};
+    const currentBookedForDate = bookedByDate[selectedDate] || [];
+    
+    let newBookedForDate;
     if (shouldBook) {
-      newBooked = [...currentBooked, time];
+      newBookedForDate = [...currentBookedForDate, time];
     } else {
-      newBooked = currentBooked.filter(t => t !== time);
+      newBookedForDate = currentBookedForDate.filter(t => t !== time);
     }
     
-    if (plan.id.startsWith("default-")) {
-      setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, bookedSlots: newBooked } : p));
-    } else {
-      try {
-        await updateDoc(doc(db, "plans", plan.id), { bookedSlots: newBooked });
-      } catch (error) {
-        console.error("Error updating booked slots:", error);
-      }
-    }
-  };
-
-  const handleRemoveInlineTiming = async (plan: Plan, time: string) => {
-    const newTimings = (plan.timings || []).filter(t => t !== time);
-    const newBooked = (plan.bookedSlots || []).filter(t => t !== time);
-
-    if (plan.id.startsWith("default-")) {
-      setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, timings: newTimings, bookedSlots: newBooked } : p));
-    } else {
-      try {
-        await updateDoc(doc(db, "plans", plan.id), { timings: newTimings, bookedSlots: newBooked });
-      } catch (error) {
-        console.error("Error removing timing:", error);
-      }
-    }
+    const newBookedSlotsByDate = {
+      ...bookedByDate,
+      [selectedDate]: newBookedForDate
+    };
+    
+    // Optimistic UI update: update local state instantly
+    setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, bookedSlotsByDate: newBookedSlotsByDate } : p));
   };
 
   const handleAddInlineTiming = async (plan: Plan) => {
     const newTime = inlineNewTiming[plan.id]?.trim();
     if (!newTime) return;
 
-    const currentTimings = plan.timings || [];
-    if (currentTimings.includes(newTime)) return;
-
-    const newTimings = [...currentTimings, newTime];
-
-    if (plan.id.startsWith("default-")) {
-      setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, timings: newTimings } : p));
-    } else {
-      try {
-        await updateDoc(doc(db, "plans", plan.id), { timings: newTimings });
-      } catch (error) {
-        console.error("Error adding timing:", error);
-      }
-    }
+    const newTimings = [...(plan.timings || []), newTime];
+    setPlans(prev => prev.map(p => p.id === plan.id ? { ...p, timings: newTimings } : p));
 
     setInlineNewTiming(prev => ({ ...prev, [plan.id]: "" }));
   };
 
   return (
     <div style={{ marginTop: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+          <label style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '0.9rem' }}>Select Date:</label>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <input 
+              type="date" 
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              ref={dateInputRef}
+              min={new Date().toISOString().split('T')[0]}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'white',
+                fontSize: '1rem',
+                outline: 'none',
+                fontFamily: 'inherit',
+                cursor: 'pointer',
+                paddingRight: '30px'
+              }}
+              className="admin-date-input"
+              onClick={(e) => e.currentTarget.showPicker()}
+            />
+            <Calendar 
+              size={20} 
+              onClick={() => dateInputRef.current?.showPicker()}
+              style={{ position: 'absolute', right: '5px', top: '50%', transform: 'translateY(-50%)', color: '#d4af37', cursor: 'pointer', pointerEvents: 'none' }} 
+            />
+            <style>
+              {`
+                .admin-date-input::-webkit-calendar-picker-indicator {
+                  opacity: 0;
+                  position: absolute;
+                  right: 0;
+                  width: 100%;
+                  height: 100%;
+                  cursor: pointer;
+                }
+              `}
+            </style>
+          </div>
+        </div>
         <button onClick={() => openModal()} className="btn-primary" style={{ padding: '0.6rem 1.2rem', gap: '0.5rem', display: 'flex', alignItems: 'center' }}>
           <Plus size={18} /> Add New Plan
         </button>
       </div>
 
-      <div className={frontendStyles.grid} style={{ marginTop: '2rem' }}>
+      <div className={adminStyles.packagesGrid} style={{ marginTop: '2rem' }}>
         {plans.length === 0 ? (
           <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem', gridColumn: '1 / -1' }}>
             <p className="text-[var(--text-secondary)]">No plans found. Add one to get started.</p>
@@ -363,43 +379,29 @@ export default function PackagesManager() {
                     gap: '0.5rem', 
                     marginBottom: '1rem'
                   }}>
-                    {plan.timings.filter(t => !plan.bookedSlots?.includes(t)).map((time, idx) => (
+                    {plan.timings.filter(t => !(plan.bookedSlotsByDate?.[selectedDate] || []).includes(t)).map((time, idx) => (
                       <span 
                         key={`avail-${idx}`} 
                         onClick={() => handleToggleBookSlot(plan, time, true)}
+                        title="Click to mark as Booked"
                         style={{ 
-                          background: 'rgba(212,175,55,0.1)', 
-                          border: '1px solid rgba(212,175,55,0.25)', 
-                          padding: '0.6rem 0.5rem', 
+                          background: 'rgba(212, 175, 55, 0.05)', 
+                          border: '1px solid rgba(212, 175, 55, 0.3)', 
+                          padding: '0.8rem 1rem', 
                           borderRadius: '6px', 
-                          fontSize: '0.8rem', 
+                          fontSize: '0.85rem', 
                           color: 'var(--text-primary)', 
                           display: 'inline-flex',
                           alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: '0.3rem',
+                          justifyContent: 'center',
                           whiteSpace: 'nowrap',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
                         }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(212, 175, 55, 0.15)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(212, 175, 55, 0.05)' }}
                       >
-                        <span style={{ flex: 1, textAlign: 'center' }}>{time}</span>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleRemoveInlineTiming(plan, time); }}
-                          style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            color: '#ff4444', 
-                            cursor: 'pointer', 
-                            fontSize: '1.2rem',
-                            lineHeight: 1,
-                            padding: '0 2px',
-                            fontWeight: 'bold',
-                            opacity: 0.6
-                          }}
-                          title="Delete slot"
-                        >
-                          ×
-                        </button>
+                        {time}
                       </span>
                     ))}
                   </div>
@@ -407,7 +409,7 @@ export default function PackagesManager() {
                   <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', marginBottom: '1rem' }}>No available slots.</p>
                 )}
                 
-                {plan.bookedSlots && plan.bookedSlots.length > 0 && (
+                {(plan.bookedSlotsByDate?.[selectedDate] || []).length > 0 && (
                   <>
                     <p className="text-sm font-bold mb-3 mt-4" style={{ color: '#EF4444' }}>Booked Slots -</p>
                     <div style={{ 
@@ -416,90 +418,36 @@ export default function PackagesManager() {
                       gap: '0.5rem',
                       marginBottom: '1rem'
                     }}>
-                      {plan.bookedSlots.map((time, idx) => (
-                        <span 
-                          key={`booked-${idx}`} 
-                          onClick={() => handleToggleBookSlot(plan, time, false)}
-                          style={{ 
-                            background: 'rgba(255,255,255,0.03)', 
-                            border: '1px solid rgba(255,255,255,0.08)', 
-                            padding: '0.6rem 0.5rem', 
-                            borderRadius: '6px', 
-                            fontSize: '0.8rem', 
-                            color: '#666', 
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: '0.3rem',
-                            whiteSpace: 'nowrap',
-                            cursor: 'pointer',
-                            opacity: 0.6
-                          }}
-                        >
-                          <span style={{ flex: 1, textAlign: 'center', textDecoration: 'line-through' }}>{time}</span>
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); handleRemoveInlineTiming(plan, time); }}
-                            style={{ 
-                              background: 'none', 
-                              border: 'none', 
-                              color: '#ff4444', 
-                              cursor: 'pointer', 
-                              fontSize: '1.2rem',
-                              lineHeight: 1,
-                              padding: '0 2px',
-                              fontWeight: 'bold',
-                              opacity: 0.6
-                            }}
-                            title="Delete slot"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+                    {(plan.bookedSlotsByDate?.[selectedDate] || []).map((time, idx) => (
+                      <span 
+                        key={`booked-${idx}`} 
+                        onClick={() => handleToggleBookSlot(plan, time, false)}
+                        title="Click to mark as Available"
+                        style={{ 
+                          background: 'rgba(255,255,255,0.03)', 
+                          border: '1px solid rgba(255,255,255,0.08)', 
+                          padding: '0.8rem 1rem', 
+                          borderRadius: '6px', 
+                          fontSize: '0.85rem', 
+                          color: '#ef4444', 
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          whiteSpace: 'nowrap',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          opacity: 0.8
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                      >
+                        <span style={{ textDecoration: 'line-through' }}>{time}</span>
+                      </span>
+                    ))}
                     </div>
                   </>
                 )}
 
-                {/* Inline Add Timing Form */}
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                  <input 
-                    type="text" 
-                    placeholder="Add timing (e.g. 06:00 PM - 07:00 PM)" 
-                    value={inlineNewTiming[plan.id] || ""}
-                    onChange={(e) => setInlineNewTiming(prev => ({ ...prev, [plan.id]: e.target.value }))}
-                    onKeyDown={async (e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        await handleAddInlineTiming(plan);
-                      }
-                    }}
-                    style={{
-                      flex: 1,
-                      padding: '0.4rem 0.6rem',
-                      fontSize: '0.8rem',
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '4px',
-                      color: 'white'
-                    }}
-                  />
-                  <button 
-                    type="button"
-                    onClick={() => handleAddInlineTiming(plan)}
-                    style={{
-                      background: 'var(--accent-gold)',
-                      color: 'var(--bg-primary)',
-                      border: 'none',
-                      padding: '0.4rem 0.8rem',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    +
-                  </button>
-                </div>
               </div>
 
               <button className={`btn-primary ${frontendStyles.bookBtn}`} style={{ cursor: 'default' }}>

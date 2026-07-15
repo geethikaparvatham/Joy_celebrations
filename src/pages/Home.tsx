@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Play, Sparkles, Star, Quote } from "lucide-react";
+import LiveStats from "@/components/ui/LiveStats";
 import styles from "@/page.module.css";
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
@@ -100,27 +102,7 @@ export default function Home() {
       </section>
       <section className={styles.statsSection}>
         <div className={styles.statsContainer}>
-          <div className={styles.statBox}>
-            <h3 className={styles.statNumber}>
-              5.0 <span className="gold-text">★</span>
-            </h3>
-            <p className={styles.statLabel}>Google Rating</p>
-          </div>
-          <div className={styles.statDivider}></div>
-          <div className={styles.statBox}>
-            <h3 className={styles.statNumber}>200+</h3>
-            <p className={styles.statLabel}>Happy Reviews</p>
-          </div>
-          <div className={styles.statDivider}></div>
-          <div className={styles.statBox}>
-            <h3 className={styles.statNumber}>4+</h3>
-            <p className={styles.statLabel}>Premium Party Packages</p>
-          </div>
-          <div className={styles.statDivider}></div>
-          <div className={styles.statBox}>
-            <h3 className={styles.statNumber}>1000+</h3>
-            <p className={styles.statLabel}>Successful Celebrations</p>
-          </div>
+          <LiveStats />
         </div>
       </section>
 

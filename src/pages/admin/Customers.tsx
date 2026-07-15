@@ -3,10 +3,10 @@ import { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Users, Search, ChevronDown, ChevronUp, Calendar, Ticket, ShoppingBag, ArrowUpDown } from "lucide-react";
-import styles from "@/page.module.css";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import AdminNotifications from "@/components/admin/AdminNotifications";
 import LogoutButton from "./LogoutButton";
+import AdminNotifications from "@/components/admin/AdminNotifications";
+import styles from "../Admin.module.css";
 
 type Booking = {
   id: string;

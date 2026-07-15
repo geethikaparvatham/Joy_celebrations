@@ -6,37 +6,37 @@ const posts = [
     slug: 'best-birthday-celebration-ideas-vijayawada',
     title: 'Why Are Private Theater Parties the Next Big Trend in Vijayawada',
     category: 'Celebration Ideas',
-    image: '/images/theme_birthday.jpg'
+    image: '/images/theme_birthday.jpg?v=2'
   },
   {
     slug: 'romantic-proposal-decoration-guide',
     title: 'From Solo Chill to Group Thrills in Vijayawada — Why Private Experiences Always Win',
     category: 'Places & Activities',
-    image: '/images/theme_friendship.jpg'
+    image: '/images/theme_friendship.jpg?v=2'
   },
   {
     slug: 'private-theatre-vs-restaurant',
     title: 'How Are Private Theaters in Vijayawada Replacing Boring Movie Nights?',
     category: 'Movies & Shows',
-    image: '/images/theme_couple.jpg'
+    image: '/images/theme_couple.jpg?v=2'
   },
   {
     slug: 'top-5-anniversary-surprise-ideas',
     title: 'Top 5 Anniversary Surprise Ideas Using a Private Theatre',
     category: 'Celebration Ideas',
-    image: '/images/theme_anniversary.jpg'
+    image: '/images/theme_anniversary.jpg?v=2'
   },
   {
     slug: 'private-theatre-vs-public-cinema',
     title: '5 Reasons Why a Private Theatre is Better Than a Public Cinema',
     category: 'Places & Activities',
-    image: '/images/theme_movie.jpg'
+    image: '/images/theme_movie.jpg?v=2'
   },
   {
     slug: 'best-romantic-movies-date-night',
     title: 'Best Movies to Watch for a Romantic Date Night in a Private Theatre',
     category: 'Movies & Shows',
-    image: '/images/theme_proposal.jpg'
+    image: '/images/theme_proposal.jpg?v=2'
   }
 ];
 
