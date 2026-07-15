@@ -188,16 +188,16 @@ export default function Home() {
 
         <section style={{ padding: '5rem 10%', background: '#0a0a0a', borderTop: '1px solid rgba(212, 175, 55, 0.1)' }}>
           <h2 className="heading-luxury" style={{ color: '#d4af37', marginBottom: '2rem', textAlign: 'center' }}>Our Celebration Services</h2>
-          <article style={{ maxWidth: '900px', margin: '0 auto', color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '1.1rem', textAlign: 'center' }}>
+          <article style={{ maxWidth: '900px', margin: '0 auto', color: '#e2e8f0', lineHeight: '1.8', fontSize: '1.1rem', textAlign: 'center' }}>
             <p style={{ marginBottom: '2rem' }}>We specialize in hosting a variety of private events ensuring every detail is perfectly managed.</p>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem' }}>
-              <li style={{ background: '#111', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>Birthday Celebrations</li>
-              <li style={{ background: '#111', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>Proposal Decorations</li>
-              <li style={{ background: '#111', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>Anniversary Celebrations</li>
-              <li style={{ background: '#111', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>Bride-to-Be Events</li>
-              <li style={{ background: '#111', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>Baby Shower Celebrations</li>
-              <li style={{ background: '#111', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>Private Movie Screenings</li>
-              <li style={{ background: '#111', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>Surprise Events</li>
+              <li style={{ background: '#111', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.6)' }}>Birthday Celebrations</li>
+              <li style={{ background: '#111', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.6)' }}>Proposal Decorations</li>
+              <li style={{ background: '#111', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.6)' }}>Anniversary Celebrations</li>
+              <li style={{ background: '#111', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.6)' }}>Bride-to-Be Events</li>
+              <li style={{ background: '#111', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.6)' }}>Baby Shower Celebrations</li>
+              <li style={{ background: '#111', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.6)' }}>Private Movie Screenings</li>
+              <li style={{ background: '#111', color: '#fff', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid rgba(212, 175, 55, 0.6)' }}>Surprise Events</li>
             </ul>
           </article>
         </section>
