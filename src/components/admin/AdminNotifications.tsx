@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Bell, X, CheckCheck, Ticket } from "lucide-react";
+import { Bell, X, CheckCheck, Ticket, Check } from "lucide-react";
 import ToastNotification from './ToastNotification';
 
 type Notification = {
