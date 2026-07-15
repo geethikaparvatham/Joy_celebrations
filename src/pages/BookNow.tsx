@@ -207,20 +207,20 @@ export default function BookNowPage() {
     const whatsappNumber = "919618681267";
     const name = customerName || "Customer";
     
-    let msg = `*New Booking Request!*%0A%0A`;
-    msg += `*Name:* ${name}%0A`;
-    if (customerPhone) msg += `*Phone:* ${customerPhone}%0A`;
-    msg += `*Package:* ${selectedPackage}%0A`;
-    msg += `*Occasion:* ${selectedOccasion}%0A`;
-    msg += `*Date/Time:* ${date || 'TBD'} | ${timeSlot || 'TBD'}%0A`;
+    let msg = `*New Booking Request!*\n\n`;
+    msg += `*Name:* ${name}\n`;
+    if (customerPhone) msg += `*Phone:* ${customerPhone}\n`;
+    msg += `*Package:* ${selectedPackage}\n`;
+    msg += `*Occasion:* ${selectedOccasion}\n`;
+    msg += `*Date/Time:* ${date || 'TBD'} | ${timeSlot || 'TBD'}\n`;
     
     if (selectedAddons.length > 0) {
-      msg += `*Addons:* ${selectedAddons.join(', ')}%0A`;
+      msg += `*Addons:* ${selectedAddons.join(', ')}\n`;
     }
     
     msg += `*Total Amount:* ₹ ${currentTotal.toLocaleString('en-IN')}`;
     
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${msg}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
     
     // Save booking + notification so admin gets notified
     await saveBookingToFirestore();
