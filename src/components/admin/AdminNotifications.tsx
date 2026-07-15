@@ -36,7 +36,7 @@ export default function AdminNotifications() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audioRef.current = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
+    audioRef.current = new Audio("/notification.mp3");
   }, []);
 
   // Play a big, attention-grabbing notification sound using HTML5 Audio
