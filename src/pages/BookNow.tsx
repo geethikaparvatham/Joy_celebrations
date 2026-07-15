@@ -6,8 +6,6 @@ import { useBookingStore } from "@/lib/store";
 import Tesseract from "tesseract.js";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 interface Plan {
   id: string;
