@@ -36,7 +36,11 @@ export default function AdminNotifications() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audioRef.current = new Audio("/notification.mp3");
+    audioRef.current = new Audio("/samsung_whistle.mp3");
+    // Request notification permission for browser push notifications
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
   }, []);
 
   // Play a big, attention-grabbing notification sound using HTML5 Audio
@@ -92,6 +96,15 @@ export default function AdminNotifications() {
         }
       } else if (newUnreadCount > prevUnreadCount.current) {
         playNotificationSound();
+        
+        // Trigger native browser push notification
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification("You have a new notification from your website!", {
+            body: "A new booking request has been received.",
+            icon: "/favicon.ico"
+          });
+        }
+        
         const newest = newNotifications.find(n => !n.read && (!latestToast || n.id !== latestToast.id));
         if (newest) setLatestToast(newest);
       }

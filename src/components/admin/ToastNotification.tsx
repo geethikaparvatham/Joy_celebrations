@@ -14,15 +14,6 @@ export default function ToastNotification({ booking, onClose, onAccept, onReject
   useEffect(() => {
     // Animate in
     setTimeout(() => setIsVisible(true), 50);
-    
-    // Play Samsung notification sound
-    try {
-      const audio = new Audio('/samsung_whistle.mp3');
-      audio.volume = 1.0;
-      audio.play().catch(e => console.error("Audio playback failed (usually requires user interaction first)", e));
-    } catch (e) {
-      console.error("Audio instantiation failed", e);
-    }
   }, []);
 
   if (!booking) return null;
