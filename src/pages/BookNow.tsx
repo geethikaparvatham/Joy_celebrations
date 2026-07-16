@@ -6,7 +6,7 @@ import { useBookingStore } from "@/lib/store";
 import SEO from "@/components/SEO";
 import Tesseract from "tesseract.js";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
+import { collection, doc, setDoc, addDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
 
 interface Plan {
   id: string;
@@ -47,6 +47,13 @@ const inputStyles = {
 
 export default function BookNowPage() {
   const [currentStep, setCurrentStep] = useState(1);
+  const bookingIdRef = useRef(`bk-${Date.now()}`);
+
+  useEffect(() => {
+    if (currentStep === 6) {
+      saveBookingToFirestore();
+    }
+  }, [currentStep]);
   const dateInputRef = useRef<HTMLInputElement>(null);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [paymentMethod, setPaymentMethod] = useState('UPI / GPay / PhonePe');
@@ -139,7 +146,6 @@ export default function BookNowPage() {
   
   // Firebase syncing is disconnected. We rely entirely on localStorage.
   useEffect(() => {
-    // Just listen for cross-tab local storage changes if they happen
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'joy_plans' && e.newValue) {
         setPlans(JSON.parse(e.newValue));
@@ -226,10 +232,7 @@ export default function BookNowPage() {
     // Open whatsapp immediately BEFORE the async save to bypass popup blockers
     window.open(whatsappUrl, '_blank');
     
-    // Save booking + notification so admin gets notified
-    await saveBookingToFirestore();
-    
-    // Redirect to home or receipt after saving
+    // Redirect to home or receipt after sending
     navigate('/');
   };
 
@@ -246,8 +249,7 @@ export default function BookNowPage() {
   };
 
   const saveBookingToFirestore = async () => {
-    // Generate a robust booking ID locally
-    const bookingId = `bk-${Date.now()}`;
+    const bookingId = bookingIdRef.current;
     
     const bookingData = {
       bookingId: bookingId,
@@ -277,8 +279,8 @@ export default function BookNowPage() {
     console.log("📦 Saving booking data:", JSON.stringify(bookingData));
 
     try {
-      const docRef = await addDoc(collection(db, "bookings"), bookingData);
-      console.log("✅ Booking + notification saved to Firebase! Document ID:", docRef.id);
+      await setDoc(doc(db, "bookings", bookingId), bookingData, { merge: true });
+      console.log("✅ Booking + notification saved to Firebase! Document ID:", bookingId);
     } catch (err) {
       console.error("Error saving booking to Firestore:", err);
     }
