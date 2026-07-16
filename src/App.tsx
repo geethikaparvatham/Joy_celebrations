@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ConditionalFooter from './components/layout/ConditionalFooter';
@@ -28,6 +29,14 @@ import AdminSettings from './pages/admin/Settings';
 
 import WhatsAppButton from './components/ui/WhatsAppButton';
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = localStorage.getItem('admin_token') === 'authenticated';
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  return <>{children}</>;
+};
+
 function AppLayout() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
@@ -53,11 +62,11 @@ function AppLayout() {
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/bookings" element={<AdminBookings />} />
-          <Route path="/admin/customers" element={<AdminCustomers />} />
-          <Route path="/admin/packages" element={<AdminPackages />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/bookings" element={<ProtectedRoute><AdminBookings /></ProtectedRoute>} />
+          <Route path="/admin/customers" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
+          <Route path="/admin/packages" element={<ProtectedRoute><AdminPackages /></ProtectedRoute>} />
+          <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
         </Routes>
       </main>
       {!isAdmin && <WhatsAppButton />}
@@ -65,8 +74,6 @@ function AppLayout() {
     </>
   );
 }
-
-import { HelmetProvider } from 'react-helmet-async';
 
 function App() {
   return (
