@@ -12,7 +12,7 @@ const galleryItems = [
   { id: 6, url: "/gallery6.jpg" },
   { id: 7, url: "/gallery8.jpg" },
   { id: 8, url: "/gallery9.jpg" },
-  { id: 9, url: "/gallery10.jpg" }
+  { id: 9, url: "/gallery10.jpg?v=2" }
 ];
 
 export default function GalleryPage() {
