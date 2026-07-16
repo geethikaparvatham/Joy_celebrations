@@ -124,3 +124,15 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-gold-dark);
 }
+
+@media (max-width: 768px) {
+  .admin-notification-dropdown {
+    position: fixed !important;
+    top: 150px !important;
+    right: 5% !important;
+    left: 5% !important;
+    width: 90% !important;
+    max-width: none !important;
+    z-index: 9999 !important;
+  }
+}

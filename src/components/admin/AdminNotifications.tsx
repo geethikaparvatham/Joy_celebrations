@@ -235,11 +235,13 @@ export default function AdminNotifications() {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div style={{
-          position: "absolute",
-          top: "calc(100% + 10px)",
-          right: 0,
-          width: "390px",
+        <div 
+          className="admin-notification-dropdown"
+          style={{
+            position: "absolute",
+            top: "calc(100% + 10px)",
+            right: 0,
+            width: "390px",
           maxHeight: "520px",
           background: "#1a1a1a",
           border: "1px solid rgba(212,175,55,0.3)",
