@@ -33,29 +33,12 @@ export default function AdminNotifications() {
   const prevUnreadCount = useRef<number>(0);
   const isFirstLoad = useRef<boolean>(true);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
   useEffect(() => {
-    audioRef.current = new Audio("/samsung_whistle.mp3");
     // Request notification permission for browser push notifications
     if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
       Notification.requestPermission();
     }
   }, []);
-
-  // Play a big, attention-grabbing notification sound using HTML5 Audio
-  const playNotificationSound = () => {
-    try {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(err => {
-          console.warn('Browser blocked audio playback. User must click on the page first:', err);
-        });
-      }
-    } catch (err) {
-      console.warn('Could not play notification sound:', err);
-    }
-  };
 
   useEffect(() => {
     const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
@@ -95,8 +78,6 @@ export default function AdminNotifications() {
           if (newest) setLatestToast(newest);
         }
       } else if (newUnreadCount > prevUnreadCount.current) {
-        playNotificationSound();
-        
         // Trigger native browser push notification
         if ("Notification" in window && Notification.permission === "granted") {
           new Notification("You have a new notification from your website!", {

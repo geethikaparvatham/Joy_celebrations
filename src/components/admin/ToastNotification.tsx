@@ -14,6 +14,20 @@ export default function ToastNotification({ booking, onClose, onAccept, onReject
   useEffect(() => {
     // Animate in
     setTimeout(() => setIsVisible(true), 50);
+
+    // Play notification sound
+    try {
+      const audio = new Audio('/samsung_whistle.mp3');
+      audio.volume = 1.0;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log('Audio playback blocked by browser until user interacts with the page:', error);
+        });
+      }
+    } catch (e) {
+      console.error("Audio playback error:", e);
+    }
   }, []);
 
   if (!booking) return null;
