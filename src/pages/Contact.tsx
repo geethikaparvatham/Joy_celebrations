@@ -91,7 +91,23 @@ export default function ContactPage() {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" required />
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              required 
+              pattern="^[6-9]\d{9}$"
+              maxLength={10}
+              title="Phone number must be exactly 10 digits and start with 6, 7, 8, or 9"
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                let val = target.value.replace(/\D/g, '');
+                if (val.length > 0 && !/^[6-9]/.test(val[0])) {
+                  val = ''; // Clear if first digit is invalid
+                }
+                target.value = val;
+              }}
+            />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="message">Message</label>
