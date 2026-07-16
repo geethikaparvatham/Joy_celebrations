@@ -5,11 +5,11 @@ import SEO from "@/components/SEO";
 import styles from "./AddOns.module.css";
 
 const addons = [
-  { id: "photography", title: "Professional Photography (1 Hour)", price: 1500, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGkcC1VYq8sTXN6JUzA5Ia70FHgeRmH7y5eea1jah9GYbjJXHr-Gd_uMc&s=10", details: "• Unlimited Photos" },
-  { id: "cinematic-reel", title: "Cinematic Reel", price: 1500, image: "/addon_cinematic_reel.jpg?v=3", details: "" },
-  { id: "fog-effect", title: "Fog Effect", price: 799, image: "/addon_fog.jpg?v=3", details: "" },
-  { id: "bubble-entry", title: "Bubble Entry", price: 299, image: "/addon_bubble_entry.jpg?v=3", details: "" },
-  { id: "rose-petals", title: "Rose Petals Entry", price: 699, image: "/addon_rose_petals.jpg?v=3", details: "" }
+  { id: "photography", title: "Professional Photography (1 Hour)", price: 1500, image: "/addon_photography.jpg?v=4", details: "• Unlimited Photos" },
+  { id: "cinematic-reel", title: "Cinematic Reel", price: 1500, image: "/addon_cinematic_reel.jpg?v=4", details: "" },
+  { id: "fog-effect", title: "Fog Effect", price: 799, image: "/addon_fog.jpg?v=4", details: "" },
+  { id: "bubble-entry", title: "Bubble Entry", price: 299, image: "/addon_bubble_entry.jpg?v=4", details: "" },
+  { id: "rose-petals", title: "Rose Petals Entry", price: 699, image: "/addon_rose_petals.jpg?v=4", details: "" }
 ];
 
 export default function AddOnsPage() {
