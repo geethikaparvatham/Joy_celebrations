@@ -6,7 +6,7 @@ import styles from "./Gallery.module.css";
 const galleryItems = [
   { id: 1, url: "/bg1.jpg" },
   { id: 2, url: "/bg3.jpg" },
-  { id: 3, url: "/gallery13.jpg" },
+  { id: 3, url: "/gallery13.jpg?v=2" },
   { id: 4, url: "/gallery12.jpg" },
   { id: 5, url: "/gallery5.jpg" },
   { id: 6, url: "/gallery6.jpg" },
