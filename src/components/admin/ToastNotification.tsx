@@ -15,27 +15,36 @@ export default function ToastNotification({ booking, onClose, onAccept, onReject
     // Animate in
     setTimeout(() => setIsVisible(true), 50);
     
-    // Play notification sound
+    // Play big notification sound
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioContext) {
         const ctx = new AudioContext();
-        const osc = ctx.createOscillator();
-        const gainNode = ctx.createGain();
         
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-        
-        gainNode.gain.setValueAtTime(0, ctx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-        
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.5);
+        const playNote = (freq: number, startTime: number, duration: number) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = 'triangle'; // Richer sound than sine
+          osc.frequency.setValueAtTime(freq, startTime);
+          
+          gain.gain.setValueAtTime(0, startTime);
+          gain.gain.linearRampToValueAtTime(0.6, startTime + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.start(startTime);
+          osc.stop(startTime + duration);
+        };
+
+        const t = ctx.currentTime;
+        // Play a prominent, victorious 4-note arpeggio (C5 - E5 - G5 - C6)
+        playNote(523.25, t, 0.4);
+        playNote(659.25, t + 0.15, 0.4);
+        playNote(783.99, t + 0.3, 0.4);
+        playNote(1046.50, t + 0.45, 1.2); // Last note held longer
       }
     } catch (e) {
       console.error("Audio playback failed", e);
