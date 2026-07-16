@@ -204,7 +204,7 @@ export default function BookNowPage() {
     // Force public link even when testing on localhost
     let baseUrl = window.location.origin;
     if (baseUrl.includes('localhost')) {
-      baseUrl = 'https://joy-celebrations-private-theatre.vercel.app';
+      baseUrl = 'https://joy-celebrations.vercel.app';
     }
     
     return `${baseUrl}/receipt?d=${btoa(JSON.stringify(receiptData))}`;
