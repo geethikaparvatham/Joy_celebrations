@@ -15,39 +15,13 @@ export default function ToastNotification({ booking, onClose, onAccept, onReject
     // Animate in
     setTimeout(() => setIsVisible(true), 50);
     
-    // Play big notification sound
+    // Play Samsung notification sound
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioContext) {
-        const ctx = new AudioContext();
-        
-        const playNote = (freq: number, startTime: number, duration: number) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          
-          osc.type = 'triangle'; // Richer sound than sine
-          osc.frequency.setValueAtTime(freq, startTime);
-          
-          gain.gain.setValueAtTime(0, startTime);
-          gain.gain.linearRampToValueAtTime(0.6, startTime + 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-          
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          
-          osc.start(startTime);
-          osc.stop(startTime + duration);
-        };
-
-        const t = ctx.currentTime;
-        // Play a prominent, victorious 4-note arpeggio (C5 - E5 - G5 - C6)
-        playNote(523.25, t, 0.4);
-        playNote(659.25, t + 0.15, 0.4);
-        playNote(783.99, t + 0.3, 0.4);
-        playNote(1046.50, t + 0.45, 1.2); // Last note held longer
-      }
+      const audio = new Audio('/samsung_whistle.mp3');
+      audio.volume = 1.0;
+      audio.play().catch(e => console.error("Audio playback failed (usually requires user interaction first)", e));
     } catch (e) {
-      console.error("Audio playback failed", e);
+      console.error("Audio instantiation failed", e);
     }
   }, []);
 
