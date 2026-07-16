@@ -208,7 +208,7 @@ export default function BookNowPage() {
     const whatsappNumber = "919618681267";
     const name = customerName || "Customer";
     
-    let msg = `*New Booking Request!*\n\n`;
+    let msg = `*You have a new notification from your website!*\n\n`;
     msg += `*Name:* ${name}\n`;
     if (customerPhone) msg += `*Phone:* ${customerPhone}\n`;
     msg += `*Package:* ${selectedPackage}\n`;
