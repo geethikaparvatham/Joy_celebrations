@@ -87,7 +87,18 @@ export default function ContactPage() {
           <h2 className="heading-luxury text-2xl mb-4">Send a Message</h2>
           <div className={styles.formGroup}>
             <label htmlFor="name">Full Name</label>
-            <input type="text" id="name" name="name" required />
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              required 
+              pattern="^[A-Za-z\s]+$"
+              title="Name should only contain letters and spaces"
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^A-Za-z\s]/g, '');
+              }}
+            />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phone">Phone Number</label>

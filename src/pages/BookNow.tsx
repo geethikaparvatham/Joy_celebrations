@@ -753,7 +753,10 @@ export default function BookNowPage() {
                         id="customerName"
                         type="text"
                         value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                          setCustomerName(val);
+                        }}
                         className={styles.inputField}
                         style={inputStyles}
                         placeholder="Enter your full name"
