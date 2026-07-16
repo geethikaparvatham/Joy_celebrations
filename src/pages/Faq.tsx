@@ -27,40 +27,8 @@ const faqs = [
     answer: "Basic beautiful decorations are included in all our standard packages. For more elaborate setups—like premium balloon arches, LED name boards, rose petal pathways, and cinematic fog effects—we offer premium packages or customizable add-ons."
   },
   {
-    question: "Can I bring my own cake for a birthday celebration?",
-    answer: "Yes, you can absolutely bring your own birthday or anniversary cake! If you'd rather not carry one, you can pre-order a fresh, customized cake directly through our booking add-ons."
-  },
-  {
-    question: "How many guests are allowed in the private theatre?",
-    answer: "Our luxury private theatre is designed to comfortably accommodate up to 6-8 guests depending on the package chosen, making it perfect for couples, small families, or close friend groups."
-  },
-  {
     question: "What is your cancellation and refund policy?",
     answer: "We understand that plans change. We offer flexible rescheduling if you notify us at least 24 hours in advance. For cancellations, please refer to our detailed cancellation policy page or contact our support team via WhatsApp for a partial refund."
-  },
-  {
-    question: "Is parking available at the venue?",
-    answer: "Yes, we provide safe and secure parking facilities for two-wheelers and four-wheelers directly at our location in Gunadala, Vijayawada, ensuring a hassle-free visit."
-  },
-  {
-    question: "Do I need to book in advance?",
-    answer: "Yes, advance booking is highly recommended. Since we offer an exclusive private theatre experience, slots fill up very quickly, especially on weekends and holidays. Book online early to secure your preferred date and time."
-  },
-  {
-    question: "Can I connect my own phone or laptop to the screen?",
-    answer: "Yes, we provide easy connectivity options including HDMI and wireless casting so you can seamlessly play your own surprise videos, photo slideshows, or stream your favorite movies directly on our massive 4K screen."
-  },
-  {
-    question: "Do you organize surprise proposal decorations?",
-    answer: "We specialize in surprise proposals! We can arrange everything from a romantic rose petal pathway and 'Marry Me' neon signs to cinematic fog effects, making your proposal in Vijayawada an unforgettable magical moment."
-  },
-  {
-    question: "Are there any hidden charges?",
-    answer: "No, we believe in 100% transparency. The final price you see during the checkout process on our website includes the theatre rental and selected decorations/add-ons. There are absolutely no hidden fees."
-  },
-  {
-    question: "Can we play loud music inside?",
-    answer: "Yes, our theatre features a premium, acoustically treated Dolby Atmos sound system. You can enjoy loud, immersive, theater-quality sound without worrying about disturbing others, as our rooms are fully soundproofed."
   }
 ];
 
